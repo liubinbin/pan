@@ -1,4 +1,8 @@
 package cn.liubinbin.pan.client;
+
+import java.awt.List;
+import java.util.ArrayList;
+
 /**
  *
  * @author liubinbin
@@ -6,39 +10,47 @@ package cn.liubinbin.pan.client;
  */
 public class Client {
 
-	public Client() {
-		
+	private String feHost;
+	private String fePort;
+	
+	public Client(String feHost, String fePort) {
+		this.feHost = feHost;
+		this.fePort = fePort;
 	}
 	
 	public void open() {
-		
+		// get a address to connect
 	}
 	
 	public void close() {
 		
 	}
 	
-	public void createBucket() {
+	public void createBucket(String bucketName) {
 		
 	}
 	
-	public void listBucket() {
+	public ArrayList<String> listBucket() {
+		return null;
+	}
+	
+	public ArrayList<String> listObject() {
+		return null;
+	}
+	
+	public void deleteBucket(String bucketName) {
 		
 	}
 	
-	public void deleteBucket() {
+	public void getObject(String bucketName, String key) {
 		
 	}
 	
-	public void get() {
+	public void putOBject(String bucketName, String key, String filePath) {
 		
 	}
 	
-	public void put() {
-		
-	}
-	
-	public void delete() {
+	public void deleteObject(String bucketName, String key) {
 		
 	}
 }

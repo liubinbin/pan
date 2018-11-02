@@ -1,10 +1,10 @@
-package cn.liubinbin.pan.server.frontend;
+package cn.liubinbin.pan.server.frontend.handler;
 /**
  *
  * @author liubinbin
  *
  */
-public class Server {
+public class DeleteBucketHandler {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
