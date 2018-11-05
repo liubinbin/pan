@@ -18,7 +18,7 @@ public class Meta {
 		
 	}
 
-	public ArrayList<String> GetBucket() {
+	public ArrayList<String> getBucket() {
 		return null;
 	}
 }

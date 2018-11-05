@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan;
+package main.java.cn.liubinbin.pan.client;
 
 import java.awt.List;
 import java.util.ArrayList;
