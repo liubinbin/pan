@@ -22,7 +22,7 @@ public class Bucket {
 		return null;
 	}
 	
-	public int put(byte[] value) { 
+	public int put(byte[] value) {
 		int offset = writeIdx;
 		System.arraycopy(value, writeIdx, data, 0, value.length);
 		writeIdx += value.length;

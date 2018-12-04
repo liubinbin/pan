@@ -61,7 +61,10 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
             HttpRequest req = (HttpRequest) msg;
            
             boolean keepAlive = HttpUtil.isKeepAlive(req);
+            
+            //replace the following line of code
             ByteBuf value = Unpooled.wrappedBuffer(CONTENT);
+            
             FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
             response.headers().set(CONTENT_TYPE, "text/plain");
             response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
