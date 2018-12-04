@@ -19,12 +19,12 @@ public class Bucket {
 	public byte[] get(int offset, int length) {
 		byte[] value = new byte[length];
 		System.arraycopy(data, offset, value, 0, length);
-		return null;
+		return value;
 	}
 	
 	public int put(byte[] value) {
 		int offset = writeIdx;
-		System.arraycopy(value, writeIdx, data, 0, value.length);
+		System.arraycopy(value, 0, data, writeIdx, value.length);
 		writeIdx += value.length;
 		return offset;
 	}
@@ -32,4 +32,9 @@ public class Bucket {
 	public boolean checkWriteForLen(int length) {
 		return (writeIdx + length > slotsize) ? false:true;
 	}
+
+	public int getWriteIdx() {
+		return writeIdx;
+	}
+
 }
