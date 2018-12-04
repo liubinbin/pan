@@ -1,4 +1,2 @@
-/be-config.properties
-/fe-config.properties
 /main/
-/test/
+/cache-config.properties

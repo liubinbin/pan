@@ -10,4 +10,6 @@ public class Contants {
 	
 	public static final String BE_PORT= "be.server.port";
 	
+	public static final String SLOT_SIZE= "cache.slot.size";
+	
 }
