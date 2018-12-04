@@ -49,6 +49,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 	
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
+		this.cacheManager.put("abc".getBytes(), CONTENT);
 	}
 	
     private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -72,7 +73,9 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
             
             if (req.method().equals(HttpMethod.GET)) {
                 final String uri = req.uri();
+                System.out.println("uri: " + uri);
                 final String path = sanitizeUri(uri);
+                System.out.println("path: " + path);
                 if (path == null) {
                     sendError(ctx, FORBIDDEN);
                     return;
@@ -108,19 +111,19 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
             return null;
         }
 
-        // Convert file separators.
-        uri = uri.replace('/', File.separatorChar);
-
-        // Simplistic dumb security check.
-        // You will have to do something serious in the production environment.
-        if (uri.contains(File.separator + '.') ||
-            uri.contains('.' + File.separator) ||
-            uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
-            return null;
-        }
+//        // Convert file separators.
+//        uri = uri.replace('/', File.separatorChar);
+//
+//        // Simplistic dumb security check.
+//        // You will have to do something serious in the production environment.
+//        if (uri.contains(File.separator + '.') ||
+//            uri.contains('.' + File.separator) ||
+//            uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
+//            return null;
+//        }
 
         // Convert to absolute path.
-        return uri;
+        return uri.split("/")[1];
     }
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {

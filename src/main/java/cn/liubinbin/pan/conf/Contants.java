@@ -18,6 +18,10 @@ public class Contants {
 	
 	public static final int DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT = 8;
 	
+	public static final String CACHE_SEGMENT_SIZE = "cache.segment.size";
+	
+	public static final int DEFAULT_CACHE_SEGMENT_SIZE = 512;
+	
 	public static final String SLOT_SIZE= "cache.slot.size";
 	
 }

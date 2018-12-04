@@ -26,11 +26,15 @@ public class CacheConfig {
 	}
 	
 	public int getNettyThreadCount( ) {
-		return configuration.getInt(Contants.CACHE_SERVER_PORT, Contants.DEFAULT_CACHE_SERVER_PORT);
+		return configuration.getInt(Contants.CACHE_NETTY_SERVER_THREAD_COUNT, Contants.DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT);
 	}
 	
 	public int[] getBucketSlotSize() {
-		
-		return null;
+		int[] bucketSlotSize = {128,512};
+		return bucketSlotSize;
+	}
+	
+	public int getSegmentSize(){
+		return configuration.getInt(Contants.CACHE_SEGMENT_SIZE, Contants.DEFAULT_CACHE_SEGMENT_SIZE);
 	}
 }

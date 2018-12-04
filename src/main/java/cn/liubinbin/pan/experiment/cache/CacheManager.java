@@ -20,6 +20,10 @@ public class CacheManager {
 	public CacheManager(CacheConfig cacheConfig) {
 		index = new ConcurrentSkipListMap<Key, Addr>();
 		bucketSlotSize = cacheConfig.getBucketSlotSize();
+		buckets = new Bucket[bucketSlotSize.length];
+		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx ++){
+			buckets[bucketIdx] = new Bucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+		}
 	}
 
 	public byte[] getByByteArray(byte[] key) {
