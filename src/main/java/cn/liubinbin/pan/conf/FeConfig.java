@@ -22,7 +22,7 @@ public class FeConfig {
 	}
 	
 	public int getFePort() {
-		return configuration.getInt(Contants.FE_PORT, 50501);
+		return configuration.getInt(Contants.FE_SERVER_PORT, 50501);
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {

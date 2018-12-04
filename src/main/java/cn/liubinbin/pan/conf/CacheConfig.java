@@ -18,7 +18,15 @@ public class CacheConfig {
 	
 	public CacheConfig() throws FileNotFoundException, ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
-		configuration.read(new FileReader("conf/be-config.properties"));
+		configuration.read(new FileReader("conf/cache-config.properties"));
+	}
+	
+	public int getPort() {
+		return configuration.getInt(Contants.CACHE_SERVER_PORT, Contants.DEFAULT_CACHE_SERVER_PORT);
+	}
+	
+	public int getNettyThreadCount( ) {
+		return configuration.getInt(Contants.CACHE_SERVER_PORT, Contants.DEFAULT_CACHE_SERVER_PORT);
 	}
 	
 	public int[] getBucketSlotSize() {
