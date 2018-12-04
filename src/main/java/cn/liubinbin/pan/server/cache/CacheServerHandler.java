@@ -22,13 +22,21 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;
+import io.netty.util.CharsetUtil;
 import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * @author liubinbin
@@ -62,22 +70,68 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
            
             boolean keepAlive = HttpUtil.isKeepAlive(req);
             
-            //replace the following line of code
-            ByteBuf value = Unpooled.wrappedBuffer(CONTENT);
-            
-            FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
-            response.headers().set(CONTENT_TYPE, "text/plain");
-            response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
-
-            if (!keepAlive) {
-                ctx.write(response).addListener(ChannelFutureListener.CLOSE);
-            } else {
-                response.headers().set(CONNECTION, KEEP_ALIVE);
-                ctx.write(response);
+            if (req.method().equals(HttpMethod.GET)) {
+                final String uri = req.uri();
+                final String path = sanitizeUri(uri);
+                if (path == null) {
+                    sendError(ctx, FORBIDDEN);
+                    return;
+                }
+            	byte[] key = path.getBytes();
+            	ByteBuf value = cacheManager.getByByteBuf(key);
+            	
+            	FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
+            	response.headers().set(CONTENT_TYPE, "text/plain");
+            	response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+            	if (!keepAlive) {
+            		ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+            	} else {
+            		response.headers().set(CONNECTION, KEEP_ALIVE);
+            		ctx.write(response);
+            	}
+            } else if (req.method().equals(HttpMethod.PUT)) {
+            	
             }
+
         }
     }
+    
+    private static String sanitizeUri(String uri) {
+        // Decode the path.
+        try {
+            uri = URLDecoder.decode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new Error(e);
+        }
 
+        if (uri.isEmpty() || uri.charAt(0) != '/') {
+            return null;
+        }
+
+        // Convert file separators.
+        uri = uri.replace('/', File.separatorChar);
+
+        // Simplistic dumb security check.
+        // You will have to do something serious in the production environment.
+        if (uri.contains(File.separator + '.') ||
+            uri.contains('.' + File.separator) ||
+            uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
+            return null;
+        }
+
+        // Convert to absolute path.
+        return uri;
+    }
+
+    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+
+        // Close the connection as soon as the error message is sent.
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+    
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();

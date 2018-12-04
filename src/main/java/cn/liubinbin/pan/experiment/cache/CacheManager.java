@@ -2,6 +2,7 @@ package main.java.cn.liubinbin.pan.experiment.cache;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import io.netty.buffer.ByteBuf;
 import main.java.cn.liubinbin.pan.conf.CacheConfig;
 
 /**
@@ -21,13 +22,23 @@ public class CacheManager {
 		bucketSlotSize = cacheConfig.getBucketSlotSize();
 	}
 
-	public byte[] get(byte[] key) {
+	public byte[] getByByteArray(byte[] key) {
 		Addr addr = index.get(new Key(key));
 		// not found for key
 		if (addr == null) {
 			return null;
 		}
-		byte[] value = buckets[addr.getBucketIdx()].get(addr.getOffset(), addr.getLength());
+		byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
+		return value;
+	}
+	
+	public ByteBuf getByByteBuf(byte[] key) {
+		Addr addr = index.get(new Key(key));
+		// not found for key
+		if (addr == null) {
+			return null;
+		}
+		ByteBuf value = buckets[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
 		return value;
 	}
 	
