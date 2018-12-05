@@ -32,10 +32,17 @@ public class CacheConfig {
 
 	public int[] getBucketSlotSize() {
 		int[] bucketSlotSize = { 128, 512 };
+		String bucketSlotSizeStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE );
+		String[] bucketSlotSizeStrArray = bucketSlotSizeStr.split(",");
+		bucketSlotSize = new int[bucketSlotSizeStrArray.length];
 		return bucketSlotSize;
 	}
 
 	public int getSegmentSize() {
 		return configuration.getInt(Contants.CACHE_SEGMENT_SIZE, Contants.DEFAULT_CACHE_SEGMENT_SIZE);
+	}
+	
+	public int getTotalSize() {
+		return configuration.getInt(Contants.CACHE_TOTAL_SIZE, Contants.DEFAULT_TOTAL_SEGMENT_SIZE);
 	}
 }

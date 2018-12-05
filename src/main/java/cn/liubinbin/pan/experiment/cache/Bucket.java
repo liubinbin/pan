@@ -1,9 +1,5 @@
 package main.java.cn.liubinbin.pan.experiment.cache;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -59,7 +55,7 @@ public class Bucket {
 		System.out.println("bucket.getWriteIdx(): " + bucket.getWriteIdx());
 		System.out.println("data1.length: " + data1.length);
 		ByteBuf valueFromBucket = bucket.getByByteBuf(data1Offset, data1.length);
-		ByteBuf valueOriginal = Unpooled.wrappedBuffer(data2);
+		ByteBuf valueOriginal = Unpooled.wrappedBuffer(data1);
 
 		System.out.println(valueFromBucket.compareTo(valueOriginal));
 
