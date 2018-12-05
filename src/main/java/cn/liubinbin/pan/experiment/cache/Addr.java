@@ -41,4 +41,8 @@ public class Addr {
 		this.length = length;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{bucketIdx: %d ; offset: %d ; length: %d }", bucketIdx, offset, length);
+	}
 }

@@ -37,5 +37,9 @@ public class CacheConfigTest {
 		assertEquals(bucketSlotSize[6], 66560);
 		assertEquals(bucketSlotSize[7], 132096);
 		assertEquals(bucketSlotSize[8], 263168);
+		assertEquals(bucketSlotSize[9], 525312);
+		assertEquals(bucketSlotSize[10], 1049600);
+		assertEquals(bucketSlotSize[11], 4195328);
+		assertEquals(bucketSlotSize[12], 16778240);
 	}
 }

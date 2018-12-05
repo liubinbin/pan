@@ -24,9 +24,9 @@ public class BucketTest {
 		byte[] data2 = { 's', 'p', 'a', 'k', 'h', 'a' };
 		int data2Offset = bucket.put(data2);
 		assertEquals(data1.length + data2.length, bucket.getWriteIdx());
-		assertEquals(Arrays.equals(data1, bucket.getByByteArray(data1Offset, data1.length)), true);
-		assertEquals(Arrays.equals(data2, bucket.getByByteArray(data2Offset, data2.length)), true);
-		assertEquals(Arrays.equals(data1, bucket.getByByteArray(data2Offset, data2.length)), false);
+		assertTrue(Arrays.equals(data1, bucket.getByByteArray(data1Offset, data1.length)));
+		assertTrue(Arrays.equals(data2, bucket.getByByteArray(data2Offset, data2.length)));
+		assertFalse(Arrays.equals(data1, bucket.getByByteArray(data2Offset, data2.length)));
 	}
 
 	@Test

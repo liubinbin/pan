@@ -48,12 +48,12 @@ import org.apache.log4j.Logger;
 
 public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 
-	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
+//	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
 	private CacheManager cacheManager;
 
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
-		this.cacheManager.put("abc".getBytes(), CONTENT);
+		this.cacheManager.put("abcd".getBytes(), CONTENT);
 	}
 
 	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -84,7 +84,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 					sendError(ctx, FORBIDDEN);
 					return;
 				}
-				logger.debug("receive a req with path of " + path);
+//				logger.debug("receive a req with path of " + path);
 				byte[] key = path.getBytes();
 				ByteBuf value = cacheManager.getByByteBuf(key);
 
