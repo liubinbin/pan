@@ -13,16 +13,16 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
  *
  */
 public class BeConfig {
-	
+
 	private PropertiesConfiguration configuration = null;
-	
+
 	public BeConfig() throws FileNotFoundException, ConfigurationException, IOException {
 		configuration = new PropertiesConfiguration();
 		configuration.read(new FileReader("conf/be-config.properties"));
 	}
-	
+
 	public int[] bucketSlotSize() {
-		
+
 		return null;
 	}
 }

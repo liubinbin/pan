@@ -1,4 +1,5 @@
 package main.java.cn.liubinbin.pan.experiment.cache;
+
 /**
  *
  * @author liubinbin
@@ -9,7 +10,7 @@ public class Addr {
 	private int bucketIdx;
 	private int offset;
 	private int length;
-	
+
 	public Addr(int bucketIdx, int offset, int length) {
 		this.setBucketIdx(bucketIdx);
 		this.setOffset(offset);
@@ -39,6 +40,5 @@ public class Addr {
 	public void setLength(int length) {
 		this.length = length;
 	}
-	
 
 }

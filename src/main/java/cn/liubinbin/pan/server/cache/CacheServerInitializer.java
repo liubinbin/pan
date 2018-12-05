@@ -30,16 +30,16 @@ import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
 public class CacheServerInitializer extends ChannelInitializer<SocketChannel> {
 
 	private CacheManager cacheManager;
-	
-    public CacheServerInitializer(CacheManager cacheManager) {
-    	this.cacheManager = cacheManager;
-    }
 
-    @Override
-    public void initChannel(SocketChannel ch) {
-        ChannelPipeline p = ch.pipeline();
-        p.addLast(new HttpServerCodec());
-        p.addLast(new HttpServerExpectContinueHandler());
-        p.addLast(new CacheServerHandler(cacheManager));
-    }
+	public CacheServerInitializer(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
+
+	@Override
+	public void initChannel(SocketChannel ch) {
+		ChannelPipeline p = ch.pipeline();
+		p.addLast(new HttpServerCodec());
+		p.addLast(new HttpServerExpectContinueHandler());
+		p.addLast(new CacheServerHandler(cacheManager));
+	}
 }

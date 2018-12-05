@@ -8,14 +8,13 @@ import java.util.ArrayList;
  *
  */
 public class Meta {
-	
-	
+
 	public Meta() {
-		// 
+		//
 	}
-	
+
 	public void addBucket() {
-		
+
 	}
 
 	public ArrayList<String> getBucket() {

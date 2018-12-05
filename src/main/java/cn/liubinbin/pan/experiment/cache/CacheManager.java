@@ -12,16 +12,16 @@ import main.java.cn.liubinbin.pan.conf.CacheConfig;
  */
 
 public class CacheManager {
-	
+
 	private ConcurrentSkipListMap<Key, Addr> index;
 	private Bucket[] buckets;
 	private int[] bucketSlotSize;
-	
+
 	public CacheManager(CacheConfig cacheConfig) {
 		index = new ConcurrentSkipListMap<Key, Addr>();
 		bucketSlotSize = cacheConfig.getBucketSlotSize();
 		buckets = new Bucket[bucketSlotSize.length];
-		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx ++){
+		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
 			buckets[bucketIdx] = new Bucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
 		}
 	}
@@ -35,7 +35,7 @@ public class CacheManager {
 		byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
 		return value;
 	}
-	
+
 	public ByteBuf getByByteBuf(byte[] key) {
 		Addr addr = index.get(new Key(key));
 		// not found for key
@@ -45,7 +45,7 @@ public class CacheManager {
 		ByteBuf value = buckets[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
 		return value;
 	}
-	
+
 	public void put(byte[] key, byte[] value) {
 		int bucketIdx = chooseBucketIdx(value.length);
 		int offset = buckets[bucketIdx].put(value);
@@ -53,9 +53,9 @@ public class CacheManager {
 		Addr addr = new Addr(bucketIdx, offset, value.length);
 		index.put(key1, addr);
 	}
-	
+
 	public int chooseBucketIdx(int valueLen) {
-		for (int bucketIdx = 0; bucketIdx  < bucketSlotSize.length; bucketIdx++) {
+		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
 			if (valueLen < bucketSlotSize[bucketIdx]) {
 				return bucketIdx;
 			}

@@ -1,4 +1,5 @@
 package main.java.cn.liubinbin.pan.module;
+
 /**
  *
  * @author liubinbin
@@ -12,7 +13,7 @@ public class Record {
 	private byte[] value;
 
 	public Record() {
-		
+
 	}
 
 	public long getKeySize() {

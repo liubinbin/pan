@@ -1,4 +1,5 @@
 package main.java.cn.liubinbin.pan.server.backend;
+
 /**
  *
  * @author liubinbin
@@ -7,6 +8,6 @@ package main.java.cn.liubinbin.pan.server.backend;
 public class FileScanner {
 
 	public static void main(String[] args) {
-		
+
 	}
 }

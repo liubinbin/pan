@@ -12,9 +12,9 @@ import main.java.cn.liubinbin.pan.conf.FeConfig;
  *
  */
 public class FeConfigTest {
-	
+
 	private FeConfig feConfig = null;
-	
+
 	public FeConfigTest() {
 		try {
 			this.feConfig = new FeConfig();
@@ -24,7 +24,7 @@ public class FeConfigTest {
 	}
 
 	@Test
-	public void testGetPort(){
+	public void testGetPort() {
 		assertEquals("fe port", 50501, feConfig.getFePort());
 	}
 }

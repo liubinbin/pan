@@ -34,9 +34,12 @@ import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 
 /**
  * @author liubinbin
@@ -44,100 +47,102 @@ import java.net.URLDecoder;
  */
 
 public class CacheServerHandler extends ChannelInboundHandlerAdapter {
-	
+
+	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
 	private CacheManager cacheManager;
-	
+
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 		this.cacheManager.put("abc".getBytes(), CONTENT);
 	}
-	
-    private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 
-    private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
-    private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
-    private static final AsciiString CONNECTION = AsciiString.cached("Connection");
-    private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
+	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
+	private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
+	private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
+	private static final AsciiString CONNECTION = AsciiString.cached("Connection");
+	private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof HttpRequest) {
-            HttpRequest req = (HttpRequest) msg;
-           
-            boolean keepAlive = HttpUtil.isKeepAlive(req);
-            
-            if (req.method().equals(HttpMethod.GET)) {
-                final String uri = req.uri();
-                System.out.println("uri: " + uri);
-                final String path = sanitizeUri(uri);
-                System.out.println("path: " + path);
-                if (path == null) {
-                    sendError(ctx, FORBIDDEN);
-                    return;
-                }
-            	byte[] key = path.getBytes();
-            	ByteBuf value = cacheManager.getByByteBuf(key);
-            	
-            	FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
-            	response.headers().set(CONTENT_TYPE, "text/plain");
-            	response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
-            	if (!keepAlive) {
-            		ctx.write(response).addListener(ChannelFutureListener.CLOSE);
-            	} else {
-            		response.headers().set(CONNECTION, KEEP_ALIVE);
-            		ctx.write(response);
-            	}
-            } else if (req.method().equals(HttpMethod.PUT)) {
-            	
-            }
+	@Override
+	public void channelReadComplete(ChannelHandlerContext ctx) {
+		ctx.flush();
+	}
 
-        }
-    }
-    
-    private static String sanitizeUri(String uri) {
-        // Decode the path.
-        try {
-            uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new Error(e);
-        }
+	@Override
+	public void channelRead(ChannelHandlerContext ctx, Object msg) {
+		if (msg instanceof HttpRequest) {
+			HttpRequest req = (HttpRequest) msg;
 
-        if (uri.isEmpty() || uri.charAt(0) != '/') {
-            return null;
-        }
+			boolean keepAlive = HttpUtil.isKeepAlive(req);
 
-//        // Convert file separators.
-//        uri = uri.replace('/', File.separatorChar);
-//
-//        // Simplistic dumb security check.
-//        // You will have to do something serious in the production environment.
-//        if (uri.contains(File.separator + '.') ||
-//            uri.contains('.' + File.separator) ||
-//            uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
-//            return null;
-//        }
+			if (req.method().equals(HttpMethod.GET)) {
+				final String uri = req.uri();
+				System.out.println("uri: " + uri);
+				final String path = sanitizeUri(uri);
+				System.out.println("path: " + path);
+				if (path == null) {
+					sendError(ctx, FORBIDDEN);
+					return;
+				}
+				logger.debug("receive a req with path of " + path);
+				byte[] key = path.getBytes();
+				ByteBuf value = cacheManager.getByByteBuf(key);
 
-        // Convert to absolute path.
-        return uri.split("/")[1];
-    }
+				FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
+				response.headers().set(CONTENT_TYPE, "text/plain");
+				response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+				if (!keepAlive) {
+					ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+				} else {
+					response.headers().set(CONNECTION, KEEP_ALIVE);
+					ctx.write(response);
+				}
+			} else if (req.method().equals(HttpMethod.PUT)) {
 
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+			}
 
-        // Close the connection as soon as the error message is sent.
-        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-    }
-    
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
-    }
+		}
+	}
+
+	private static String sanitizeUri(String uri) {
+		// Decode the path.
+		try {
+			uri = URLDecoder.decode(uri, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new Error(e);
+		}
+
+		if (uri.isEmpty() || uri.charAt(0) != '/') {
+			return null;
+		}
+
+		// // Convert file separators.
+		// uri = uri.replace('/', File.separatorChar);
+		//
+		// // Simplistic dumb security check.
+		// // You will have to do something serious in the production environment.
+		// if (uri.contains(File.separator + '.') ||
+		// uri.contains('.' + File.separator) ||
+		// uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
+		// return null;
+		// }
+
+		// Convert to absolute path.
+		return uri.split("/")[1];
+	}
+
+	private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status,
+				Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+		response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+
+		// Close the connection as soon as the error message is sent.
+		ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		cause.printStackTrace();
+		ctx.close();
+	}
 }

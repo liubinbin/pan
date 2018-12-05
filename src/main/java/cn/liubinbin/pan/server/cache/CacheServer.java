@@ -32,25 +32,23 @@ import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
  */
 public final class CacheServer {
 
-    public static void main(String[] args) throws Exception {
-    	CacheConfig cacheConfig = new CacheConfig();
-    	CacheManager cacheManager = new CacheManager(cacheConfig);
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.option(ChannelOption.SO_BACKLOG, 1024);
-            b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new CacheServerInitializer(cacheManager));
+	public static void main(String[] args) throws Exception {
+		CacheConfig cacheConfig = new CacheConfig();
+		CacheManager cacheManager = new CacheManager(cacheConfig);
+		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+		EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
+		try {
+			ServerBootstrap b = new ServerBootstrap();
+			b.option(ChannelOption.SO_BACKLOG, 1024);
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(new CacheServerInitializer(cacheManager));
 
-            Channel ch = b.bind(cacheConfig.getPort()).sync().channel();
+			Channel ch = b.bind(cacheConfig.getPort()).sync().channel();
 
-            ch.closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
-    }
+			ch.closeFuture().sync();
+		} finally {
+			bossGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully();
+		}
+	}
 }

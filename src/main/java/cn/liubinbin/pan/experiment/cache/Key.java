@@ -2,12 +2,11 @@ package main.java.cn.liubinbin.pan.experiment.cache;
 
 /**
  *
- * @author liubinbin
- * TODO key should be put into map
+ * @author liubinbin TODO key should be put into map
  */
-public class Key implements Comparable{
+public class Key implements Comparable {
 	private byte[] key;
-	
+
 	public Key(byte[] key) {
 		this.key = key;
 	}
@@ -22,6 +21,6 @@ public class Key implements Comparable{
 
 	@Override
 	public int compareTo(Object o) {
-		return key.hashCode() - ((Key) o ).hashCode();
+		return key.hashCode() - ((Key) o).hashCode();
 	}
 }
