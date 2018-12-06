@@ -54,9 +54,11 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 		this.cacheManager.put("abcd".getBytes(), CONTENT);
+		this.cacheManager.put("abc".getBytes(), CONTENT1);
 	}
 
 	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
+	private static final byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
 
 	private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
 	private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
@@ -73,7 +75,8 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) msg;
 
-			boolean keepAlive = HttpUtil.isKeepAlive(req);
+//			boolean keepAlive = HttpUtil.isKeepAlive(req);
+			boolean keepAlive = false;
 
 			if (req.method().equals(HttpMethod.GET)) {
 				final String uri = req.uri();

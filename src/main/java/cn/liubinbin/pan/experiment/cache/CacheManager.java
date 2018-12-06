@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
@@ -21,8 +23,12 @@ import main.java.cn.liubinbin.pan.conf.CacheConfig;
 public class CacheManager {
 
 	private ConcurrentSkipListMap<Key, Addr> index;
+	// TODO do we need volatile, we have already lock.
 	private Bucket[] buckets;
 	private int[] bucketSlotSize;
+	private ReentrantReadWriteLock readWriteLock;
+	private Lock rLock;
+	private Lock wLock;
 
 	public CacheManager(CacheConfig cacheConfig) {
 		index = new ConcurrentSkipListMap<Key, Addr>();
@@ -31,35 +37,53 @@ public class CacheManager {
 		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
 			buckets[bucketIdx] = new Bucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
 		}
+		this.readWriteLock = new ReentrantReadWriteLock();
+		this.rLock = readWriteLock.readLock();
+		this.wLock = readWriteLock.writeLock();
 	}
 
 	public byte[] getByByteArray(byte[] key) {
-		Addr addr = index.get(new Key(key));
-		// not found for key
-		if (addr == null) {
-			System.out.println("addr is null for key " + String.valueOf(key));
-			return null;
+		rLock.lock();
+		try {
+			Addr addr = index.get(new Key(key));
+			// not found for key
+			if (addr == null) {
+				System.out.println("addr is null for key " + String.valueOf(key));
+				return null;
+			}
+			byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
+			return value;
+		} finally {
+			rLock.unlock();
 		}
-		byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
-		return value;
 	}
 
 	public ByteBuf getByByteBuf(byte[] key) {
-		Addr addr = index.get(new Key(key));
-		// not found for key
-		if (addr == null) {
-			return null;
+		rLock.lock();
+		try {
+			Addr addr = index.get(new Key(key));
+			// not found for key
+			if (addr == null) {
+				return null;
+			}
+			ByteBuf value = buckets[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
+			return value;
+		} finally {
+			rLock.unlock();
 		}
-		ByteBuf value = buckets[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
-		return value;
 	}
 
 	public void put(byte[] key, byte[] value) {
-		int bucketIdx = chooseBucketIdx(value.length);
-		int offset = buckets[bucketIdx].put(value);
-		Key key1 = new Key(key);
-		Addr addr = new Addr(bucketIdx, offset, value.length);
-		index.put(key1, addr);
+		rLock.lock();
+		try {
+			int bucketIdx = chooseBucketIdx(value.length);
+			int offset = buckets[bucketIdx].put(value);
+			Key key1 = new Key(key);
+			Addr addr = new Addr(bucketIdx, offset, value.length);
+			index.put(key1, addr);
+		} finally {
+			rLock.unlock();
+		}
 	}
 
 	public int chooseBucketIdx(int valueLen) {
@@ -70,26 +94,26 @@ public class CacheManager {
 		}
 		return -1;
 	}
-	
+
 	public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
-//		byte[] key = { 'k', 'e', 'y'};
-//		byte[] key1 = { 'k', 'e', 'y', '1'};
-//		ConcurrentSkipListMap<Key, Addr> index = new ConcurrentSkipListMap<Key, Addr>();
-//		index.put(new Key(key), new Addr(1, 0, 1));
-//		System.out.println("addr.toString: " + index.get(new Key(key)).toString());
-		
+		// byte[] key = { 'k', 'e', 'y'};
+		// byte[] key1 = { 'k', 'e', 'y', '1'};
+		// ConcurrentSkipListMap<Key, Addr> index = new ConcurrentSkipListMap<Key,
+		// Addr>();
+		// index.put(new Key(key), new Addr(1, 0, 1));
+		// System.out.println("addr.toString: " + index.get(new Key(key)).toString());
+
 		CacheManager cacheManager = new CacheManager(new CacheConfig());
-		byte[] key = { 'k', 'e', 'y'};
-		byte[] key1 = { 'k', 'e', 'y', '1'};
+		byte[] key = { 'k', 'e', 'y' };
+		byte[] key1 = { 'k', 'e', 'y', '1' };
 		byte[] value = { 'v', 'a', 'l', 'u', 'e' };
 		byte[] value1 = { 'v', 'a', 'l', 'u', 'e', '1' };
-		
+
 		cacheManager.put(key, value);
 		cacheManager.put(key1, value1);
 		byte[] valueFromCache = cacheManager.getByByteArray(key);
 		System.out.println("valueFromCache.length: " + valueFromCache.length);
 		System.out.println("Arrays.equals(value, valueFromCache): " + Arrays.equals(value, valueFromCache));
 	}
-	
-	
+
 }
