@@ -6,6 +6,11 @@ import org.junit.Test;
 
 import main.java.cn.liubinbin.pan.experiment.cache.Key;
 
+/**
+ * 
+ * @author liubinbin
+ *
+ */
 public class KeyTest {
 
 	@Test

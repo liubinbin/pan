@@ -69,20 +69,4 @@ public class Bucket {
 		return writeIdx;
 	}
 
-	public static void main(String[] args) {
-		Bucket bucket = new Bucket(128, 16384);
-		byte[] data1 = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-		int data1Offset = bucket.put(data1);
-		byte[] data2 = { 's', 'p', 'a', 'k', 'h', 'a' };
-		int data2Offset = bucket.put(data2);
-		System.out.println("data1.length + data2.length: " + data1.length + data2.length);
-		System.out.println("bucket.getWriteIdx(): " + bucket.getWriteIdx());
-		System.out.println("data1.length: " + data1.length);
-		ByteBuf valueFromBucket = bucket.getByByteBuf(data1Offset, data1.length);
-		ByteBuf valueOriginal = Unpooled.wrappedBuffer(data1);
-
-		System.out.println(valueFromBucket.compareTo(valueOriginal));
-
-	}
-
 }

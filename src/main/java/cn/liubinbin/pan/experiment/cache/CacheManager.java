@@ -95,25 +95,4 @@ public class CacheManager {
 		return -1;
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
-		// byte[] key = { 'k', 'e', 'y'};
-		// byte[] key1 = { 'k', 'e', 'y', '1'};
-		// ConcurrentSkipListMap<Key, Addr> index = new ConcurrentSkipListMap<Key,
-		// Addr>();
-		// index.put(new Key(key), new Addr(1, 0, 1));
-		// System.out.println("addr.toString: " + index.get(new Key(key)).toString());
-
-		CacheManager cacheManager = new CacheManager(new CacheConfig());
-		byte[] key = { 'k', 'e', 'y' };
-		byte[] key1 = { 'k', 'e', 'y', '1' };
-		byte[] value = { 'v', 'a', 'l', 'u', 'e' };
-		byte[] value1 = { 'v', 'a', 'l', 'u', 'e', '1' };
-
-		cacheManager.put(key, value);
-		cacheManager.put(key1, value1);
-		byte[] valueFromCache = cacheManager.getByByteArray(key);
-		System.out.println("valueFromCache.length: " + valueFromCache.length);
-		System.out.println("Arrays.equals(value, valueFromCache): " + Arrays.equals(value, valueFromCache));
-	}
-
 }

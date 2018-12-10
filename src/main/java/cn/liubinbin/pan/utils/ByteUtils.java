@@ -1,5 +1,10 @@
 package main.java.cn.liubinbin.pan.utils;
 
+/**
+ * 
+ * @author liubinbin
+ *
+ */
 public class ByteUtils {
 	
 	public static int hashCode(byte[] buf) {

@@ -35,13 +35,17 @@ public final class CacheServer {
 	public static void main(String[] args) throws Exception {
 		CacheConfig cacheConfig = new CacheConfig();
 		CacheManager cacheManager = new CacheManager(cacheConfig);
+		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
+		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
+		cacheManager.put("abcd".getBytes(), CONTENT);
+		cacheManager.put("abc".getBytes(), CONTENT1);
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
 		try {
 			ServerBootstrap b = new ServerBootstrap();
 			b.option(ChannelOption.SO_BACKLOG, 1024);
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(new CacheServerInitializer(cacheManager));
+					.handler(new LoggingHandler(LogLevel.ERROR)).childHandler(new CacheServerInitializer(cacheManager));
 
 			Channel ch = b.bind(cacheConfig.getPort()).sync().channel();
 

@@ -53,8 +53,6 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
-		this.cacheManager.put("abcd".getBytes(), CONTENT);
-		this.cacheManager.put("abc".getBytes(), CONTENT1);
 	}
 
 	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -75,14 +73,14 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 		if (msg instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) msg;
 
-//			boolean keepAlive = HttpUtil.isKeepAlive(req);
-			boolean keepAlive = false;
+			boolean keepAlive = HttpUtil.isKeepAlive(req);
+//			boolean keepAlive = false;
 
 			if (req.method().equals(HttpMethod.GET)) {
 				final String uri = req.uri();
-				System.out.println("uri: " + uri);
+//				System.out.println("uri: " + uri);
 				final String path = sanitizeUri(uri);
-				System.out.println("path: " + path);
+//				System.out.println("path: " + path);
 				if (path == null) {
 					sendError(ctx, FORBIDDEN);
 					return;
