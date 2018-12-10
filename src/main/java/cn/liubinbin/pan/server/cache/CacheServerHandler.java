@@ -16,20 +16,26 @@
 package main.java.cn.liubinbin.pan.server.cache;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;
 import io.netty.util.CharsetUtil;
+import main.java.cn.liubinbin.pan.conf.Contants;
 import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
+import main.java.cn.liubinbin.pan.experiment.cache.Key;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
@@ -63,6 +69,9 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 	private static final AsciiString CONNECTION = AsciiString.cached("Connection");
 	private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
 
+	private CompositeByteBuf tempData = null;
+	private byte[] key = null;
+	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) {
 		ctx.flush();
@@ -74,18 +83,15 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 			HttpRequest req = (HttpRequest) msg;
 
 			boolean keepAlive = HttpUtil.isKeepAlive(req);
-//			boolean keepAlive = false;
-
+			
 			if (req.method().equals(HttpMethod.GET)) {
+				//deal with get request
 				final String uri = req.uri();
-//				System.out.println("uri: " + uri);
 				final String path = sanitizeUri(uri);
-//				System.out.println("path: " + path);
 				if (path == null) {
 					sendError(ctx, FORBIDDEN);
 					return;
 				}
-//				logger.debug("receive a req with path of " + path);
 				byte[] key = path.getBytes();
 				ByteBuf value = cacheManager.getByByteBuf(key);
 
@@ -99,10 +105,48 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 					ctx.write(response);
 				}
 			} else if (req.method().equals(HttpMethod.PUT)) {
-
+				//deal with put request
+//				if (msg instanceof HttpContent) {
+//					System.out.println("liubb HttpContent");
+//					if (msg instanceof LastHttpContent) {
+//						System.out.println("liubb HttpContent");
+//					}
+//				}
+				final String uri = req.uri();
+				final String path = sanitizeUri(uri);
+				if (path == null) {
+					sendError(ctx, FORBIDDEN);
+					return;
+				}
+				key = path.getBytes();
+				
+				if (req instanceof HttpRequest){
+					tempData = Unpooled.compositeBuffer();
+					System.out.println("liubb HttpRequest");
+					if (req instanceof FullHttpRequest) {
+						System.out.println("liubb FullHttpRequest");
+					} else {
+						System.out.println("liubb not FullHttpRequest");
+					}
+				} else {
+					System.out.println("liubb not HttpRequest" + req.getClass());
+				}
+//				System.out.println("abc");
 			}
 
-		}
+		} else if (msg instanceof HttpContent) {
+			ByteBuf abc = ((HttpContent) msg).content();
+			tempData.addComponent(true, abc.duplicate());
+			System.out.println("liubb HttpContent " + abc.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
+			if (msg instanceof LastHttpContent) {
+				int length = tempData.readableBytes();
+				byte[] data = new byte[length];
+				tempData.getBytes(tempData.readerIndex(), data);
+				System.out.println("key.length: " + key.length + " data.length: " + data.length);
+				cacheManager.put(key, data);
+				System.out.println("liubb LastHttpContent " + length + " " + data.length);
+			}
+		} 
 	}
 
 	private static String sanitizeUri(String uri) {
@@ -113,23 +157,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 			throw new Error(e);
 		}
 
-		if (uri.isEmpty() || uri.charAt(0) != '/') {
-			return null;
-		}
-
-		// // Convert file separators.
-		// uri = uri.replace('/', File.separatorChar);
-		//
-		// // Simplistic dumb security check.
-		// // You will have to do something serious in the production environment.
-		// if (uri.contains(File.separator + '.') ||
-		// uri.contains('.' + File.separator) ||
-		// uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ) {
-		// return null;
-		// }
-
-		// Convert to absolute path.
-		return uri.split("/")[1];
+		return uri.split(Contants.FILE_SEPARATOR)[1];
 	}
 
 	private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {

@@ -21,7 +21,7 @@ public class Contants {
 
 	public static final String CACHE_SEGMENT_SIZE = "cache.segment.size";
 
-	public static final int DEFAULT_CACHE_SEGMENT_SIZE = 512;
+	public static final int DEFAULT_CACHE_SEGMENT_SIZE = 132096;
 	
 	public static final String CACHE_TOTAL_SIZE = "cache.total.size";
 
@@ -29,6 +29,8 @@ public class Contants {
 
 	public static final String SLOT_SIZE = "cache.slot.size";
 	
-	public static final String DEFAULT_SLOT_SIZE = "128,512";
+	public static final String DEFAULT_SLOT_SIZE = "128,512,132096";
+	
+	public static final String FILE_SEPARATOR = "/";
 
 }

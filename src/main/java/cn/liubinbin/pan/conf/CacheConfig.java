@@ -31,7 +31,7 @@ public class CacheConfig {
 	}
 
 	public int[] getBucketSlotSize() {
-		int[] bucketSlotSize = { 128, 512 };
+		int[] bucketSlotSize = null;
 		String bucketSlotSizeStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE );
 		String[] bucketSlotSizeStrArray = bucketSlotSizeStr.split(",");
 		bucketSlotSize = new int[bucketSlotSizeStrArray.length];
