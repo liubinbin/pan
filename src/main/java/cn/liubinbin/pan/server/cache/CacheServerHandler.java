@@ -103,16 +103,27 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				}
 				byte[] key = path.getBytes();
 				ByteBuf value = cacheManager.getByByteBuf(key);
-
-				FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
-				response.headers().set(CONTENT_TYPE, "text/plain");
-				response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
-				if (!keepAlive) {
-					ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+				if (value == null) {
+					FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
+					response.headers().set(CONTENT_TYPE, "text/plain");
+					if (!keepAlive) {
+						ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+					} else {
+						response.headers().set(CONNECTION, KEEP_ALIVE);
+						ctx.write(response);
+					}
 				} else {
-					response.headers().set(CONNECTION, KEEP_ALIVE);
-					ctx.write(response);
+					FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
+					response.headers().set(CONTENT_TYPE, "text/plain");
+					response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+					if (!keepAlive) {
+						ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+					} else {
+						response.headers().set(CONNECTION, KEEP_ALIVE);
+						ctx.write(response);
+					}
 				}
+
 			} else if (req.method().equals(HttpMethod.PUT)) {
 				//deal with put request
 				isGet = false;
