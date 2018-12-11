@@ -16,6 +16,7 @@
 package main.java.cn.liubinbin.pan.server.cache;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -59,6 +60,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 
 	public CacheServerHandler(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
+		this.tempData = Unpooled.compositeBuffer();
 	}
 
 	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -71,6 +73,8 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 
 	private CompositeByteBuf tempData = null;
 	private byte[] key = null;
+	private boolean isGet = true;
+	private HttpRequest HttpRequest = null;
 	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -84,7 +88,12 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 
 			boolean keepAlive = HttpUtil.isKeepAlive(req);
 			
+			
+			tempData.clear();
+			key = null;
+			
 			if (req.method().equals(HttpMethod.GET)) {
+				isGet = true;
 				//deal with get request
 				final String uri = req.uri();
 				final String path = sanitizeUri(uri);
@@ -106,12 +115,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				}
 			} else if (req.method().equals(HttpMethod.PUT)) {
 				//deal with put request
-//				if (msg instanceof HttpContent) {
-//					System.out.println("liubb HttpContent");
-//					if (msg instanceof LastHttpContent) {
-//						System.out.println("liubb HttpContent");
-//					}
-//				}
+				isGet = false;
 				final String uri = req.uri();
 				final String path = sanitizeUri(uri);
 				if (path == null) {
@@ -121,7 +125,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				key = path.getBytes();
 				
 				if (req instanceof HttpRequest){
-					tempData = Unpooled.compositeBuffer();
+					tempData.clear();
 					System.out.println("liubb HttpRequest");
 					if (req instanceof FullHttpRequest) {
 						System.out.println("liubb FullHttpRequest");
@@ -131,20 +135,34 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				} else {
 					System.out.println("liubb not HttpRequest" + req.getClass());
 				}
-//				System.out.println("abc");
 			}
 
 		} else if (msg instanceof HttpContent) {
-			ByteBuf abc = ((HttpContent) msg).content();
-			tempData.addComponent(true, abc.duplicate());
-			System.out.println("liubb HttpContent " + abc.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
-			if (msg instanceof LastHttpContent) {
-				int length = tempData.readableBytes();
-				byte[] data = new byte[length];
-				tempData.getBytes(tempData.readerIndex(), data);
-				System.out.println("key.length: " + key.length + " data.length: " + data.length);
-				cacheManager.put(key, data);
-				System.out.println("liubb LastHttpContent " + length + " " + data.length);
+			if (! isGet) {
+				ByteBuf tempContent = ((HttpContent) msg).content();
+				if (tempContent.isReadable()) {
+					tempData.addComponent(true, tempContent.duplicate());
+//					System.out.println(ByteBufUtil.hexDump(tempContent));
+					System.out.println("liubb HttpContent " + tempContent.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
+				} else {
+					System.out.println("abc is not readable");
+				}
+				if (msg instanceof LastHttpContent) {
+					int length = tempData.readableBytes();
+					byte[] data = new byte[length];
+					tempData.getBytes(tempData.readerIndex(), data);
+					System.out.println("key.length: " + key.length + " data.length: " + data.length);
+					cacheManager.put(key, data);
+					System.out.println("liubb LastHttpContent " + length + " " + data.length);
+					FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+					response.headers().set(CONTENT_TYPE, "text/plain");
+					if (!false) {
+						ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+					} else {
+						response.headers().set(CONNECTION, KEEP_ALIVE);
+						ctx.write(response);
+					}
+				}
 			}
 		} 
 	}

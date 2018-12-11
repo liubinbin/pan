@@ -53,7 +53,7 @@ public class Bucket {
 		wLock.lock();
 		try {
 			int offset = writeIdx;
-			System.out.println("data " + data.length + " writeIdx " + writeIdx + " value.length " + value.length);
+//			System.out.println("data " + data.length + " writeIdx " + writeIdx + " value.length " + value.length);
 			System.arraycopy(value, 0, data, writeIdx, value.length);
 			writeIdx += value.length;
 			return offset;
