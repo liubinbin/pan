@@ -8,7 +8,7 @@ import io.netty.buffer.Unpooled;
 
 /**
  *
- * @author liubinbin not threadsafe and performance problem exists
+ * @author liubinbin
  */
 public class Bucket {
 
@@ -19,9 +19,9 @@ public class Bucket {
 	private Lock rLock;
 	private Lock wLock;
 
-	public Bucket(int slotSize, int dataSize) {
+	public Bucket(int slotSize, int segmentSize) {
 		this.slotsize = slotSize;
-		this.data = new byte[dataSize];
+		this.data = new byte[segmentSize];
 		this.writeIdx = 0;
 		this.readWriteLock = new ReentrantReadWriteLock();
 		this.rLock = readWriteLock.readLock();

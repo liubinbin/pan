@@ -63,9 +63,6 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 		this.tempData = Unpooled.compositeBuffer();
 	}
 
-	private static final byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-	private static final byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
-
 	private static final AsciiString CONTENT_TYPE = AsciiString.cached("Content-Type");
 	private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
 	private static final AsciiString CONNECTION = AsciiString.cached("Connection");
@@ -87,7 +84,6 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 			HttpRequest req = (HttpRequest) msg;
 
 			boolean keepAlive = HttpUtil.isKeepAlive(req);
-			
 			
 			tempData.clear();
 			key = null;

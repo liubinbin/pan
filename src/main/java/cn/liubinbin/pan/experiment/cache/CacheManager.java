@@ -31,6 +31,7 @@ public class CacheManager {
 	private Lock wLock;
 
 	public CacheManager(CacheConfig cacheConfig) {
+		System.out.println("init cachemanger");
 		index = new ConcurrentSkipListMap<Key, Addr>();
 		bucketSlotSize = cacheConfig.getBucketSlotSize();
 		buckets = new Bucket[bucketSlotSize.length];
@@ -48,7 +49,6 @@ public class CacheManager {
 			Addr addr = index.get(new Key(key));
 			// not found for key
 			if (addr == null) {
-				System.out.println("addr is null for key " + String.valueOf(key));
 				return null;
 			}
 			byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
