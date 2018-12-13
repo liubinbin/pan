@@ -103,14 +103,33 @@ doMiniBatchMutate
 
 
 
+```
+if (truck.type() == RingBufferTruck.Type.SYNC) {
+  this.syncFutures[this.syncFuturesCount.getAndIncrement()] = truck.unloadSync();
+  // Force flush of syncs if we are carrying a full complement of syncFutures.
+  if (this.syncFuturesCount.get() == this.syncFutures.length) {
+    endOfBatch = true;
+  }
+} else if (truck.type() == RingBufferTruck.Type.APPEND) {
+```
+
+
+
+ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和数据。分开可以用于控制。
+
 
 
 主流程：
 
 1. handler将entry和txid写入disruptor，然后通过sync函数等待，通过一个threadlocal的设置了txid的SyncFuture，调用get方法阻塞。
 2. 会把SyncFuture和Sync标志写入到disruptor中。
-3. 在disruptor的Handler的onEvent里，将entry给append到writer里。
-4. ​
+3. 在disruptor的Handler的onEvent里：
+   1. 将entry给append到writer里。
+   2. 设置SyncFuture，用于传递。
+4. 给syncRunners传递带txid的SyncFuture
+5. SyncRunner会在while里不停的跑，
+   1. releaseSyncFuture已经sync过的数据（可能在别的syncRunner）
+   2. sync数据，然后releaseSyncFuture
 
 
 
