@@ -27,7 +27,7 @@ public class LongEventMain {
 		LongEventFactory factory = new LongEventFactory();
 
 		// Specify the size of the ring buffer, must be power of 2.
-		int bufferSize = 1024;
+		int bufferSize = 16;
 
 		// Construct the Disruptor
 		Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(factory, bufferSize, simpleThreadFactory);
@@ -43,6 +43,7 @@ public class LongEventMain {
 		 * 感觉RingBuffer是disrutor的重要组成部分。
 		 */
 		RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
+//		System.out.println("getCursor " + ringBuffer.getCursor());
 
 		LongEventProducer producer = new LongEventProducer(ringBuffer);
 
@@ -50,6 +51,7 @@ public class LongEventMain {
 		for (long l = 0; true; l++) {
 			bb.putLong(0, l);
 			producer.onData(bb);
+			System.out.println("getCursor after onData " + ringBuffer.getCursor());
 //			Thread.sleep(1000);
 		}
 	}

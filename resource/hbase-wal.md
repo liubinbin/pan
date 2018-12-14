@@ -1,4 +1,4 @@
-# 设计
+# hbase-wal
 
 
 
@@ -133,6 +133,12 @@ ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和�
 
 
 
+
+此处需要一张图
+
+
+
+思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。
 
 
 
