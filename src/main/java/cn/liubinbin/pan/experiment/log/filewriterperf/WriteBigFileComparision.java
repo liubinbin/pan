@@ -22,7 +22,7 @@ import javax.xml.crypto.Data;
  */
 public class WriteBigFileComparision {
 
-	private final int DATA_CHUNK = 128 * 1024;
+	private final int DATA_CHUNK = 128 * 1024 * 1024;
 	private final long LEN = 2L * 1024 * 1024 * 1024L;
 	private final byte[] DATA = new byte[DATA_CHUNK];
 	
@@ -116,7 +116,7 @@ public class WriteBigFileComparision {
 		System.out.println("writeWithMappedByteBuffer use " + (System.currentTimeMillis() - startTime));
 		
 		startTime = System.currentTimeMillis();
-		writeWithTransferTo("file2");
+		writeWithTransferTo("file3");
 		System.out.println("writeWithTransferTo use " + (System.currentTimeMillis() - startTime));
 	}
 	
