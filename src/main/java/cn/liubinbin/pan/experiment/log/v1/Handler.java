@@ -27,7 +27,7 @@ public class Handler implements Runnable {
 		byte[] data = {'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'};
 		ByteBuffer byteBuffer = ByteBuffer.allocate(10);
 		while(true){
-//			int sequence = count.getAndIncrement();
+			int sequence = count.getAndIncrement();
 //			long startTime = System.currentTimeMillis();
 			byteBuffer.clear();
 			byteBuffer.put(data);
@@ -35,7 +35,7 @@ public class Handler implements Runnable {
 			wal.append(byteBuffer);
 //			System.out.println("append use " + (System.currentTimeMillis() - startTime));
 //			startTime = System.currentTimeMillis();
-			wal.flush();
+			wal.flush(sequence);
 //			System.out.println("flush use " + (System.currentTimeMillis() - startTime));
 		}
 	}

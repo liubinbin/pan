@@ -22,9 +22,11 @@ import javax.xml.crypto.Data;
  */
 public class WriteBigFileComparision {
 
-	private final int DATA_CHUNK = 128 * 1024 * 1024;
 	private final long LEN = 2L * 1024 * 1024 * 1024L;
-	private final byte[] DATA = new byte[DATA_CHUNK];
+//	private final int DATA_CHUNK = 128 * 1024 * 1024;
+//	private final byte[] DATA = new byte[DATA_CHUNK];
+	private final int DATA_CHUNK = 10;
+	private final byte[] DATA = {'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'};
 	
 	public void writeWithFileChannel(String filePath) throws IOException {
 		File file = new File(filePath);

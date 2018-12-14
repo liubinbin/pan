@@ -36,11 +36,13 @@ public class Wal {
 		}
 	}
 	
-	public void flush(){
-		try {
-			fileChannel.force(true);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+	public void flush(int sequence){
+		if (sequence % 50 == 0){
+			try {
+				fileChannel.force(true);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
