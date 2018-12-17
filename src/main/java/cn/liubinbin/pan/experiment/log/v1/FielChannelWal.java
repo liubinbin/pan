@@ -7,14 +7,14 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class Wal {
+public class FielChannelWal {
 	
 	private final int DATA_CHUNK = 128 * 1024 * 1024;
 	private final byte[] DATA = new byte[DATA_CHUNK];
 	private FileChannel fileChannel;
 	private RandomAccessFile randomAccessFile;
 	
-	public Wal(String filePath) {
+	public FielChannelWal(String filePath) {
 		File file = new File(filePath);
 		if (file.exists()) {
 			file.delete();
@@ -37,13 +37,13 @@ public class Wal {
 	}
 	
 	public void flush(int sequence){
-		if (sequence % 50 == 0){
+//		if (sequence % 50 == 0){
 			try {
 				fileChannel.force(true);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		}
+//		}
 	}
 
 	public void close() {

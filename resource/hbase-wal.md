@@ -138,11 +138,13 @@ ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和�
 
 
 
-思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。
+思考：syncRunner为多个，大概是为了隔离notifier和sync，两种操作不要在一起，最终可以减轻同步代价。有点像分段锁。
 
 
 
+亮点：
 
+1. ​
 
 
 
