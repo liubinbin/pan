@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.experiment.log.v2;
+package main.java.cn.liubinbin.pan.experiment.log.v3;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,18 +10,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 
  * nThreads: 1 
- * hdd (low level windows)
  * sequence 	%1 			%2 			%4 			%8 
  * 				2,948,822	5,152,055	7,687,817	11,585,537
- * ssd (mac pro 2015mid)
- * sequence 	%1 			%2 			%4 			%8 
- * 				5,056,326	7,282,300	13,151,423	19,885,006
- * 
  * @author liubinbin
+ *
  */
-public class FielChannelWalV2 {
+public class FielChannelWalV3 {
 
 	private final int DATA_CHUNK = 128 * 1024 * 1024;
 	private final byte[] DATA = new byte[DATA_CHUNK];
@@ -47,7 +42,7 @@ public class FielChannelWalV2 {
 
 	}
 
-	public FielChannelWalV2(String filePath) {
+	public FielChannelWalV3(String filePath) {
 		File file = new File(filePath);
 		if (file.exists()) {
 			file.delete();
@@ -73,7 +68,7 @@ public class FielChannelWalV2 {
 	}
 
 	public void flush(int sequence) {
-		if (sequence % 8 == 0) {
+		if (sequence % 1 == 0) {
 			try {
 				seqQueue.put(sequence);
 			} catch (InterruptedException e) {
