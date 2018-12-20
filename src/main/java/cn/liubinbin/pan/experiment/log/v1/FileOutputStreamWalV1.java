@@ -5,11 +5,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileOutputStreamWal {
+/**
+ * 
+ * @author liubinbin
+ *
+ */
+public class FileOutputStreamWalV1 {
 	
 	private FileOutputStream fileOutputStream;
 	
-	public FileOutputStreamWal(String filePath) {
+	public FileOutputStreamWalV1(String filePath) {
 		File file = new File(filePath);
 		if (file.exists()) {
 			file.delete();

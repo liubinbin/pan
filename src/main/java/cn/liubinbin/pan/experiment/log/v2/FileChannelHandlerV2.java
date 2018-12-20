@@ -1,19 +1,24 @@
-package main.java.cn.liubinbin.pan.experiment.log.v1;
+package main.java.cn.liubinbin.pan.experiment.log.v2;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FileChannelHandler implements Runnable {
-	private FielChannelWal wal;
+public class FileChannelHandlerV2 implements Runnable {
+	private FielChannelWalV2 wal;
 	private AtomicInteger count;
 	private CyclicBarrier barrier;
 	
-	public FileChannelHandler(FielChannelWal wal, AtomicInteger count, CyclicBarrier barrier) {
+
+	public FileChannelHandlerV2(FielChannelWalV2 wal, AtomicInteger count, CyclicBarrier barrier) {
 		this.wal = wal;
 		this.count = count;
 		this.barrier = barrier;
+
+		
 	}
 
 	@Override
@@ -28,15 +33,16 @@ public class FileChannelHandler implements Runnable {
 		ByteBuffer byteBuffer = ByteBuffer.allocate(10);
 		while(true){
 			int sequence = count.getAndIncrement();
-//			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			byteBuffer.clear();
 			byteBuffer.put(data);
 			byteBuffer.flip();
 			wal.append(byteBuffer);
-//			System.out.println("append use " + (System.currentTimeMillis() - startTime));
-//			startTime = System.currentTimeMillis();
+			
+//			System.out.println("append use " + (System.nanoTime() - startTime));
+//			startTime = System.nanoTime();
 			wal.flush(sequence);
-//			System.out.println("flush use " + (System.currentTimeMillis() - startTime));
+//			System.out.println("flush use " + (System.nanoTime() - startTime));
 		}
 	}
 

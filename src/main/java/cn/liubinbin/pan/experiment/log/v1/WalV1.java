@@ -5,17 +5,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Main {
+/*
+ * deal after five round
+ * threads	1			2			4			8
+ * count	901,022		825,085		822,268		809,802
+ */
+
+public class WalV1 {
 	
 	private void doMain(String[] args){
 		int nThreads = 8;
-		FielChannelWal wal = new FielChannelWal("wal");
+		FielChannelWalV1 wal = new FielChannelWalV1("wal");
 //		FileOutputStreamWal wal = new FileOutputStreamWal("wal");
 		AtomicInteger count = new AtomicInteger(0);
 		CyclicBarrier barrier = new CyclicBarrier(nThreads);
 		ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
 		for (int i = 0; i < nThreads; i++) {
-			executorService.execute(new FileChannelHandler(wal, count, barrier));
+			executorService.execute(new FileChannelHandlerV1(wal, count, barrier));
 //			executorService.execute(new FileOutputstreamHandler(wal, count, barrier));
 		}
 		for (int i = 0; i < 5; i++) {
@@ -27,11 +33,12 @@ public class Main {
 			}
 			System.out.println("deal " + (count.get() - tempCount));
 		}
+		System.out.println("deal after five round " + count.get());
 		executorService.shutdown();
 	}
 	
 	public static void main(String[] args) {
-		new Main().doMain(args);
+		new WalV1().doMain(args);
 	}
 
 }
