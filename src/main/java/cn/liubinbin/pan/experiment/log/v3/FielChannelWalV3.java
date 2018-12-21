@@ -8,6 +8,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+
+import com.lmax.disruptor.dsl.Disruptor;
 
 /**
  * nThreads: 1 
@@ -18,29 +21,28 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class FielChannelWalV3 {
 
-	private final int DATA_CHUNK = 128 * 1024 * 1024;
-	private final byte[] DATA = new byte[DATA_CHUNK];
 	private FileChannel fileChannel;
 	private RandomAccessFile randomAccessFile;
 	private BlockingQueue<Integer> seqQueue;
-	private Flusher flusher;
-
-	public class Flusher implements Runnable {
-
-		@Override
-		public void run() {
-			int sequence = 0;
-			while (true) {
-				try {
-					sequence = seqQueue.take();
-					fileChannel.force(true);
-				} catch (InterruptedException | IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
+//	private Flusher flusher;
+	private Disruptor<LongEvent> disruptor;
+	
+//	public class Flusher implements Runnable {
+//
+//		@Override
+//		public void run() {
+//			int sequence = 0;
+//			while (true) {
+//				try {
+//					sequence = seqQueue.take();
+//					fileChannel.force(true);
+//				} catch (InterruptedException | IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//
+//	}
 
 	public FielChannelWalV3(String filePath) {
 		File file = new File(filePath);
@@ -55,8 +57,20 @@ public class FielChannelWalV3 {
 		}
 		this.fileChannel = randomAccessFile.getChannel();
 		this.seqQueue = new LinkedBlockingQueue<Integer>(4);
-		this.flusher = new Flusher();
-		new Thread(this.flusher).start();
+//		this.flusher = new Flusher();
+//		new Thread(this.flusher).start();
+		
+		ThreadFactory simpleThreadFactory  = new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r);  
+			}
+		};
+		LongEventFactory factory = new LongEventFactory();
+		int bufferSize = 16;
+		this.disruptor = new Disruptor<LongEvent>(factory, bufferSize, simpleThreadFactory);
+		this.disruptor.handleEventsWith(new LongEventHandler());
+		this.disruptor.start();
 	}
 
 	public void append(ByteBuffer byteBuffer) {

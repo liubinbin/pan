@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.experiment.log;
+package main.java.cn.liubinbin.pan.experiment.log.v3;
 
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.RingBuffer;
@@ -6,16 +6,14 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ThreadFactory;
 
 /**
+ * 在disruptor包中已经将Executor传入Disruptor的构造函数的方法给废弃了。
+ * 所以，这里使用了Disruptor的构造函数的新方法
  * @author liubinbin
  */
 public class LongEventMain {
 	public static void main(String[] args) throws Exception {
 		// Executor that will be used to construct new threads for consumers
 //		Executor executor = Executors.newCachedThreadPool();
-		/**
-		 * 在disruptor包中已经将Executor传入Disruptor的构造函数的方法给废弃了。
-		 * 所以，这里使用了Disruptor的构造函数的新方法
-		 */
 		ThreadFactory simpleThreadFactory  = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -43,7 +41,6 @@ public class LongEventMain {
 		 * 感觉RingBuffer是disrutor的重要组成部分。
 		 */
 		RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
-//		System.out.println("getCursor " + ringBuffer.getCursor());
 
 		LongEventProducer producer = new LongEventProducer(ringBuffer);
 

@@ -122,7 +122,7 @@ ringbuffer传递内容包括的sync标志（主要用于传递SyncFuture）和�
 主流程：
 
 1. handler将entry和txid写入disruptor，然后通过sync函数等待，通过一个threadlocal的设置了txid的SyncFuture，调用get方法阻塞。
-2. 会把SyncFuture和Sync标志写入到disruptor中。
+2. 把SyncFuture和Sync标志写入到disruptor中。
 3. 在disruptor的Handler的onEvent里：
    1. 将entry给append到writer里。
    2. 设置SyncFuture，用于传递。

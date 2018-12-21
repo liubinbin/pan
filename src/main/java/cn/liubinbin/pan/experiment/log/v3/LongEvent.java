@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.experiment.log;
+package main.java.cn.liubinbin.pan.experiment.log.v3;
 
 public class LongEvent<T> {
 	private T value;
