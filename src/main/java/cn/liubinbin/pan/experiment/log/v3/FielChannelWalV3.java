@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 
+import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
 /**
@@ -26,23 +27,9 @@ public class FielChannelWalV3 {
 	private BlockingQueue<Integer> seqQueue;
 //	private Flusher flusher;
 	private Disruptor<Entry> disruptor;
+	private RingBuffer<Entry> ringBuffer;
 	
-//	public class Flusher implements Runnable {
-//
-//		@Override
-//		public void run() {
-//			int sequence = 0;
-//			while (true) {
-//				try {
-//					sequence = seqQueue.take();
-//					fileChannel.force(true);
-//				} catch (InterruptedException | IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//
-//	}
+
 
 	public FielChannelWalV3(String filePath) {
 		File file = new File(filePath);
@@ -57,8 +44,6 @@ public class FielChannelWalV3 {
 		}
 		this.fileChannel = randomAccessFile.getChannel();
 		this.seqQueue = new LinkedBlockingQueue<Integer>(4);
-//		this.flusher = new Flusher();
-//		new Thread(this.flusher).start();
 		
 		ThreadFactory simpleThreadFactory  = new ThreadFactory() {
 			@Override
@@ -69,11 +54,20 @@ public class FielChannelWalV3 {
 		EntryFactory factory = new EntryFactory();
 		int bufferSize = 16;
 		this.disruptor = new Disruptor<Entry>(factory, bufferSize, simpleThreadFactory);
-		this.disruptor.handleEventsWith(new EntryHandler());
+		this.disruptor.handleEventsWith(new EntryHandler(fileChannel));
 		this.disruptor.start();
+		this.ringBuffer = disruptor.getRingBuffer();
 	}
 
-	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence ) {
+	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence) {
+		long entryId = ringBuffer.next(); // Grab the next sequence
+		try {
+			Entry entry = ringBuffer.get(sequence); // Get the entry in the Disruptor for the sequence
+			entry.setByteBuffer(byteBuffer);
+			entry.setSequence(sequence);
+		} finally {
+			ringBuffer.publish(sequence);
+		}
 		
 	}
 
