@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadFactory;
  * 所以，这里使用了Disruptor的构造函数的新方法
  * @author liubinbin
  */
-public class LongEventMain {
+public class EntryMain {
 	public static void main(String[] args) throws Exception {
 		// Executor that will be used to construct new threads for consumers
 //		Executor executor = Executors.newCachedThreadPool();
@@ -22,16 +22,16 @@ public class LongEventMain {
 		};
 
 		// The factory for the event
-		LongEventFactory factory = new LongEventFactory();
+		EntryFactory factory = new EntryFactory();
 
 		// Specify the size of the ring buffer, must be power of 2.
 		int bufferSize = 16;
 
 		// Construct the Disruptor
-		Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(factory, bufferSize, simpleThreadFactory);
+		Disruptor<Entry> disruptor = new Disruptor<Entry>(factory, bufferSize, simpleThreadFactory);
 
 		// Connect the handler
-		disruptor.handleEventsWith(new LongEventHandler());
+		disruptor.handleEventsWith(new EntryHandler());
 
 		// Start the Disruptor, starts all threads running
 		disruptor.start();
@@ -40,9 +40,9 @@ public class LongEventMain {
 		/**
 		 * 感觉RingBuffer是disrutor的重要组成部分。
 		 */
-		RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
+		RingBuffer<Entry> ringBuffer = disruptor.getRingBuffer();
 
-		LongEventProducer producer = new LongEventProducer(ringBuffer);
+		EntryProducer producer = new EntryProducer(ringBuffer);
 
 		ByteBuffer bb = ByteBuffer.allocate(8);
 		for (long l = 0; true; l++) {

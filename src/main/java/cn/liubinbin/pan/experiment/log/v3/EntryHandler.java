@@ -2,10 +2,10 @@ package main.java.cn.liubinbin.pan.experiment.log.v3;
 
 import com.lmax.disruptor.EventHandler;
 
-public class LongEventHandler implements EventHandler<LongEvent> {
+public class EntryHandler implements EventHandler<Entry> {
 	
 	@Override
-	public void onEvent(LongEvent event, long sequence, boolean endOfBatch) {
+	public void onEvent(Entry event, long sequence, boolean endOfBatch) {
 		try {
 			Thread.sleep(1000 * 1);
 		} catch (InterruptedException e) {

@@ -30,8 +30,7 @@ public class FileChannelHandlerV3 implements Runnable {
 			byteBuffer.clear();
 			byteBuffer.put(data);
 			byteBuffer.flip();
-			wal.append(byteBuffer);
-			wal.flush(sequence);
+			wal.appendAndWaitForSynced(byteBuffer, sequence);
 		}
 	}
 

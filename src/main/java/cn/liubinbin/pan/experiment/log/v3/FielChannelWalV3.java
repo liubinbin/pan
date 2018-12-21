@@ -25,7 +25,7 @@ public class FielChannelWalV3 {
 	private RandomAccessFile randomAccessFile;
 	private BlockingQueue<Integer> seqQueue;
 //	private Flusher flusher;
-	private Disruptor<LongEvent> disruptor;
+	private Disruptor<Entry> disruptor;
 	
 //	public class Flusher implements Runnable {
 //
@@ -66,30 +66,15 @@ public class FielChannelWalV3 {
 				return new Thread(r);  
 			}
 		};
-		LongEventFactory factory = new LongEventFactory();
+		EntryFactory factory = new EntryFactory();
 		int bufferSize = 16;
-		this.disruptor = new Disruptor<LongEvent>(factory, bufferSize, simpleThreadFactory);
-		this.disruptor.handleEventsWith(new LongEventHandler());
+		this.disruptor = new Disruptor<Entry>(factory, bufferSize, simpleThreadFactory);
+		this.disruptor.handleEventsWith(new EntryHandler());
 		this.disruptor.start();
 	}
 
-	public void append(ByteBuffer byteBuffer) {
-		try {
-			fileChannel.write(byteBuffer);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void flush(int sequence) {
-		if (sequence % 1 == 0) {
-			try {
-				seqQueue.put(sequence);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-
+	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence ) {
+		
 	}
 
 	public void close() {
