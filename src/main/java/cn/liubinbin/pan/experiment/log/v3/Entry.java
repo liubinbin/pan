@@ -6,6 +6,7 @@ public class Entry<T> {
 	
 	private ByteBuffer byteBuffer;
 	private int sequence;
+	private SyncMark syncMark;
 	
 	public Entry() {
 		this.sequence = 0;
@@ -35,5 +36,13 @@ public class Entry<T> {
 	@Override
 	public String toString(){
 		return sequence + "";
+	}
+
+	public SyncMark getSyncMark() {
+		return syncMark;
+	}
+
+	public void setSyncMark(SyncMark syncMark) {
+		this.syncMark = syncMark;
 	}
 }

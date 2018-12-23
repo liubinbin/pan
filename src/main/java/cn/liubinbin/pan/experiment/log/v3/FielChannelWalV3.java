@@ -28,8 +28,6 @@ public class FielChannelWalV3 {
 //	private Flusher flusher;
 	private Disruptor<Entry> disruptor;
 	private RingBuffer<Entry> ringBuffer;
-	
-
 
 	public FielChannelWalV3(String filePath) {
 		File file = new File(filePath);
@@ -59,16 +57,18 @@ public class FielChannelWalV3 {
 		this.ringBuffer = disruptor.getRingBuffer();
 	}
 
-	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence) {
+	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence, SyncMark syncMark) {
+		syncMark.setSequenceAndSetNotDone(sequence);
 		long entryId = ringBuffer.next(); // Grab the next sequence
 		try {
 			Entry entry = ringBuffer.get(sequence); // Get the entry in the Disruptor for the sequence
 			entry.setByteBuffer(byteBuffer);
 			entry.setSequence(sequence);
+			entry.setSyncMark(syncMark);
 		} finally {
 			ringBuffer.publish(sequence);
 		}
-		
+		syncMark.WaitForDone();
 	}
 
 	public void close() {

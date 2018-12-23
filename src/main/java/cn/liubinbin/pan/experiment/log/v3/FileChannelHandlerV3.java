@@ -9,11 +9,18 @@ public class FileChannelHandlerV3 implements Runnable {
 	private FielChannelWalV3 wal;
 	private AtomicInteger count;
 	private CyclicBarrier barrier;
+	private ThreadLocal<SyncMark> syncMark;
 
 	public FileChannelHandlerV3(FielChannelWalV3 wal, AtomicInteger count, CyclicBarrier barrier) {
 		this.wal = wal;
 		this.count = count;
 		this.barrier = barrier;
+		this.syncMark = new ThreadLocal<SyncMark>() {
+			@Override
+			protected SyncMark initialValue() {
+				return new SyncMark();
+			}
+		};
 	}
 
 	@Override
@@ -30,7 +37,7 @@ public class FileChannelHandlerV3 implements Runnable {
 			byteBuffer.clear();
 			byteBuffer.put(data);
 			byteBuffer.flip();
-			wal.appendAndWaitForSynced(byteBuffer, sequence);
+			wal.appendAndWaitForSynced(byteBuffer, sequence, syncMark.get());
 		}
 	}
 
