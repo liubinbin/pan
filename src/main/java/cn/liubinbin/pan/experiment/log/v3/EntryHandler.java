@@ -5,13 +5,11 @@ import java.nio.channels.FileChannel;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.logging.log4j.core.util.SystemClock;
+
 import com.lmax.disruptor.EventHandler;
 
 /**
- * ssd (mac pro 2015mid)
- * thread: 1
- * batch	 	%1 			%2 			%4 			%8 
- * 				4,672,512	6,445,806		
  * @author liubinbin
  *
  */
@@ -20,26 +18,22 @@ public class EntryHandler implements EventHandler<Entry> {
 	private FileChannel fileChannel;
 	private Flusher flusher;
 	private BlockingQueue<SyncMark> seqQueue;
-	private int batch;
+	private int batchOfSync;
 	
-	public EntryHandler(FileChannel fileChannel) {
+	public EntryHandler(FileChannel fileChannel, int batchOfSync, int seqQueueSize) {
 		this.fileChannel = fileChannel;
 		this.flusher = new Flusher();
-		this.batch = 2;
-		this.seqQueue = new LinkedBlockingQueue<SyncMark>(4);
+		this.batchOfSync = batchOfSync;
+		this.seqQueue = new LinkedBlockingQueue<SyncMark>(seqQueueSize);
 		new Thread(this.flusher).start();
 	}
 	
 	@Override
 	public void onEvent(Entry entry, long sequence, boolean endOfBatch) throws IOException, InterruptedException {
-//		try {
-//			Thread.sleep(1000 * 1);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+		long startTime = System.nanoTime();
 		fileChannel.write(entry.getByteBuffer());
 		seqQueue.put(entry.getSyncMark());
-		//TODO do sth about sequence 
+//		System.out.println("sequence: " + sequence + " use time: " + (System.nanoTime() - startTime));
 //		System.out.println("On event entry: entry.sequence: " + entry.getSequence() + " " + sequence);
 	}
 	
@@ -52,12 +46,12 @@ public class EntryHandler implements EventHandler<Entry> {
 			while (true) {
 				try {
 					syncMark = seqQueue.take();
-					batchIdx = (++batchIdx) % batch;
-					if (batch == 1 || batchIdx == 0) { 
+					batchIdx = (++batchIdx) % batchOfSync;
+					if (batchOfSync == 1 || batchIdx == 0) { 
 						fileChannel.force(true);
 					}
 					syncMark.done();
-//					System.out.println(" Flusher batchIdx: " + batchIdx + " batch: " + batch + " syncMark: " + syncMark.getThreadName() + " sequence: " + syncMark.getSequence());
+//					System.out.println(" Flusher batchIdx: " + batchIdx + " batchOfSync: " + batchOfSync + " syncMark: " + syncMark.getThreadName() + " sequence: " + syncMark.getSequence());
 				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}

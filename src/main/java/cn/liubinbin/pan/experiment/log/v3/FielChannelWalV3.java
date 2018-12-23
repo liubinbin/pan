@@ -24,12 +24,11 @@ public class FielChannelWalV3 {
 
 	private FileChannel fileChannel;
 	private RandomAccessFile randomAccessFile;
-	private BlockingQueue<Integer> seqQueue;
-//	private Flusher flusher;
 	private Disruptor<Entry> disruptor;
 	private RingBuffer<Entry> ringBuffer;
-
-	public FielChannelWalV3(String filePath) {
+	private int batchOfSync;
+	
+	public FielChannelWalV3(String filePath, int batchOfSync, int seqQueueSize, int disruptorBufSize) {
 		File file = new File(filePath);
 		if (file.exists()) {
 			file.delete();
@@ -41,8 +40,7 @@ public class FielChannelWalV3 {
 			e.printStackTrace();
 		}
 		this.fileChannel = randomAccessFile.getChannel();
-		this.seqQueue = new LinkedBlockingQueue<Integer>(4);
-		
+		this.batchOfSync = batchOfSync;
 		ThreadFactory simpleThreadFactory  = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -50,9 +48,9 @@ public class FielChannelWalV3 {
 			}
 		};
 		EntryFactory factory = new EntryFactory();
-		int bufferSize = 16;
+		int bufferSize = disruptorBufSize;
 		this.disruptor = new Disruptor<Entry>(factory, bufferSize, simpleThreadFactory);
-		this.disruptor.handleEventsWith(new EntryHandler(fileChannel));
+		this.disruptor.handleEventsWith(new EntryHandler(fileChannel, this.batchOfSync, seqQueueSize));
 		this.disruptor.start();
 		this.ringBuffer = disruptor.getRingBuffer();
 	}

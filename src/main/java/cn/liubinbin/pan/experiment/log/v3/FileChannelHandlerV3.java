@@ -30,12 +30,12 @@ public class FileChannelHandlerV3 implements Runnable {
 		} catch (InterruptedException | BrokenBarrierException e) {
 			e.printStackTrace();
 		} 
-		byte[] data = {'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'};
+//		byte[] data = {'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd'};
 		ByteBuffer byteBuffer = ByteBuffer.allocate(10);
 		while(true){
 			int sequence = count.getAndIncrement();
 			byteBuffer.clear();
-			byteBuffer.put(data);
+			byteBuffer.put( (sequence  + "\n").getBytes());
 			byteBuffer.flip();
 			wal.appendAndWaitForSynced(byteBuffer, sequence, syncMark.get());
 		}
