@@ -13,7 +13,7 @@ public abstract class IoModeSpeedTest {
 	public abstract void read(String filePath, String Conten, int repeatCount) throws IOException;
 	
 	private void printHelp() {
-		System.out.println("usgae: java -jar *.jar /home/liubb 100000");
+		System.out.println("usgae: java -jar *.jar filePath 100000");
 	}
 	
 	public void test(String[] args) throws IOException {

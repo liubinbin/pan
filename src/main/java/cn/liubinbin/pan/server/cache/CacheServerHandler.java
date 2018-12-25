@@ -133,15 +133,17 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				
 				if (req instanceof HttpRequest){
 					tempData.clear();
-					System.out.println("liubb HttpRequest");
+					System.out.println("It is HttpRequest");
 					if (req instanceof FullHttpRequest) {
-						System.out.println("liubb FullHttpRequest");
+						System.out.println("It is FullHttpRequest");
 					} else {
-						System.out.println("liubb not FullHttpRequest");
+						System.out.println("It is not FullHttpRequest");
 					}
 				} else {
-					System.out.println("liubb not HttpRequest" + req.getClass());
+					System.out.println("It is not HttpRequest" + req.getClass());
 				}
+			} else if (req.method().equals(HttpMethod.DELETE)) {
+				System.out.println("we receive a delete request");
 			}
 
 		} else if (msg instanceof HttpContent) {
@@ -150,7 +152,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				if (tempContent.isReadable()) {
 					tempData.addComponent(true, tempContent.duplicate());
 //					System.out.println(ByteBufUtil.hexDump(tempContent));
-					System.out.println("liubb HttpContent " + tempContent.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
+					System.out.println("It is HttpContent " + tempContent.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
 				} else {
 					System.out.println("abc is not readable");
 				}
@@ -160,7 +162,7 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 					tempData.getBytes(tempData.readerIndex(), data);
 					System.out.println("key.length: " + key.length + " data.length: " + data.length);
 					cacheManager.put(key, data);
-					System.out.println("liubb LastHttpContent " + length + " " + data.length);
+					System.out.println("It is LastHttpContent " + length + " " + data.length);
 					FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
 					response.headers().set(CONTENT_TYPE, "text/plain");
 					if (!false) {
