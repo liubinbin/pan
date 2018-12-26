@@ -143,6 +143,14 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 					System.out.println("It is not HttpRequest" + req.getClass());
 				}
 			} else if (req.method().equals(HttpMethod.DELETE)) {
+				final String uri = req.uri();
+				final String path = sanitizeUri(uri);
+				if (path == null) {
+					sendError(ctx, FORBIDDEN);
+					return;
+				}
+				byte[] key = path.getBytes();
+				cacheManager.delete(key);
 				System.out.println("we receive a delete request");
 			}
 

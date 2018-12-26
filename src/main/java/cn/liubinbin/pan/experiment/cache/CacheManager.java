@@ -72,6 +72,15 @@ public class CacheManager {
 			rLock.unlock();
 		}
 	}
+	
+	public void delete(byte[] key) {
+		rLock.lock();
+		try {
+			index.remove(new Key(key));
+		} finally {
+			rLock.unlock();
+		}
+	}
 
 	public void put(byte[] key, byte[] value) {
 		rLock.lock();
