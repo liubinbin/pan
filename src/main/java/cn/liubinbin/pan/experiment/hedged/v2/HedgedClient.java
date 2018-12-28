@@ -65,7 +65,9 @@ public class HedgedClient {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		} 
+		} else {
+			System.out.println("sleeTimeInMs: 0, do not sleep ");
+		}
 	}
 
 	public Callable<String> getCallable(final int idx) {
@@ -100,7 +102,7 @@ public class HedgedClient {
 		CompletionService<String> hedgedService = new ExecutorCompletionService<>(hedgedReadThreadpool);
 		while (true) {
 			if (futures == null) {
-				Callable<String> getFromDataNodeCallable = getCallable(idx);
+				Callable<String> getFromDataNodeCallable = getCallable(idx++);
 				Future<String> firstRequest = hedgedService.submit(getFromDataNodeCallable);
 				futures = new ArrayList<Future<String>>();
 				futures.add(firstRequest);
@@ -113,7 +115,7 @@ public class HedgedClient {
 					
 				}
 			} else {
-				Callable<String> getFromDataNodeCallable = getCallable(idx);
+				Callable<String> getFromDataNodeCallable = getCallable(idx++);
 				Future<String> secondRequest = hedgedService.submit(getFromDataNodeCallable);
 				futures.add(secondRequest);
 				try {
@@ -136,11 +138,12 @@ public class HedgedClient {
 		long startTime = System.currentTimeMillis();
 		for (int idx = 0; idx < 1; idx++) {
 			long startTimeOneRound = System.currentTimeMillis();
-//			hedgedClient.get();
+//			hedgedClient.get(idx);
 			hedgedClient.hedgedGet(idx);
 			System.out.println("one round " + (System.currentTimeMillis() - startTimeOneRound) + " ms");
 		}
 		System.out.println("used time " + (System.currentTimeMillis() - startTime) + " ms");
+		hedgedReadThreadpool.shutdown();
 	}
 
 }
