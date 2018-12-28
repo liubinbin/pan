@@ -14,8 +14,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *			1000
- * 	get		
+ *			1000	
+ * 	get		150762
  * 	hedget	
  * @author liubinbin
  *
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HedgedClient {
 
 	private Random random;
-	private final long hedgedReadThresholdMills = 500;
+	private final long hedgedReadThresholdMills = 30;
 	private final int hedgedReadThreadpoolSize = 5;
 	private static ThreadPoolExecutor hedgedReadThreadpool;
 
@@ -55,35 +55,38 @@ public class HedgedClient {
 		}
 	}
 
-	public void get() {
-		int sleeTimeInMs = 100 + random.nextInt(100);
-//		System.out.println("sleeTimeInMs: " + sleeTimeInMs);
-		try {
-			Thread.sleep(sleeTimeInMs);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	public void get(int idx) {
+		System.out.println("idx " + idx);
+		if (idx % 2 == 0 ) {
+			int sleeTimeInMs = 100 + random.nextInt(100);
+			System.out.println("sleeTimeInMs: " + sleeTimeInMs);
+			try {
+				Thread.sleep(sleeTimeInMs);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} 
 	}
 
-	public Callable<String> get(final CountDownLatch hasReceivedResult) {
+	public Callable<String> getCallable(final int idx,final CountDownLatch hasReceivedResult) {
 		return new Callable<String>() {
 		      @Override
 		      public String call() throws Exception {
-		        get();
+		        get(idx);
 		        hasReceivedResult.countDown();
 		        return "a";
 		      }
 		    };
 	}
 
-	private Future<String> getHedgedReadFuture(final CountDownLatch hasReceivedResult) {
-		Callable<String> getFromDataNodeCallable = get(hasReceivedResult);
+	private Future<String> getHedgedReadFuture(int idx, final CountDownLatch hasReceivedResult) {
+		Callable<String> getFromDataNodeCallable = getCallable(idx, hasReceivedResult);
 		return hedgedReadThreadpool.submit(getFromDataNodeCallable);
 	}
 
-	private String getFirstToComplete(ArrayList<Future<String>> futures, CountDownLatch latch)
+	private String getFirstToComplete(ArrayList<Future<String>> futures, CountDownLatch hasReceivedResult)
 			throws ExecutionException, InterruptedException {
-		latch.await();
+		hasReceivedResult.await();
 		for (Future<String> future : futures) {
 			if (future.isDone()) {
 				try {
@@ -111,37 +114,39 @@ public class HedgedClient {
 		}
 	}
 
-	public void hedgedGet() {
+	public void hedgedGet(int idx) {
 		int sleeTimeInMs = 100 + random.nextInt(100);
 		ArrayList<Future<String>> futures = null;
 		CountDownLatch hasReceivedResult = new CountDownLatch(1);
 		while (true) {
 			Future<String> future = null;
 			if (futures == null) {
-				future = getHedgedReadFuture(hasReceivedResult);
+				future = getHedgedReadFuture(idx, hasReceivedResult);
 				try {
 					future.get(hedgedReadThresholdMills, TimeUnit.MILLISECONDS);
+					return;
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				} catch (TimeoutException e) {
 					futures = new ArrayList<Future<String>>();
 					futures.add(future);
-					e.printStackTrace();
+//					e.printStackTrace();
 					continue;
 				}
 			} else {
-				future = getHedgedReadFuture(hasReceivedResult);
+				future = getHedgedReadFuture(idx++, hasReceivedResult);
 				futures.add(future);
 				try {
 					String result = getFirstToComplete(futures, hasReceivedResult);
 					// cancel the rest.
 					cancelAll(futures);
+					return;
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 				
 			}
@@ -151,8 +156,11 @@ public class HedgedClient {
 	public static void main(String[] args) {
 		HedgedClient hedgedClient = new HedgedClient();
 		long startTime = System.currentTimeMillis();
-		for (int i = 0; i < 1000; i++) {
-			hedgedClient.get();
+		for (int idx = 0; idx < 1; idx++) {
+			long startTimeOneRound = System.currentTimeMillis();
+//			hedgedClient.get();
+			hedgedClient.hedgedGet(idx);
+			System.out.println("one round " + (System.currentTimeMillis() - startTimeOneRound) + " ms");
 		}
 		System.out.println("used time " + (System.currentTimeMillis() - startTime) + " ms");
 	}
