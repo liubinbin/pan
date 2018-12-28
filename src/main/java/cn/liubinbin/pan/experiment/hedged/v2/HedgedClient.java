@@ -1,10 +1,12 @@
-package main.java.cn.liubinbin.pan.experiment.hedged.v1;
+package main.java.cn.liubinbin.pan.experiment.hedged.v2;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -66,39 +68,20 @@ public class HedgedClient {
 		} 
 	}
 
-	public Callable<String> getCallable(final int idx,final CountDownLatch hasReceivedResult) {
+	public Callable<String> getCallable(final int idx) {
 		return new Callable<String>() {
 		      @Override
 		      public String call() throws Exception {
 		        get(idx);
-		        hasReceivedResult.countDown();
 		        return "a";
 		      }
 		    };
 	}
 
-	private Future<String> getHedgedReadFuture(int idx, final CountDownLatch hasReceivedResult) {
-		Callable<String> getFromDataNodeCallable = getCallable(idx, hasReceivedResult);
-		return hedgedReadThreadpool.submit(getFromDataNodeCallable);
-	}
-
-	private String getFirstToComplete(ArrayList<Future<String>> futures, CountDownLatch hasReceivedResult)
+	private String getFirstToComplete(CompletionService<String> hedgedService)
 			throws ExecutionException, InterruptedException {
-		hasReceivedResult.await();
-		for (Future<String> future : futures) {
-			if (future.isDone()) {
-				try {
-					return future.get();
-				} catch (ExecutionException e) {
-					// already logged in the Callable
-					futures.remove(future);
-					throw e;
-				}
-			}
-		}
-		throw new InterruptedException("latch has counted down to zero but no"
-				+ "result available yet, for safety try to request another one from"
-				+ "outside loop, this should be rare");
+		Future<String> result = hedgedService.take();
+		return result.get();
 	}
 
 	private void cancelAll(ArrayList<Future<String>> futures) {
@@ -114,35 +97,34 @@ public class HedgedClient {
 
 	public void hedgedGet(int idx) {
 		ArrayList<Future<String>> futures = null;
-		CountDownLatch hasReceivedResult = new CountDownLatch(1);
+		CompletionService<String> hedgedService = new ExecutorCompletionService<>(hedgedReadThreadpool);
 		while (true) {
-			Future<String> future = null;
 			if (futures == null) {
-				future = getHedgedReadFuture(idx, hasReceivedResult);
+				Callable<String> getFromDataNodeCallable = getCallable(idx);
+				Future<String> firstRequest = hedgedService.submit(getFromDataNodeCallable);
+				futures = new ArrayList<Future<String>>();
+				futures.add(firstRequest);
 				try {
-					future.get(hedgedReadThresholdMills, TimeUnit.MILLISECONDS);
-					return;
+					Future<String> result = hedgedService.poll(hedgedReadThresholdMills, TimeUnit.MILLISECONDS);
+					if (result != null) {
+						return;
+					}
 				} catch (InterruptedException e) {
 					
-				} catch (ExecutionException e) {
-					
-				} catch (TimeoutException e) {
-					futures = new ArrayList<Future<String>>();
-					futures.add(future);
-					continue;
 				}
 			} else {
-				future = getHedgedReadFuture(idx++, hasReceivedResult);
-				futures.add(future);
+				Callable<String> getFromDataNodeCallable = getCallable(idx);
+				Future<String> secondRequest = hedgedService.submit(getFromDataNodeCallable);
+				futures.add(secondRequest);
 				try {
-					String result = getFirstToComplete(futures, hasReceivedResult);
+					String result = getFirstToComplete(hedgedService);
 					// cancel the rest.
 					cancelAll(futures);
 					return;
 				} catch (ExecutionException e) {
-//					e.printStackTrace();
+					
 				} catch (InterruptedException e) {
-//					e.printStackTrace();
+					
 				}
 				
 			}
