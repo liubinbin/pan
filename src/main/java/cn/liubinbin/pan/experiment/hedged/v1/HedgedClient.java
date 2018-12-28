@@ -72,9 +72,12 @@ public class HedgedClient {
 		return new Callable<String>() {
 		      @Override
 		      public String call() throws Exception {
-		        get(idx);
-		        hasReceivedResult.countDown();
-		        return "a";
+		    	  try {
+		    		  get(idx);
+		    	  } finally {
+		    		  hasReceivedResult.countDown();
+		    	  }
+		    	  return "a";
 		      }
 		    };
 	}
