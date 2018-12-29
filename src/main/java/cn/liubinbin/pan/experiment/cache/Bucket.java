@@ -14,10 +14,11 @@ public class Bucket {
 
 	private int slotsize;
 	private byte[] data;
-	private int writeIdx;
+	private volatile int writeIdx;
 	private ReentrantReadWriteLock readWriteLock;
 	private Lock rLock;
 	private Lock wLock;
+	private int dataTotalSize;
 
 	public Bucket(int slotSize, int segmentSize) {
 		this.slotsize = slotSize;
@@ -26,6 +27,7 @@ public class Bucket {
 		this.readWriteLock = new ReentrantReadWriteLock();
 		this.rLock = readWriteLock.readLock();
 		this.wLock = readWriteLock.writeLock();
+		this.dataTotalSize = 0;
 	}
 
 	public byte[] getByByteArray(int offset, int length) {
@@ -49,18 +51,33 @@ public class Bucket {
 		}
 	}
 
+	/**
+	 * TODO shoule use rLock ? 
+	 * @param value
+	 * @return
+	 */
 	public int put(byte[] value) {
 		wLock.lock();
 		try {
 			int offset = writeIdx;
 			System.arraycopy(value, 0, data, writeIdx, value.length);
 			writeIdx += value.length;
+			dataTotalSize += value.length;
 			return offset;
 		} finally {
 			wLock.unlock();
 		}
 	}
 
+	public void delete(byte[] value, int offset, int length) {
+		wLock.lock();
+		try {
+			dataTotalSize -= length;
+		} finally {
+			wLock.unlock();
+		}
+	}
+	
 	public boolean checkWriteForLen(int length) {
 		return (writeIdx + length > slotsize) ? false : true;
 	}
@@ -69,4 +86,7 @@ public class Bucket {
 		return writeIdx;
 	}
 
+	public int getdataTotalSize() {
+		return dataTotalSize;
+	}
 }

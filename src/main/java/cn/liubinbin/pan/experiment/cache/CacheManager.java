@@ -31,12 +31,11 @@ public class CacheManager {
 	private Lock wLock;
 
 	public CacheManager(CacheConfig cacheConfig) {
-		System.out.println("init cachemanger");
-		index = new ConcurrentSkipListMap<Key, Addr>();
-		bucketSlotSize = cacheConfig.getBucketSlotSize();
-		buckets = new Bucket[bucketSlotSize.length];
+		this.index = new ConcurrentSkipListMap<Key, Addr>();
+		this.bucketSlotSize = cacheConfig.getBucketSlotSize();
+		this.buckets = new Bucket[bucketSlotSize.length];
 		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-			buckets[bucketIdx] = new Bucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+			this.buckets[bucketIdx] = new Bucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
 		}
 		this.readWriteLock = new ReentrantReadWriteLock();
 		this.rLock = readWriteLock.readLock();
@@ -76,7 +75,9 @@ public class CacheManager {
 	public void delete(byte[] key) {
 		rLock.lock();
 		try {
+			Addr addr = index.get(new Key(key));
 			index.remove(new Key(key));
+			buckets[addr.getBucketIdx()].delete(key, addr.getOffset(), addr.getLength());
 		} finally {
 			rLock.unlock();
 		}

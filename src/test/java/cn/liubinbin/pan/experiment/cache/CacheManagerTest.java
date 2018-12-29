@@ -36,4 +36,19 @@ public class CacheManagerTest {
 		byte[] valueFromCache = cacheManager.getByByteArray(key);
 		assertTrue(Arrays.equals(value, valueFromCache));
 	}
+	
+	public void testdelete() {
+		byte[] key = { 'k', 'e', 'y'};
+		byte[] key1 = { 'k', 'e', 'y', '1'};
+		byte[] value = { 'v', 'a', 'l', 'u', 'e' };
+		byte[] value1 = { 'v', 'a', 'l', 'u', 'e', '1' };
+		
+		cacheManager.put(key, value);
+		cacheManager.put(key1, value1);
+		cacheManager.delete(key);
+		assertNull(cacheManager.getByByteArray(key));
+		assertNull(cacheManager.getByByteBuf(key));
+		assertNotNull(cacheManager.getByByteArray(key1));
+		assertNotNull(cacheManager.getByByteBuf(key1));
+	}
 }
