@@ -1,8 +1,5 @@
 package main.java.cn.liubinbin.pan.experiment.cache;
 
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import main.java.cn.liubinbin.pan.utils.ByteUtils;
