@@ -2,3 +2,5 @@
 curl -v -X PUT -T steam.pdf "http://localhost:50503/abcde"
 # downlaod a file
 wget http://localhost:50503/abcde
+# delete a file
+curl -v -X DELETE "http://localhost:50503/abcde"

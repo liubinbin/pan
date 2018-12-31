@@ -151,6 +151,15 @@ public class CacheServerHandler extends ChannelInboundHandlerAdapter {
 				}
 				byte[] key = path.getBytes();
 				cacheManager.delete(key);
+				FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+				response.headers().set(CONTENT_TYPE, "text/plain");
+				response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+				if (!keepAlive) {
+					ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+				} else {
+					response.headers().set(CONNECTION, KEEP_ALIVE);
+					ctx.write(response);
+				}
 				System.out.println("we receive a delete request");
 			}
 

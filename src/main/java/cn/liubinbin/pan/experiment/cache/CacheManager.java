@@ -91,6 +91,8 @@ public class CacheManager {
 			Key key1 = new Key(key);
 			Addr addr = new Addr(bucketIdx, offset, value.length);
 			index.put(key1, addr);
+			System.out.println("put key " + new String(key));
+			printKeys();
 		} finally {
 			rLock.unlock();
 		}
@@ -103,6 +105,14 @@ public class CacheManager {
 			}
 		}
 		return -1;
+	}
+	
+	private void printKeys() {
+		System.out.println("keys is following");
+		for (Key key : index.keySet()){
+			System.out.print(new String(key.getKey()) + " ");
+		}
+		System.out.println("\nkeys show done");
 	}
 
 }
