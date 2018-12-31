@@ -1,15 +1,9 @@
 package main.java.cn.liubinbin.pan.experiment.cache;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import io.netty.buffer.ByteBuf;
 import main.java.cn.liubinbin.pan.conf.CacheConfig;
@@ -48,6 +42,7 @@ public class CacheManager {
 			Addr addr = index.get(new Key(key));
 			// not found for key
 			if (addr == null) {
+				System.out.println("not found for " + new String(key));
 				return null;
 			}
 			byte[] value = buckets[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
@@ -64,7 +59,7 @@ public class CacheManager {
 			// not found for key
 			if (addr == null) {
 				return null;
-			}
+			} 
 			ByteBuf value = buckets[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
 			return value;
 		} finally {
@@ -91,8 +86,6 @@ public class CacheManager {
 			Key key1 = new Key(key);
 			Addr addr = new Addr(bucketIdx, offset, value.length);
 			index.put(key1, addr);
-			System.out.println("put key " + new String(key));
-			printKeys();
 		} finally {
 			rLock.unlock();
 		}
@@ -107,12 +100,21 @@ public class CacheManager {
 		return -1;
 	}
 	
-	private void printKeys() {
-		System.out.println("keys is following");
+	public String printKeys(Key key1) {
+		ArrayList<String> keys = new ArrayList<String>();
 		for (Key key : index.keySet()){
-			System.out.print(new String(key.getKey()) + " ");
+			keys.add(new String(key.getKey()));
 		}
-		System.out.println("\nkeys show done");
+		return keys.toString();
+	}
+	
+	public boolean checkContainKey() {
+		for (Key key : index.keySet()){
+			if (!index.containsKey(key)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

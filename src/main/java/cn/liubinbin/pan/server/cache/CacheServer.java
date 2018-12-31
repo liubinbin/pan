@@ -25,6 +25,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import main.java.cn.liubinbin.pan.conf.CacheConfig;
 import main.java.cn.liubinbin.pan.experiment.cache.CacheManager;
+import main.java.cn.liubinbin.pan.experiment.cache.Key;
 
 /**
  * @author liubinbin
@@ -42,6 +43,7 @@ public final class CacheServer {
 		cacheManager.put("abcd".getBytes(), CONTENT);
 		cacheManager.put("abc".getBytes(), CONTENT1);
 		cacheManager.put("abcde".getBytes(), CONTENT2);
+		
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
 		try {
