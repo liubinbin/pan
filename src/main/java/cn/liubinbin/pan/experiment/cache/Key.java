@@ -6,7 +6,7 @@ import main.java.cn.liubinbin.pan.utils.ByteUtils;
 
 /**
  *
- * @author liubinbin TODO key should be put into map
+ * @author liubinbin
  */
 public class Key implements Comparable<Object> {
 	private byte[] key;
@@ -32,6 +32,8 @@ public class Key implements Comparable<Object> {
 		byte[] keyToCom = ((Key)o).getKey();
 		if (key.length > keyToCom.length) {
 			return 1;
+		} else if (key.length < keyToCom.length) {
+			return -1;
 		}
 		if (Arrays.equals(key, keyToCom)){
 			return 0;
