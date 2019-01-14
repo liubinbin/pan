@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import main.java.cn.liubinbin.pan.experiment.cache.Key;
-import main.java.cn.liubinbin.pan.experiment.csmap.TestKey;
 
 /**
  * 

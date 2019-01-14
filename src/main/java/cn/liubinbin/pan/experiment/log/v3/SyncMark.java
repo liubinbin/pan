@@ -17,10 +17,16 @@ public class SyncMark {
 
 	public void done() {
 		this.isDone = true;
+		notify();
 	}
 	
 	public void WaitForDone() {
 		while(!isDone()){
+			try {
+				wait(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			// reduce cpu occupation
 //			try {
 //				Thread.sleep(1);
