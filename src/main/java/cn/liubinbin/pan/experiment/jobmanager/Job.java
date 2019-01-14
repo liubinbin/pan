@@ -16,7 +16,9 @@ public class Job implements Runnable{
 	public void run() {
 		try {
 			try {
-				Thread.sleep(1000);
+				int sleepTime = (countSyncer.getJobType().ordinal() + 1 ) * 1000;
+				System.out.println("job start to do type " + countSyncer.getJobType() + " time " + sleepTime);
+				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

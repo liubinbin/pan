@@ -24,17 +24,18 @@ public class CountSyncer {
 
 	public boolean acquire() {
     	int currentCount = count.get();
-    	assert currentCount <= limit;
+    	if (currentCount >= limit) {
+    		return false;
+    	}
     	return count.compareAndSet(currentCount, currentCount+1);
     }
     
     public void release() {
     	int currentCount = count.get();
-    	assert currentCount <= 1;
-    	
+    	assert currentCount < 1;
     	while(count.compareAndSet(currentCount, currentCount-1)) {
     		currentCount = count.get();
-        	assert currentCount <= 1;
+        	assert currentCount < 1;
     	}
     }
 
