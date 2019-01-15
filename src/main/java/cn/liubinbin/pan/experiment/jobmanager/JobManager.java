@@ -44,7 +44,7 @@ public class JobManager {
 		JobManager jobManager = new JobManager();
 		jobManager.addJobTypeLimit(JobType.TYPE1, 2);
 		jobManager.addJobTypeLimit(JobType.TYPE2, 3);
-		jobManager.addJobTypeLimit(JobType.TYPE2, 6);
+		jobManager.addJobTypeLimit(JobType.TYPE3, 2);
 		jobManager.run();
 	}
 
