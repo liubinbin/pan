@@ -1,4 +1,7 @@
 package main.java.cn.liubinbin.pan.experiment.jobmanager;
+
+import java.util.Random;
+
 /**
  *
  * @author liubinbin
@@ -16,8 +19,9 @@ public class Job implements Runnable{
 	public void run() {
 		try {
 			try {
-				int sleepTime = (countSyncer.getJobType().ordinal() + 1 ) * 1000;
-				System.out.println("job start to do type " + countSyncer.getJobType() + " time " + sleepTime);
+				Random random = new Random();
+				int sleepTime = (countSyncer.getJobType().ordinal() + 1 + random.nextInt(3)) * 1000;
+				System.out.println("job starts {type " + countSyncer.getJobType() + " time " + sleepTime + "} starts");
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
