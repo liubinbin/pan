@@ -10,12 +10,12 @@ import java.util.ArrayList;
  */
 public class Client {
 
-	private String feHost;
-	private String fePort;
+	private String cacheServerHost;
+	private String cacheServerPort;
 
-	public Client(String feHost, String fePort) {
-		this.feHost = feHost;
-		this.fePort = fePort;
+	public Client(String cacheServerHost, String cacheServerPort) {
+		this.cacheServerHost = cacheServerHost;
+		this.cacheServerPort = cacheServerPort;
 	}
 
 	public void open() {
@@ -26,20 +26,8 @@ public class Client {
 
 	}
 
-	public void createBucket(String bucketName) {
-
-	}
-
-	public ArrayList<String> listBucket() {
-		return null;
-	}
-
 	public ArrayList<String> listObject() {
 		return null;
-	}
-
-	public void deleteBucket(String bucketName) {
-
 	}
 
 	public void getObject(String bucketName, String key) {
