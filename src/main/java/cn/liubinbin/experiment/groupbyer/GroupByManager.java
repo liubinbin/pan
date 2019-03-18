@@ -25,13 +25,14 @@ public class GroupByManager {
 	
 	protected static int FINSH_MARK = -1;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		int dataCount = 10;
 		Map<Integer, Queue<Pair>> shuffleBuffer = new HashMap<Integer, Queue<Pair>>();
 		List<Queue<Pair>> input = new ArrayList<Queue<Pair>>();
 		GroupNode[] groupNodeLevel1;
 		GroupNode[] groupNodeLevel2;
-		Queue<Pair> output;
+		Queue<Pair> outputQueue;
+		Map<Integer, Queue<Pair>> output;
 		
 		Random random = new Random();
 		int parallelism = 4;
@@ -43,18 +44,20 @@ public class GroupByManager {
 		}
 		groupNodeLevel1 = new GroupNode[parallelism];
 		groupNodeLevel2 = new GroupNode[parallelism];
-		output = new LinkedBlockingQueue<Pair>();
+		outputQueue = new LinkedBlockingQueue<Pair>();
+		output = new HashMap<Integer, Queue<Pair>>();
+		output.put(0, outputQueue);
 		
 		//level-1
 		for (int i = 0; i < parallelism; i++) {
-			groupNodeLevel1[i] = new GroupNode(input.get(i), shuffleBuffer.get(i), 1, i);
+			groupNodeLevel1[i] = new GroupNode(input.get(i), shuffleBuffer, 1, i, parallelism);
 		}
 		
 		//shuffle
 		
 		//level-2
 		for (int i = 0; i < parallelism; i++) {
-			groupNodeLevel2[i] = new GroupNode(shuffleBuffer.get(i), output , 2, i);
+			groupNodeLevel2[i] = new GroupNode(shuffleBuffer.get(i), output , 2, i, parallelism);
 		}
 		
 		//start groupNode
@@ -66,7 +69,8 @@ public class GroupByManager {
 		//push data
 		int key = 0;
 		for (int i = 0; i < dataCount; i++) {
-			key = random.nextInt(10000);
+//			key = random.nextInt(10000);
+			key = i + 100;
 			input.get(i % parallelism).add(new Pair(new Record(key, "hello " + key)));
 		}
 		
@@ -78,9 +82,15 @@ public class GroupByManager {
 		//get data
 		Pair pair;
 		System.out.println("key\taggcount");
-		while(!output.isEmpty()) {
-			pair = output.poll();
-			System.out.println(pair.getKey() + "\t" + pair.getAggCount());
+		Thread.sleep(1000 * 10);
+		System.out.println("start to ouput result");
+		for(int i = 0; i < 20; i++) {
+			pair = output.get(0).poll();
+			if (pair != null) {
+				System.out.println(pair.getKey() + "\t" + pair.getAggCount());
+			} else {
+				System.out.println("pair null");
+			}
 		}
 	}
 }
