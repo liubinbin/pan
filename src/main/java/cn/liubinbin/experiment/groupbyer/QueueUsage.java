@@ -2,7 +2,6 @@ package main.java.cn.liubinbin.experiment.groupbyer;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  *
