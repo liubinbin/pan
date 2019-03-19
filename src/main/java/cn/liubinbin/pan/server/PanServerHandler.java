@@ -35,7 +35,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;
 import io.netty.util.CharsetUtil;
 import main.java.cn.liubinbin.pan.conf.Contants;
-import main.java.cn.liubinbin.pan.manager.CacheManager;
+import main.java.cn.liubinbin.pan.manager.BucketManager;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
@@ -55,9 +55,9 @@ import org.apache.log4j.Logger;
 public class PanServerHandler extends ChannelInboundHandlerAdapter {
 
 //	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
-	private CacheManager cacheManager;
+	private BucketManager cacheManager;
 
-	public PanServerHandler(CacheManager cacheManager) {
+	public PanServerHandler(BucketManager cacheManager) {
 		this.cacheManager = cacheManager;
 		this.tempData = Unpooled.compositeBuffer();
 	}

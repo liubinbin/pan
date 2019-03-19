@@ -24,7 +24,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import main.java.cn.liubinbin.pan.conf.Config;
-import main.java.cn.liubinbin.pan.manager.CacheManager;
+import main.java.cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin
@@ -34,7 +34,7 @@ public final class PanServer {
 
 	public static void main(String[] args) throws Exception {
 		Config cacheConfig = new Config();
-		CacheManager cacheManager = new CacheManager(cacheConfig);
+		BucketManager cacheManager = new BucketManager(cacheConfig);
 		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
 		byte[] CONTENT2 = new byte[73060];

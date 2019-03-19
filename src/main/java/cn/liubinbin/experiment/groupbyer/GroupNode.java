@@ -14,18 +14,20 @@ public class GroupNode implements Runnable {
 
 	private boolean fetchIsDone;
 	
-	private Queue<Pair> inQueue;
-	private Map<Integer, Queue<Pair>> outQueue;
+	private String source;
+	private int targetLevel;
 	private Map<Integer, Pair> buffer; 
 	private int level;
 	private int hash;
 	private int parallelism;
+	private SocketCenter socketCenter;
 	
-	public GroupNode(Queue<Pair> inQueue, Map<Integer, Queue<Pair>> outQueue, int level, int hash, int parallelism) {
+	public GroupNode(SocketCenter socketCenter, String source, int level, int hash, int parallelism) {
+		this.socketCenter = socketCenter;
 		this.fetchIsDone = false;
-		this.inQueue = inQueue;
-		this.outQueue = outQueue;
+		this.source = source;
 		this.level = level;
+		this.targetLevel = level + 1;
 		this.hash = hash;
 		this.buffer = new HashMap<Integer, Pair>();
 		this.parallelism = parallelism;
@@ -36,18 +38,36 @@ public class GroupNode implements Runnable {
 	}
 	
 	private void startPushDataToOut() {
-		System.out.println("level " + level + " hash " + hash + " size " + buffer.keySet().size());
+//		System.out.println("startPushDataToOut level " + level + " hash " + hash + " size " + buffer.keySet().size());
 		Iterator<Pair> entries = buffer.values().iterator();
 
 		Pair pair;
+		int counter = 0;
+		int hash = 0;
 		while (entries.hasNext()) {
 			pair = entries.next();
-			System.out.println("push data key: " + "level " + level + " pair.key " + pair.getKey() + " aggcount: " + pair.getAggCount());
-			outQueue.get(0).add(pair);
+//			System.out.println("push data key: " + "level " + level + " pair.key " + pair.getKey() + " aggcount: " + pair.getAggCount());
+			hash = pair.getKey() % parallelism;
+			socketCenter.push(targetLevel, hash, pair);
 		}
 		
-		for (int i = 0; i < parallelism; i++) {
-			outQueue.get(0).add(new Pair(new Record(GroupByManager.FINSH_MARK, "hello " + GroupByManager.FINSH_MARK)));
+		// add mark
+		if (level == 1) {
+			for (int i = 0; i < parallelism; i++) {
+				socketCenter.push( targetLevel, (i % parallelism), new Pair(new Record(GroupByManager.FINSH_MARK, "hello " + GroupByManager.FINSH_MARK)));
+			}
+		} else {
+			socketCenter.push( targetLevel, 0, new Pair(new Record(GroupByManager.FINSH_MARK, "hello " + GroupByManager.FINSH_MARK)));
+		}
+	}
+	
+	private void printBuffer() {
+		Iterator<Pair> entries = buffer.values().iterator();
+
+		Pair pair = null;
+		while (entries.hasNext()) {
+			pair = entries.next();
+//			System.out.println("buffer data: level " + level + " pair.key " + pair.getKey() + " aggcount: " + pair.getAggCount());
 		}
 	}
 	
@@ -56,13 +76,17 @@ public class GroupNode implements Runnable {
 		Pair pair;
 //		System.out.println("level " + level + " start");
 		while(true) {
-			pair = inQueue.poll();
+			pair = socketCenter.fetch(source);
 			if (pair == null) {
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				continue;
 			}
-//			System.out.println("level " + level + " pair.key " + pair.getKey());
 			if (pair.getKey() == GroupByManager.FINSH_MARK ) {
-//				System.out.println("meet finsh_mark " + " level " + level);
+//				System.out.println("level " + level + " meet finsh_mark ");
 				break;
 			}
 			if (buffer.containsKey(pair.getKey())) {
@@ -70,12 +94,14 @@ public class GroupNode implements Runnable {
 			} else {
 				buffer.put(pair.getKey(), pair);
 			}
-			
+//			printBuffer();
 		}
 		
 		setFetchDone();
 		
 		startPushDataToOut();
+		
+//		System.out.println("level " + level + " GroupNode ends");
 	}
 
 }

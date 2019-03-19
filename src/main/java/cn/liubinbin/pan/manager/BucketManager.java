@@ -21,7 +21,7 @@ import main.java.cn.liubinbin.pan.server.Key;
  *
  */
 
-public class CacheManager {
+public class BucketManager {
 
 	private ConcurrentSkipListMap<Key, Addr> index;
 	// TODO do we need volatile, we have already lock.
@@ -31,7 +31,7 @@ public class CacheManager {
 	private Lock rLock;
 	private Lock wLock;
 
-	public CacheManager(Config cacheConfig) {
+	public BucketManager(Config cacheConfig) {
 		this.index = new ConcurrentSkipListMap<Key, Addr>();
 		this.bucketSlotSize = cacheConfig.getBucketSlotSize();
 		this.buckets = new Bucket[bucketSlotSize.length];
@@ -126,7 +126,7 @@ public class CacheManager {
 
 	public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
 		Config cacheConfig = new Config();
-		CacheManager cacheManager = new CacheManager(cacheConfig);
+		BucketManager cacheManager = new BucketManager(cacheConfig);
 		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
 		byte[] CONTENT2 = new byte[73060];

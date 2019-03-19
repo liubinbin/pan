@@ -22,11 +22,11 @@ public class Config {
 	}
 
 	public int getPort() {
-		return configuration.getInt(Contants.CACHE_SERVER_PORT, Contants.DEFAULT_CACHE_SERVER_PORT);
+		return configuration.getInt(Contants.PAN_SERVER_PORT, Contants.DEFAULT_CACHE_SERVER_PORT);
 	}
 
 	public int getNettyThreadCount() {
-		return configuration.getInt(Contants.CACHE_NETTY_SERVER_THREAD_COUNT,
+		return configuration.getInt(Contants.PAN_NETTY_SERVER_THREAD_COUNT,
 				Contants.DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT);
 	}
 

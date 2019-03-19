@@ -31,14 +31,14 @@ public class Client {
 	}
 
 	public void getObject(String bucketName, String key) {
-
+		
 	}
 
 	public void putOBject(String bucketName, String key, String filePath) {
-
+		
 	}
 
 	public void deleteObject(String bucketName, String key) {
-
+		
 	}
 }

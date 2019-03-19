@@ -20,7 +20,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import main.java.cn.liubinbin.pan.manager.CacheManager;
+import main.java.cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin
@@ -29,9 +29,9 @@ import main.java.cn.liubinbin.pan.manager.CacheManager;
 
 public class PanServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private CacheManager cacheManager;
+	private BucketManager cacheManager;
 
-	public PanServerInitializer(CacheManager cacheManager) {
+	public PanServerInitializer(BucketManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 

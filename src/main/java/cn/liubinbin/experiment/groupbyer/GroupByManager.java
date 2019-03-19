@@ -1,13 +1,6 @@
 package main.java.cn.liubinbin.experiment.groupbyer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *
@@ -21,38 +14,26 @@ public class GroupByManager {
 	protected static int FINSH_MARK = -1;
 	
 	public static void main(String[] args) throws InterruptedException {
-		int dataCount = 10;
-		Map<Integer, Queue<Pair>> shuffleBuffer = new HashMap<Integer, Queue<Pair>>();
-		List<Queue<Pair>> input = new ArrayList<Queue<Pair>>();
+		int parallelism = 4;
+		SocketCenter socketCenter = new SocketCenter(parallelism);
+		int dataCount = 1020409;
 		GroupNode[] groupNodeLevel1;
 		GroupNode[] groupNodeLevel2;
-		Queue<Pair> outputQueue;
-		Map<Integer, Queue<Pair>> output;
 		
 		Random random = new Random();
-		int parallelism = 4;
 		
 		//initial
-		for(int i = 0; i < parallelism; i++) {
-			input.add(new LinkedList<Pair>());
-			shuffleBuffer.put(i, new LinkedList<Pair>());
-		}
 		groupNodeLevel1 = new GroupNode[parallelism];
 		groupNodeLevel2 = new GroupNode[parallelism];
-		outputQueue = new LinkedBlockingQueue<Pair>();
-		output = new HashMap<Integer, Queue<Pair>>();
-		output.put(0, outputQueue);
 		
 		//level-1
 		for (int i = 0; i < parallelism; i++) {
-			groupNodeLevel1[i] = new GroupNode(input.get(i), shuffleBuffer, 1, i, parallelism);
+			groupNodeLevel1[i] = new GroupNode(socketCenter, "1" + "-" + i, 1, i, parallelism);
 		}
-		
-		//shuffle
 		
 		//level-2
 		for (int i = 0; i < parallelism; i++) {
-			groupNodeLevel2[i] = new GroupNode(shuffleBuffer.get(i), output , 2, i, parallelism);
+			groupNodeLevel2[i] = new GroupNode(socketCenter, "2" + "-" + i, 2, i, parallelism);
 		}
 		
 		//start groupNode
@@ -64,28 +45,35 @@ public class GroupByManager {
 		//push data
 		int key = 0;
 		for (int i = 0; i < dataCount; i++) {
-//			key = random.nextInt(10000);
-			key = i + 100;
-			input.get(i % parallelism).add(new Pair(new Record(key, "hello " + key)));
+			key = random.nextInt(100);
+//			key = i % 4;
+			socketCenter.push(1, (i % parallelism), new Pair(new Record(key, "hello " + key)));
 		}
 		
 		//push mark
 		for (int i = 0; i < parallelism; i++) {
-			input.get(i % parallelism).add(new Pair(new Record(FINSH_MARK, "hello " + FINSH_MARK)));
+			socketCenter.push(1, (i % parallelism), new Pair(new Record(FINSH_MARK, "hello " + FINSH_MARK)));
 		}
 		
 		//get data
 		Pair pair;
 		System.out.println("key\taggcount");
 		Thread.sleep(1000 * 10);
-		System.out.println("start to ouput result");
-		for(int i = 0; i < 20; i++) {
-			pair = output.get(0).poll();
+//		System.out.println("start to ouput result");
+		while(true) {
+			pair = socketCenter.fetch("3-0");
 			if (pair != null) {
-				System.out.println(pair.getKey() + "\t" + pair.getAggCount());
+				if (pair.getKey() == GroupByManager.FINSH_MARK ) {
+//					System.out.println("sink node meet GroupByManager.FINSH_MARK ");
+					break;
+				} else {
+					System.out.println(pair.getKey() + "\t" + pair.getAggCount());
+				}
 			} else {
-				System.out.println("pair null");
-			}
+//				System.out.println("pair null");
+				Thread.sleep(1);
+			} 
 		}
+		System.out.println("done");
 	}
 }

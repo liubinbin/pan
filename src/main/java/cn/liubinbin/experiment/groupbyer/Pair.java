@@ -11,7 +11,7 @@ public class Pair {
 	
 	public Pair(Record record) {
 		this.setKey(record.getKey());
-		this.setAggCount(0);
+		this.setAggCount(1);
 	}
 	
 	public void increment() {
@@ -36,6 +36,10 @@ public class Pair {
 
 	public void setAggCount(int aggCount) {
 		this.aggCount = aggCount;
+	}
+	
+	public String toString() {
+		return " {" + key + "," + aggCount + "} ";
 	}
 
 }

@@ -10,18 +10,18 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
 import main.java.cn.liubinbin.pan.conf.Config;
-import main.java.cn.liubinbin.pan.manager.CacheManager;
+import main.java.cn.liubinbin.pan.manager.BucketManager;
 
 /**
  *
  * @author liubinbin
  *
  */
-public class CacheManagerTest {
+public class ManagerTest {
 
-	private CacheManager cacheManager;
-	public CacheManagerTest() throws FileNotFoundException, ConfigurationException, IOException {
-		this.cacheManager = new CacheManager(new Config());
+	private BucketManager bucketManager;
+	public ManagerTest() throws FileNotFoundException, ConfigurationException, IOException {
+		this.bucketManager = new BucketManager(new Config());
 	}
 	
 	@Test
@@ -31,9 +31,9 @@ public class CacheManagerTest {
 		byte[] value = { 'v', 'a', 'l', 'u', 'e' };
 		byte[] value1 = { 'v', 'a', 'l', 'u', 'e', '1' };
 		
-		cacheManager.put(key, value);
-		cacheManager.put(key1, value1);
-		byte[] valueFromCache = cacheManager.getByByteArray(key);
+		bucketManager.put(key, value);
+		bucketManager.put(key1, value1);
+		byte[] valueFromCache = bucketManager.getByByteArray(key);
 		assertTrue(Arrays.equals(value, valueFromCache));
 	}
 	
@@ -43,18 +43,18 @@ public class CacheManagerTest {
 		byte[] value = { 'v', 'a', 'l', 'u', 'e' };
 		byte[] value1 = { 'v', 'a', 'l', 'u', 'e', '1' };
 		
-		cacheManager.put(key, value);
-		cacheManager.put(key1, value1);
-		cacheManager.delete(key);
-		assertNull(cacheManager.getByByteArray(key));
-		assertNull(cacheManager.getByByteBuf(key));
-		assertNotNull(cacheManager.getByByteArray(key1));
-		assertNotNull(cacheManager.getByByteBuf(key1));
+		bucketManager.put(key, value);
+		bucketManager.put(key1, value1);
+		bucketManager.delete(key);
+		assertNull(bucketManager.getByByteArray(key));
+		assertNull(bucketManager.getByByteBuf(key));
+		assertNotNull(bucketManager.getByByteArray(key1));
+		assertNotNull(bucketManager.getByByteBuf(key1));
 	}
 	
 	public void testget() throws FileNotFoundException, ConfigurationException, IOException{
 		Config cacheConfig = new Config();
-		CacheManager cacheManager = new CacheManager(cacheConfig);
+		BucketManager cacheManager = new BucketManager(cacheConfig);
 		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
 		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
 		byte[] CONTENT2 = new byte[73060];

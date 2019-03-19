@@ -57,9 +57,11 @@ public class FielChannelWalV3 {
 
 	public void appendAndWaitForSynced(ByteBuffer byteBuffer, int sequence, SyncMark syncMark) {
 		syncMark.setSequenceAndSetNotDone(sequence);
-		long entryId = ringBuffer.next(); // Grab the next sequence
+		// Grab the next sequence
+		long entryId = ringBuffer.next(); 
 		try {
-			Entry entry = ringBuffer.get(sequence); // Get the entry in the Disruptor for the sequence
+			// Get the entry in the Disruptor for the sequence
+			Entry entry = ringBuffer.get(sequence);
 			entry.setByteBuffer(byteBuffer);
 			entry.setSequence(sequence);
 			entry.setSyncMark(syncMark);
