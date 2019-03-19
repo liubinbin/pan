@@ -50,7 +50,6 @@ public class SocketCenter {
 	}
 	
 	public synchronized void push(String source, Pair pair) {
-//		System.out.println("push data from source " + source + " data: " + pair.toString() );
 		shuffleBuffer.get(source).add(pair);
 	}
 	
@@ -58,19 +57,15 @@ public class SocketCenter {
 	public synchronized Pair fetch(String source) {
 		Pair pair = shuffleBuffer.get(source).poll();
 		if (pair == null) {
-//			System.out.println("fetch data " + source + " not data return null");
 			return null;
 		}
 		if (pair.getKey() != GroupByManager.FINSH_MARK ) {
 			return pair;
 		} else {
 			currentFinishMarkCount.put(source, currentFinishMarkCount.get(source) + 1);
-//			System.out.println("currentFinishMarkCount  source: " + source + " count: " + currentFinishMarkCount.get(source) + " " + finishRule.get(source));
 			if (currentFinishMarkCount.get(source) >= finishRule.get(source)) {
-//				System.out.println("fetch data " + source + " return finish_mark " + pair.toString());
 				return pair;
 			} else {
-//				System.out.println("fetch data " + source + " meet finish_mark return null");
 				return null;
 			}
 		}

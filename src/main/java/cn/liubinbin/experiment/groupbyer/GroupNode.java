@@ -38,15 +38,12 @@ public class GroupNode implements Runnable {
 	}
 	
 	private void startPushDataToOut() {
-//		System.out.println("startPushDataToOut level " + level + " hash " + hash + " size " + buffer.keySet().size());
 		Iterator<Pair> entries = buffer.values().iterator();
 
 		Pair pair;
-		int counter = 0;
 		int hash = 0;
 		while (entries.hasNext()) {
 			pair = entries.next();
-//			System.out.println("push data key: " + "level " + level + " pair.key " + pair.getKey() + " aggcount: " + pair.getAggCount());
 			hash = pair.getKey() % parallelism;
 			socketCenter.push(targetLevel, hash, pair);
 		}
@@ -61,20 +58,8 @@ public class GroupNode implements Runnable {
 		}
 	}
 	
-	private void printBuffer() {
-		Iterator<Pair> entries = buffer.values().iterator();
-
-		Pair pair = null;
-		while (entries.hasNext()) {
-			pair = entries.next();
-//			System.out.println("buffer data: level " + level + " pair.key " + pair.getKey() + " aggcount: " + pair.getAggCount());
-		}
-	}
-	
-	@Override
-	public void run() {
+	private void fetchDataAndAgg() {
 		Pair pair;
-//		System.out.println("level " + level + " start");
 		while(true) {
 			pair = socketCenter.fetch(source);
 			if (pair == null) {
@@ -86,7 +71,6 @@ public class GroupNode implements Runnable {
 				continue;
 			}
 			if (pair.getKey() == GroupByManager.FINSH_MARK ) {
-//				System.out.println("level " + level + " meet finsh_mark ");
 				break;
 			}
 			if (buffer.containsKey(pair.getKey())) {
@@ -94,14 +78,24 @@ public class GroupNode implements Runnable {
 			} else {
 				buffer.put(pair.getKey(), pair);
 			}
-//			printBuffer();
 		}
+	}
+	private void printBuffer() {
+		Iterator<Pair> entries = buffer.values().iterator();
+
+		Pair pair = null;
+		while (entries.hasNext()) {
+			pair = entries.next();
+		}
+	}
+	
+	@Override
+	public void run() {
+		fetchDataAndAgg();
 		
 		setFetchDone();
 		
 		startPushDataToOut();
-		
-//		System.out.println("level " + level + " GroupNode ends");
 	}
 
 }

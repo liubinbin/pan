@@ -59,18 +59,15 @@ public class GroupByManager {
 		Pair pair;
 		System.out.println("key\taggcount");
 		Thread.sleep(1000 * 10);
-//		System.out.println("start to ouput result");
 		while(true) {
 			pair = socketCenter.fetch("3-0");
 			if (pair != null) {
 				if (pair.getKey() == GroupByManager.FINSH_MARK ) {
-//					System.out.println("sink node meet GroupByManager.FINSH_MARK ");
 					break;
 				} else {
 					System.out.println(pair.getKey() + "\t" + pair.getAggCount());
 				}
 			} else {
-//				System.out.println("pair null");
 				Thread.sleep(1);
 			} 
 		}
