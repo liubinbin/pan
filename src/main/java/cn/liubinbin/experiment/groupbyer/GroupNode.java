@@ -3,7 +3,6 @@ package main.java.cn.liubinbin.experiment.groupbyer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Queue;
 
 /**
  *
@@ -78,14 +77,6 @@ public class GroupNode implements Runnable {
 			} else {
 				buffer.put(pair.getKey(), pair);
 			}
-		}
-	}
-	private void printBuffer() {
-		Iterator<Pair> entries = buffer.values().iterator();
-
-		Pair pair = null;
-		while (entries.hasNext()) {
-			pair = entries.next();
 		}
 	}
 	
