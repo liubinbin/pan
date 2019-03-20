@@ -16,7 +16,7 @@ public class GroupByManager {
 	public static void main(String[] args) throws InterruptedException {
 		int parallelism = 4;
 		SocketCenter socketCenter = new SocketCenter(parallelism);
-		int dataCount = 1020409;
+		int dataCount = 10204090;
 		GroupNode[] groupNodeLevel1;
 		GroupNode[] groupNodeLevel2;
 		
@@ -58,19 +58,22 @@ public class GroupByManager {
 		//get data
 		Pair pair;
 		System.out.println("key\taggcount");
-		Thread.sleep(1000 * 10);
+		Thread.sleep(1000 * 2);
+		int aggTotalCount = 0;
 		while(true) {
 			pair = socketCenter.fetch("3-0");
 			if (pair != null) {
 				if (pair.getKey() == GroupByManager.FINSH_MARK ) {
 					break;
 				} else {
+					aggTotalCount += pair.getAggCount();
 					System.out.println(pair.getKey() + "\t" + pair.getAggCount());
 				}
 			} else {
 				Thread.sleep(1);
 			} 
 		}
+		System.out.println("aggTotalCount: " + aggTotalCount);
 		System.out.println("done");
 	}
 }

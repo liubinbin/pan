@@ -14,13 +14,6 @@ public class KeyValue {
 		
 	}
 	
-	public void writeTo() {
-		
-	}
-	
-	public void readFrom() {
-		
-	}
 	
 	public static void main(String[] args) {
 		

@@ -7,19 +7,24 @@ import java.util.Map;
 /**
  *
  * @author liubinbin
- * is InMemory
+ * is OnDisk
  */
 
-public class BigMapInMemory{
+public class BigMapOnDisk{
 	
 	private int level;
 	private boolean isInMemory;
+	private Sector[] sectors;
+	private int spillThrottle;
+	private int sectorsCountInALevel;
 	private Map<Integer, Pair> buffer; 
 	private Iterator<Pair> entries;
 	
-	public BigMapInMemory(int level) {
+	public BigMapOnDisk(int level) {
 		this.level = level;
-		this.isInMemory = true;
+		this.isInMemory = false;
+		this.spillThrottle = 100;
+		this.sectorsCountInALevel = 16;
 		this.buffer = new HashMap<Integer, Pair>();
 	}
 	
@@ -43,6 +48,10 @@ public class BigMapInMemory{
 			 entries = buffer.values().iterator();
 		}
 		return entries.hasNext();
+	}
+	
+	public void startToSpill() {
+		
 	}
 	
 }

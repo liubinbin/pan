@@ -15,11 +15,13 @@ public class GroupNode implements Runnable {
 	
 	private String source;
 	private int targetLevel;
-	private Map<Integer, Pair> buffer; 
 	private int level;
 	private int hash;
 	private int parallelism;
 	private SocketCenter socketCenter;
+	private BigMapInMemory bigMapInMemory;
+	private int fetchCount;
+	private int pushCount;
 	
 	public GroupNode(SocketCenter socketCenter, String source, int level, int hash, int parallelism) {
 		this.socketCenter = socketCenter;
@@ -28,8 +30,10 @@ public class GroupNode implements Runnable {
 		this.level = level;
 		this.targetLevel = level + 1;
 		this.hash = hash;
-		this.buffer = new HashMap<Integer, Pair>();
 		this.parallelism = parallelism;
+		this.bigMapInMemory = new BigMapInMemory(level);
+		this.fetchCount = 0;
+		this.pushCount = 0;
 	}
 
 	private void setFetchDone() {
@@ -37,14 +41,13 @@ public class GroupNode implements Runnable {
 	}
 	
 	private void startPushDataToOut() {
-		Iterator<Pair> entries = buffer.values().iterator();
-
 		Pair pair;
 		int hash = 0;
-		while (entries.hasNext()) {
-			pair = entries.next();
+		while (bigMapInMemory.hasNext()) {
+			pair = bigMapInMemory.next();
 			hash = pair.getKey() % parallelism;
 			socketCenter.push(targetLevel, hash, pair);
+			pushCount++;
 		}
 		
 		// add mark
@@ -72,11 +75,8 @@ public class GroupNode implements Runnable {
 			if (pair.getKey() == GroupByManager.FINSH_MARK ) {
 				break;
 			}
-			if (buffer.containsKey(pair.getKey())) {
-				buffer.get(pair.getKey()).increment(pair.getAggCount());
-			} else {
-				buffer.put(pair.getKey(), pair);
-			}
+			bigMapInMemory.add(pair);
+			fetchCount++;
 		}
 	}
 	
@@ -87,6 +87,16 @@ public class GroupNode implements Runnable {
 		setFetchDone();
 		
 		startPushDataToOut();
+		
+		System.out.println("this " + toString() + " status " + getTaskStatus() );
 	}
 
+	
+	public String toString() {
+		return "GroupNode[ " + level + "," + hash + " ]";
+	}
+	
+	public String getTaskStatus() {
+		return "[ " + fetchCount + "," + pushCount + " ]";
+	}
 }
