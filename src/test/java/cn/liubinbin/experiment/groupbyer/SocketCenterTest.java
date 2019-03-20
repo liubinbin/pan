@@ -1,10 +1,5 @@
 package test.java.cn.liubinbin.experiment.groupbyer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-
 import org.junit.Test;
 
 /**
@@ -23,12 +18,12 @@ import org.junit.Test;
 public class SocketCenterTest {
 
 	@Test
-	public void testPush(int level, int hash) {
-		String source = level + "-" + hash;
+	public void testPush() {
+		
 	}
 	
 	@Test
-	public void testFetch(String source) {
+	public void testFetch() {
 		
 	}
 

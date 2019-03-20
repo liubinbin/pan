@@ -19,11 +19,11 @@ public class Contants {
 
 	public static final int DEFAULT_CACHE_SEGMENT_SIZE = 132096;
 	
-	public static final String CACHE_TOTAL_SIZE = "cache.total.size";
+	public static final String CACHE_TOTAL_SIZE = "pan.total.size";
 
 	public static final int DEFAULT_TOTAL_SEGMENT_SIZE = 262144;
 
-	public static final String SLOT_SIZE = "cache.slot.size";
+	public static final String SLOT_SIZE = "pan.slot.size";
 	
 	public static final String DEFAULT_SLOT_SIZE = "128,512,132096";
 	

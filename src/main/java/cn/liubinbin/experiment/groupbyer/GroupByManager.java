@@ -16,7 +16,7 @@ public class GroupByManager {
 	public static void main(String[] args) throws InterruptedException {
 		int parallelism = 4;
 		SocketCenter socketCenter = new SocketCenter(parallelism);
-		int dataCount = 10204090;
+		int dataCount = 123456789;
 		GroupNode[] groupNodeLevel1;
 		GroupNode[] groupNodeLevel2;
 		
@@ -45,7 +45,7 @@ public class GroupByManager {
 		//push data
 		int key = 0;
 		for (int i = 0; i < dataCount; i++) {
-			key = random.nextInt(100);
+			key = random.nextInt(123);
 //			key = i % 4;
 			socketCenter.push(1, (i % parallelism), new Pair(new Record(key, "hello " + key)));
 		}

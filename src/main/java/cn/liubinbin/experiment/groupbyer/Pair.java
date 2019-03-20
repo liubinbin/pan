@@ -9,6 +9,11 @@ public class Pair {
 	private int key;
 	private int aggCount;
 	
+	public Pair(int key, int aggCount) {
+		this.key = key;
+		this.aggCount = aggCount;
+	}
+	
 	public Pair(Record record) {
 		this.setKey(record.getKey());
 		this.setAggCount(1);
@@ -42,4 +47,13 @@ public class Pair {
 		return " {" + key + "," + aggCount + "} ";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Pair) {
+			Pair pairToComp = (Pair)obj;
+			return pairToComp.getKey() == this.getKey() && pairToComp.getAggCount() == this.getAggCount();
+		} else {
+			return false;
+		}
+	}
 }

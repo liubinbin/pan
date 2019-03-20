@@ -10,7 +10,7 @@ import java.util.Map;
  * is InMemory
  */
 
-public class BigMapInMemory{
+public class BigMapInMemory implements BigMap{
 	
 	private int level;
 	private boolean isInMemory;
