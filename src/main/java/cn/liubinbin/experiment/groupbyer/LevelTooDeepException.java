@@ -6,6 +6,11 @@ package main.java.cn.liubinbin.experiment.groupbyer;
  *
  */
 public class LevelTooDeepException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public LevelTooDeepException() {
 		super();
 	}

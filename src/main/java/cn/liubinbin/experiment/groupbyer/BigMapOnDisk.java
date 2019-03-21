@@ -178,6 +178,7 @@ public class BigMapOnDisk implements BigMap{
 		}
 	}
 	
+	//TODO find a better hash function
 	private int getHash(int key, int level) {
 		return (key >> ((level - 1) * 4)) % SECTOR_COUNT_IN_A_LEVEL;
 	}
