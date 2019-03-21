@@ -19,7 +19,7 @@ public class SpillFileTest {
 	
 	@Test
 	public void add() throws IOException {
-		SpillFile spillFile = new SpillFile("spillfile");
+		SpillFile spillFile = new SpillFile(SpillFile.SPILL_FILE_ROOT + File.separator + "0-1");
 		Pair pair1 = new Pair(123, 2);
 		Pair pair2 = new Pair(234, 6);
 		spillFile.add(pair1);

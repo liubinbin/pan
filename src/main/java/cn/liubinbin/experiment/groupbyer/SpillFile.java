@@ -16,7 +16,7 @@ public class SpillFile {
 	private String filePath;
 	private FileWriter fileWriter;
 	private BufferedReader bufferedReader;
-	private final static String SPILL_FILE_ROOT = "spill";
+	public final static String SPILL_FILE_ROOT = "spill";
 	
 	public SpillFile(String filePrefix, int hash) throws IOException {
 		this(SPILL_FILE_ROOT + File.separator + filePrefix + "-" + hash);
@@ -24,15 +24,22 @@ public class SpillFile {
 	
 	public SpillFile(String filePath) throws IOException {
 		this.setFilePath(filePath);
-		this.fileWriter = new FileWriter(filePath);
-		this.bufferedReader = new BufferedReader(new FileReader(filePath));
 	}
 
 	public void add(Pair pair) throws IOException {
+		if (fileWriter == null) {
+			this.fileWriter = new FileWriter(filePath);
+		}
 		fileWriter.write(pair.getKey() + " " + pair.getAggCount()+"\n");
 	}
 	
 	public Pair next() throws IOException {
+		if (fileWriter == null) {
+			return null;
+		}
+		if (bufferedReader == null) {
+			this.bufferedReader = new BufferedReader(new FileReader(filePath));
+		}
 		String pairStr = bufferedReader.readLine();
 		if (pairStr == null) {
 			return null;
@@ -46,11 +53,15 @@ public class SpillFile {
 	}
 	
 	public void closeWriter() throws IOException {
-		fileWriter.close();
+		if (fileWriter != null) {
+			fileWriter.close();
+		}
 	}
 	
 	public void closeReader() throws IOException {
-		bufferedReader.close();
+		if (bufferedReader != null) {
+			bufferedReader.close();
+		}
 	}
 
 	public String getFilePath() {
