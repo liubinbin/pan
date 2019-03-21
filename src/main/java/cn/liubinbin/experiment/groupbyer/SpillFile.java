@@ -1,6 +1,7 @@
 package main.java.cn.liubinbin.experiment.groupbyer;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,9 +16,14 @@ public class SpillFile {
 	private String filePath;
 	private FileWriter fileWriter;
 	private BufferedReader bufferedReader;
+	private final static String SPILL_FILE_ROOT = "spill";
+	
+	public SpillFile(String filePrefix, int hash) throws IOException {
+		this(SPILL_FILE_ROOT + File.separator + filePrefix + "-" + hash);
+	}
 	
 	public SpillFile(String filePath) throws IOException {
-		this.filePath = filePath;
+		this.setFilePath(filePath);
 		this.fileWriter = new FileWriter(filePath);
 		this.bufferedReader = new BufferedReader(new FileReader(filePath));
 	}
@@ -45,5 +51,13 @@ public class SpillFile {
 	
 	public void closeReader() throws IOException {
 		bufferedReader.close();
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 }

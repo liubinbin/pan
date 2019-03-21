@@ -1,6 +1,5 @@
 package main.java.cn.liubinbin.experiment.binfile.filev1;
 
-import java.awt.RenderingHints.Key;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

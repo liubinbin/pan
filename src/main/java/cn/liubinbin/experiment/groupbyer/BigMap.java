@@ -8,7 +8,7 @@ package main.java.cn.liubinbin.experiment.groupbyer;
 
 public interface BigMap{
 	
-	public void add(Pair pair);
+	public void add(Pair pair) throws Exception;
 	
 	public Pair next();
 	
