@@ -43,9 +43,6 @@ import static io.netty.handler.codec.http.HttpVersion.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 
 /**
  * @author liubinbin

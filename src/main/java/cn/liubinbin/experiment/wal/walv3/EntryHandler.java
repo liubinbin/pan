@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.logging.log4j.core.util.SystemClock;
 
 import com.lmax.disruptor.EventHandler;
 
