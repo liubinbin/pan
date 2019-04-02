@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.walv2;
+package cn.liubinbin.experiment.wal.walv2;
 
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;

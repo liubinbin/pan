@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

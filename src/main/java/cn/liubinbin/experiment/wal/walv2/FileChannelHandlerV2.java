@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.walv2;
+package cn.liubinbin.experiment.wal.walv2;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.BrokenBarrierException;

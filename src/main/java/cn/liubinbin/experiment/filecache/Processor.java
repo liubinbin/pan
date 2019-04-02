@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.filecache;
+package cn.liubinbin.experiment.filecache;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;

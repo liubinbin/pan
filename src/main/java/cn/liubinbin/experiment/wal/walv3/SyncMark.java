@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.walv3;
+package cn.liubinbin.experiment.wal.walv3;
 
 public class SyncMark {
 	private volatile boolean isDone;

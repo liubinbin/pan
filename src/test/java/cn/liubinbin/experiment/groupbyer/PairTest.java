@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import main.java.cn.liubinbin.experiment.groupbyer.Pair;
+import cn.liubinbin.experiment.groupbyer.Pair;
 
 /**
  *

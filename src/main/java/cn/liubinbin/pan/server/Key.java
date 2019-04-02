@@ -1,8 +1,8 @@
-package main.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import java.util.Arrays;
 
-import main.java.cn.liubinbin.pan.utils.ByteUtils;
+import cn.liubinbin.pan.utils.ByteUtils;
 
 /**
  *

@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package main.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import main.java.cn.liubinbin.pan.manager.BucketManager;
+import cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin

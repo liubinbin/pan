@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.extersorting;
+package cn.liubinbin.experiment.extersorting;
 
 import java.io.File;
 import java.io.IOException;

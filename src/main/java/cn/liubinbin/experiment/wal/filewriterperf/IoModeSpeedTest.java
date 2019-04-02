@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.filewriterperf;
+package cn.liubinbin.experiment.wal.filewriterperf;
 
 import java.io.IOException;
 

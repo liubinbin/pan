@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package main.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -34,8 +34,8 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.AsciiString;
 import io.netty.util.CharsetUtil;
-import main.java.cn.liubinbin.pan.conf.Contants;
-import main.java.cn.liubinbin.pan.manager.BucketManager;
+import cn.liubinbin.pan.conf.Contants;
+import cn.liubinbin.pan.manager.BucketManager;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;

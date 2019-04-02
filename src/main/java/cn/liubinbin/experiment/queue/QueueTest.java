@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.queue;
+package cn.liubinbin.experiment.queue;
 
 import java.awt.Point;
 import java.util.ArrayList;

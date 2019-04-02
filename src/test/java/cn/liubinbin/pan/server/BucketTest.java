@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.netty.buffer.Unpooled;
-import main.java.cn.liubinbin.pan.server.Bucket;
+import cn.liubinbin.pan.server.Bucket;
 
 /**
  *

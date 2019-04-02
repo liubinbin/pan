@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.linkedlistsort;
+package cn.liubinbin.experiment.linkedlistsort;
 
 /**
  * 

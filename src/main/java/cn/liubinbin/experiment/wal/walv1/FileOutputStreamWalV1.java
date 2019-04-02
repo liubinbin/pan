@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.walv1;
+package cn.liubinbin.experiment.wal.walv1;
 
 import java.io.File;
 import java.io.FileNotFoundException;

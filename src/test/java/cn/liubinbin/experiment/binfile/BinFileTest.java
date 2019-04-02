@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import main.java.cn.liubinbin.experiment.binfile.filev1.BinFile;
-import main.java.cn.liubinbin.experiment.binfile.filev1.KeyValue;
+import cn.liubinbin.experiment.binfile.filev1.BinFile;
+import cn.liubinbin.experiment.binfile.filev1.KeyValue;
 
 /**
  *

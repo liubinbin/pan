@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.hedged.v1;
+package cn.liubinbin.experiment.hedged.v1;
 
 import java.util.ArrayList;
 import java.util.Random;

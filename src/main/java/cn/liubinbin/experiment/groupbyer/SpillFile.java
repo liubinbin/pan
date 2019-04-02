@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.groupbyer;
+package cn.liubinbin.experiment.groupbyer;
 
 import java.io.BufferedReader;
 import java.io.File;

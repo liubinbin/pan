@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.manager;
+package cn.liubinbin.pan.manager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,10 +10,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import io.netty.buffer.ByteBuf;
-import main.java.cn.liubinbin.pan.conf.Config;
-import main.java.cn.liubinbin.pan.server.Addr;
-import main.java.cn.liubinbin.pan.server.Bucket;
-import main.java.cn.liubinbin.pan.server.Key;
+import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.server.Addr;
+import cn.liubinbin.pan.server.Bucket;
+import cn.liubinbin.pan.server.Key;
 
 /**
  *

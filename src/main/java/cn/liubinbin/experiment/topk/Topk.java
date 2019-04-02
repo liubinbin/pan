@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.topk;
+package cn.liubinbin.experiment.topk;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.binfile.filev1;
+package cn.liubinbin.experiment.binfile.filev1;
 
 import java.io.UnsupportedEncodingException;
 

@@ -25,7 +25,7 @@
  *
  */
 
-package main.java.cn.liubinbin.pan.client;
+package cn.liubinbin.pan.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

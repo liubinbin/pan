@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package main.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -23,8 +23,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import main.java.cn.liubinbin.pan.conf.Config;
-import main.java.cn.liubinbin.pan.manager.BucketManager;
+import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin

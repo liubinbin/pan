@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import main.java.cn.liubinbin.experiment.jobmanager.JobType;
+import cn.liubinbin.experiment.jobmanager.JobType;
 
 public class JobTypeTest {
 

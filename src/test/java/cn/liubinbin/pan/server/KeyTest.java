@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import main.java.cn.liubinbin.pan.server.Key;
+import cn.liubinbin.pan.server.Key;
 
 /**
  * 

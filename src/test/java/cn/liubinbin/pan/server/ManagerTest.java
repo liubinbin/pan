@@ -9,8 +9,8 @@ import java.util.Arrays;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
-import main.java.cn.liubinbin.pan.conf.Config;
-import main.java.cn.liubinbin.pan.manager.BucketManager;
+import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.manager.BucketManager;
 
 /**
  *

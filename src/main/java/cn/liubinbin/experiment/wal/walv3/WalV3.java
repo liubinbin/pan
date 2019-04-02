@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.wal.walv3;
+package cn.liubinbin.experiment.wal.walv3;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;

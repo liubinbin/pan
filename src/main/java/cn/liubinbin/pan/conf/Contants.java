@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.pan.conf;
+package cn.liubinbin.pan.conf;
 
 /**
  *

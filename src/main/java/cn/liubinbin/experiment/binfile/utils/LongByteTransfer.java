@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.binfile.utils;
+package cn.liubinbin.experiment.binfile.utils;
 
 /**
  *

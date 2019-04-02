@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.atomiclongvsaddr;
+package cn.liubinbin.experiment.atomiclongvsaddr;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;

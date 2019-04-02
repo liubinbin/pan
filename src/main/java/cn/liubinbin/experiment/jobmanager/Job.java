@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.jobmanager;
+package cn.liubinbin.experiment.jobmanager;
 
 import java.util.Random;
 

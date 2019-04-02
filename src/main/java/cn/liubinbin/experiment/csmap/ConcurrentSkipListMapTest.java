@@ -1,4 +1,4 @@
-package main.java.cn.liubinbin.experiment.csmap;
+package cn.liubinbin.experiment.csmap;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import main.java.cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.conf.Config;
 
 /**
  *
