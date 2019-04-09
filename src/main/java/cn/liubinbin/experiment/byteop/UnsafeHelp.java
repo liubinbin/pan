@@ -22,11 +22,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import org.apache.yetus.audience.InterfaceAudience;
 import sun.misc.Unsafe;
 import sun.nio.ch.DirectBuffer;
 
-@InterfaceAudience.Private
 public final class UnsafeHelp {
 
     // Unsafe mechanics
