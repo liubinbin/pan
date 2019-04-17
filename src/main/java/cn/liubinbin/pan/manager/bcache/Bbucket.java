@@ -3,6 +3,7 @@ package cn.liubinbin.pan.manager.bcache;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -14,7 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Bbucket {
 
 	private int slotsize;
-	private byte[] data;
+	private ByteBuffer data;
 	private int nextFreeSlot;
 	private byte status; // opening for put; being source of compact; being target of compact
 	/*
