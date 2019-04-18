@@ -1,4 +1,4 @@
-package cn.liubinbin.pan.manager.bcache;
+package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.server.Addr;
@@ -22,9 +22,9 @@ public class BcacheManager {
 	public BcacheManager(Config cacheConfig) {
 		this.index = new ConcurrentSkipListMap<Key, Addr>();
 		this.bucketSlotSize = cacheConfig.getBucketSlotSize();
-		this.buckets = new Bbucket[bucketSlotSize.length];
+		this.buckets = new Bucket[bucketSlotSize.length];
 		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-			this.buckets[bucketIdx] = new Bbucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+			this.buckets[bucketIdx] = new ByteArrayBucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
 		}
 		this.readWriteLock = new ReentrantReadWriteLock();
 		this.rLock = readWriteLock.readLock();
@@ -40,7 +40,6 @@ public class BcacheManager {
 	}
 
 	public void delete(byte[] key) {
-		// TODO
         // find bucket that has data for this key
 
 
@@ -65,6 +64,13 @@ public class BcacheManager {
 
 
         // find bucket
+
+
+		// put meta
+
+
+
+		// update slotsize
 
 
         // put data

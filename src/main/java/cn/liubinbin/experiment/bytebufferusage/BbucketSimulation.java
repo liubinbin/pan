@@ -1,6 +1,6 @@
 package cn.liubinbin.experiment.bytebufferusage;
 
-import cn.liubinbin.pan.manager.bcache.BItem;
+import cn.liubinbin.pan.bcache.Item;
 
 import java.nio.ByteBuffer;
 
@@ -16,8 +16,12 @@ public class BbucketSimulation {
         int bucketOffset = 0;
 
         int slotSize = 10240;
-        BItem first = new BItem();
-        BItem second = new BItem();
+        byte[] firstKey = "first".getBytes();
+        byte[] firstValue = "first time to say hello world".getBytes();
+        Item first = new Item(firstKey, firstValue);
+        byte[] secondKey = "secoond".getBytes();
+        byte[] secondValue = "right now, we can do something together, coz we know each other better that before".getBytes();
+        Item second = new Item(secondKey, secondValue);
 
         // write first KeyValue
         int offsetFirst = 0;

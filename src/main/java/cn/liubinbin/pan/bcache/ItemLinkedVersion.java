@@ -1,4 +1,4 @@
-package cn.liubinbin.pan.manager.bcache;
+package cn.liubinbin.pan.bcache;
 
 
 /**
@@ -18,7 +18,7 @@ package cn.liubinbin.pan.manager.bcache;
  *      -- byte[] key
  *      -- byte[] value
  */
-public class BItemLinkedVersion {
+public class ItemLinkedVersion {
     private byte status; // 0 does not exist, 1 does exist
     private long expiretime;
     private int hash;
@@ -28,7 +28,7 @@ public class BItemLinkedVersion {
     private byte[] key;
     private byte[] value;
 
-    BItemLinkedVersion(){
+    ItemLinkedVersion(){
 
 	}
 

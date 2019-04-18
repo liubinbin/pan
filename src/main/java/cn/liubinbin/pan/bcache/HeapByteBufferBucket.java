@@ -1,18 +1,16 @@
-package cn.liubinbin.pan.manager.bcache;
+package cn.liubinbin.pan.bcache;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  *
  * @author liubinbin
  */
-public class Bbucket {
+public abstract class HeapByteBufferBucket extends Bucket{
 
 	private int slotsize;
 	private ByteBuffer data;
@@ -23,9 +21,9 @@ public class Bbucket {
 	 */
 	private AtomicInteger dataTotalSize;
 
-	public Bbucket(int slotSize, int segmentSize) {
+	public HeapByteBufferBucket(int slotSize, int segmentSize) {
 		this.slotsize = slotSize;
-		this.data = new byte[segmentSize];
+		this.data = ByteBuffer.allocate(segmentSize);
 		this.dataTotalSize.set(0);
 		this.nextFreeSlot = 0;
 	}
