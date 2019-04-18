@@ -3,9 +3,9 @@ package cn.liubinbin.pan.utils;
 /**
  * @author liubinbin
  */
-public class ByteArrayUtils {
+public class ByteArrayUtilsTest {
 
-    private ByteArrayUtils() {
+    private ByteArrayUtilsTest() {
     }
 
     public static int toInt(ByteBuffer buffer, int offset) {

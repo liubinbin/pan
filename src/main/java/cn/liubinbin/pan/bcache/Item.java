@@ -24,20 +24,20 @@ import java.nio.ByteBuffer;
  */
 public class Item {
     // meta
-    // 0 does not exist or deleted, 1 does exist
-    private byte status;        // 1 byte, 0
-    private long expiretime;    // 8 bytes, 0 + 1
-    private int hash;           // 4 bytes, 0 + 1 + 8
-    private int dataLen;        // 4 bytes, 0 + 1 + 8 + 4
-    private int keyLength;      // 4 bytes, 0 + 1 + 8 + 4 + 4
-    private int valueLength;    // 4 bytes, 0 + 1 + 8 + 4 + 4 + 4
+    // 0 does not exist or deleted, 1 does exist, preserve the rest
+    private int status;         // 4 byte, 0
+    private long expireTime;    // 8 bytes, 0 + 4
+    private int hash;           // 4 bytes, 0 + 4 + 8
+    private int dataLen;        // 4 bytes, 0 + 4 + 8 + 4
+    private int keyLength;      // 4 bytes, 0 + 4 + 8 + 4 + 4
+    private int valueLength;    // 4 bytes, 0 + 4 + 8 + 4 + 4 + 4
     // data
-    private byte[] key;         // key.length, 0 + 1 + 8 + 4 + 4 + 4 + 4
-    private byte[] value;       // value.length, 0 + 1 + 8 + 4 + 4 + 4 + 4 + keyLength
+    private byte[] key;         // key.length, 0 + 4 + 8 + 4 + 4 + 4 + 4
+    private byte[] value;       // value.length, 0 + 4 + 8 + 4 + 4 + 4 + 4 + keyLength
 
     public Item(byte[] key, byte[] value){
         this.status = 1;
-        this.expiretime = System.currentTimeMillis();
+        this.expireTime = System.currentTimeMillis();
         this.hash = ByteUtils.hashCode(key);
         this.keyLength = key.length;
         this.valueLength = value.length;
@@ -48,8 +48,8 @@ public class Item {
 	}
 
 	public void writeTo(ByteBuffer byteBuffer, int offset){
-        byteBuffer.put(status); // use cas to race this slot
-        byteBuffer.putLong(expiretime);
+        byteBuffer.putInt(status); // use cas to race this slot
+        byteBuffer.putLong(expireTime);
         byteBuffer.putInt(hash);
         byteBuffer.putInt(dataLen);
         byteBuffer.putInt(keyLength);
@@ -62,7 +62,7 @@ public class Item {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("status: ").append(status);
-        sb.append(", expiretime: ").append(expiretime);
+        sb.append(", expiretime: ").append(expireTime);
         sb.append(", hahs: " ).append(hash);
         sb.append(", dataLen: ").append(dataLen);
         sb.append(", keyLength: ").append(keyLength);
@@ -82,8 +82,8 @@ public class Item {
         bItem.writeTo(bBucket, 0);
         System.out.println("bBucket " + bBucket.toString());
         bBucket.flip();
-        byte status = bBucket.get();
-        long expiretime = bBucket.getLong();
+        int status = bBucket.getInt();
+        long expireTime = bBucket.getLong();
         int hash = bBucket.getInt();
         int dataLen = bBucket.getInt();
         int keyLength = bBucket.getInt();
@@ -94,7 +94,7 @@ public class Item {
         bBucket.get(valuere);
 
         System.out.println("status: " + status);
-        System.out.println("expiretime: " + expiretime);
+        System.out.println("expiretime: " + expireTime);
         System.out.println("hash: " + hash);
         System.out.println("dataLen: " + dataLen);
         System.out.println("key: " + new String(keyre));

@@ -1,6 +1,5 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.pan.utils.UnsafeAccess;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
