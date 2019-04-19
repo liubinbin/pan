@@ -29,4 +29,6 @@ public class Contants {
 	
 	public static final String FILE_SEPARATOR = "/";
 
+	public static int MsInADay = 24 * 3600 * 1000;
+
 }
