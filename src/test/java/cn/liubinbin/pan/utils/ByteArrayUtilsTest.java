@@ -1,76 +1,109 @@
 package cn.liubinbin.pan.utils;
 
+import org.junit.Test;
+
+import java.nio.ByteOrder;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 /**
  * @author liubinbin
  */
 public class ByteArrayUtilsTest {
 
-    private ByteArrayUtilsTest() {
+    @Test
+    public void testToByte(){
+        byte[] data = new byte[20];
+        for (int i = 0; i < 20; i++){
+            data[i] = (byte)i;
+        }
+        for (int i = 0; i < 20; i++){
+            assertEquals((byte)i, ByteArrayUtils.toByte(data, i));
+        }
+        assertNotEquals((byte)1, ByteArrayUtils.toByte(data, 0));
     }
 
-    public static int toInt(ByteBuffer buffer, int offset) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.toInt(buffer, offset);
+    @Test
+    public void testPutByte(){
+        byte[] data = new byte[20];
+        for (int i = 0; i < 20; i++){
+            ByteArrayUtils.putByte(data, i, (byte)i);
+        }
+        for (int i = 0; i < 20; i++){
+            assertEquals((byte)i, ByteArrayUtils.toByte(data, i));
+        }
+        assertNotEquals((byte)1, ByteArrayUtils.toByte(data, 0));
     }
 
-    public static long toLong(ByteBuffer buffer, int offset) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.toLong(buffer, offset);
+    @Test
+    public void testToInt(){
+        int expectNumber = (1 << 24) + (2 << 16) + (3 << 8) + 4;
+        byte[] data = new byte[4];
+        for (int i = 0; i < 4; i++){
+            data[i] = (byte)(i + 1);
+        }
+        assertEquals(expectNumber, ByteArrayUtils.toInt(data, 0));
+        assertEquals(expectNumber, ByteUtils.byteArrayToInt(data));
     }
 
-    public static int toShort(ByteBuffer buffer, int offset) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.toShort(buffer, offset);
+    @Test
+    public void testPutInt(){
+        int expectNumber = 1234;
+        byte[] data = new byte[4];
+        ByteArrayUtils.putInt(data, 0, expectNumber);
+        assertEquals(expectNumber, ByteArrayUtils.toInt(data, 0));
     }
 
-    public static int toByte(ByteBuffer buffer, int offset) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.toByte(buffer, offset);
+    @Test
+    public void testCASInt(){
+        byte[] data = new byte[4];
+        int expectNumber = 1234;
+        int wrongExpectNumber = 234;
+        int update = 6789;
+        ByteArrayUtils.putInt(data, 0, expectNumber);
+
+        boolean wrongExcept = ByteArrayUtils.compareAndSetInt(data, 0, wrongExpectNumber, update);
+        assertNotEquals(ByteArrayUtils.toInt(data, 0), update);
+        assertEquals(false, wrongExcept);
+
+        boolean rightExcept = ByteArrayUtils.compareAndSetInt(data, 0, expectNumber, update);
+        assertEquals(ByteArrayUtils.toInt(data, 0), update);
+        assertEquals(true, rightExcept);
     }
 
-    public static void putInt(ByteBuffer buffer, int offset, int val) {
-        org.apache.hadoop.hbase.util.ByteBufferUtils.putInt(buffer, offset, val);
+    @Test
+    public void testToLong(){
+        long expectNumber = (1L << 56) + (2L << 48) + (3L << 40) + (4L << 32) + (5L << 24) + (6L << 16) + (7L << 8) + 8L;
+        byte[] data = new byte[8];
+        for (int i = 0; i < 8; i++){
+            data[i] = (byte)(i + 1);
+        }
+        assertEquals(expectNumber, ByteArrayUtils.toLong(data, 0));
     }
 
-    public static void putLong(ByteBuffer buffer, int offset, long val) {
-        org.apache.hadoop.hbase.util.ByteBufferUtils.putLong(buffer, offset, val);
+    @Test
+    public void testPutLong(){
+        int expectNumber = 1234;
+        byte[] data = new byte[4];
+        ByteArrayUtils.putInt(data, 0, expectNumber);
+        assertEquals(expectNumber, ByteArrayUtils.toInt(data, 0));
     }
 
-    /**
-     * Copy from one buffer to another from given offset. This will be absolute positional copying and
-     * won't affect the position of any of the buffers.
-     *
-     * @param in                source buffer
-     * @param out               destination buffer
-     * @param sourceOffset      offset in the source buffer
-     * @param destinationOffset offset in the destination buffer
-     * @param length            how many bytes to copy
-     */
-    public static void copyFromBufferToBuffer(ByteBuffer in, ByteBuffer out, int sourceOffset,
-                                              int destinationOffset, int length) {
-        org.apache.hadoop.hbase.util.ByteBufferUtils
-                .copyFromBufferToBuffer(in, out, sourceOffset, destinationOffset, length);
+    @Test
+    public void testCASLong(){
+        byte[] data = new byte[4];
+        int expectNumber = 1234;
+        int wrongExpectNumber = 234;
+        int update = 6789;
+        ByteArrayUtils.putInt(data, 0, expectNumber);
+
+        boolean wrongExcept = ByteArrayUtils.compareAndSetInt(data, 0, wrongExpectNumber, update);
+        assertNotEquals(ByteArrayUtils.toInt(data, 0), update);
+        assertEquals(false, wrongExcept);
+
+        boolean rightExcept = ByteArrayUtils.compareAndSetInt(data, 0, expectNumber, update);
+        assertEquals(ByteArrayUtils.toInt(data, 0), update);
+        assertEquals(true, rightExcept);
     }
-
-
-    public static boolean compareAndSetLong(ByteBuffer byteBuffer, int offset, long expected,
-                                            long update) {
-        return UnsafeHelp.compareAndSetLong(byteBuffer, offset, expected, update);
-    }
-
-    public static boolean compareAndSetLong(ByteBuffer byteBuffer, int offset, long expected,
-                                            long update) {
-        return UnsafeHelp.compareAndSetLong(byteBuffer, offset, expected, update);
-    }
-
-    public static boolean compareAndSetInt(byte[] byteArray, int offset, int expected,
-                                           int update) {
-        return UnsafeHelp.compareAndSetInt(byteArray, offset, expected, update);
-    }
-
-
-    public static int compareTo(ByteBuffer buf1, int o1, int l1, ByteBuffer buf2, int o2, int l2) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.compareTo(buf1, o1, l1, buf2, o2, l2);
-    }
-
-    public static int compareTo(ByteBuffer buf1, int o1, int l1, byte[] buf2, int o2, int l2) {
-        return org.apache.hadoop.hbase.util.ByteBufferUtils.compareTo(buf1, o1, l1, buf2, o2, l2);
-    }
-
 }

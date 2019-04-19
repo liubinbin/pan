@@ -1,12 +1,13 @@
 package cn.liubinbin.pan.utils;
 
-import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import sun.misc.Unsafe;
 import sun.nio.ch.DirectBuffer;
+
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public final class UnsafeHelp {
 
@@ -17,6 +18,12 @@ public final class UnsafeHelp {
      * The offset to the first element in a byte array.
      */
     public static final long BYTE_ARRAY_BASE_OFFSET;
+
+    /**
+     *  we should deal with LITTLE_ENDIAN and BIG_ENDIAN
+     */
+    public static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder()
+            .equals(ByteOrder.LITTLE_ENDIAN);
 
     static {
         try {
@@ -41,29 +48,29 @@ public final class UnsafeHelp {
     private UnsafeHelp() {
     }
 
-    public static boolean compareAndSetLong(ByteBuffer buf, int offset, long expected, long update) {
-        if (buf.isDirect()) {
-            return UNSAFE
-                    .compareAndSwapLong(null, ((DirectBuffer) buf).address() + offset, expected, update);
-        }
-        return UNSAFE
-                .compareAndSwapLong(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset,
-                        expected, update);
-    }
+//    public static boolean compareAndSetLong(ByteBuffer buf, int offset, long expected, long update) {
+//        if (buf.isDirect()) {
+//            return UNSAFE
+//                    .compareAndSwapLong(null, ((DirectBuffer) buf).address() + offset, expected, update);
+//        }
+//        return UNSAFE
+//                .compareAndSwapLong(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset,
+//                        expected, update);
+//    }
 
-    public static boolean compareAndSetInt(ByteBuffer buf, int offset, int expected, int update) {
-        if (buf.isDirect()) {
-            return UNSAFE
-                    .compareAndSwapInt(null, ((DirectBuffer) buf).address() + offset, expected, update);
-        }
-        return UNSAFE
-                .compareAndSwapInt(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset,
-                        expected, update);
-    }
+//    public static boolean compareAndSetInt(ByteBuffer buf, int offset, int expected, int update) {
+//        if (buf.isDirect()) {
+//            return UNSAFE
+//                    .compareAndSwapInt(null, ((DirectBuffer) buf).address() + offset, expected, update);
+//        }
+//        return UNSAFE
+//                .compareAndSwapInt(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset,
+//                        expected, update);
+//    }
 
-    public static boolean compareAndSetInt(byte[] buf, int offset, int expected, int update) {
-        return UNSAFE.compareAndSwapInt(buf, offset, expected, update);
-    }
+//    public static boolean compareAndSetInt(byte[] buf, int offset, int expected, int update) {
+//        return UNSAFE.compareAndSwapInt(buf, offset, expected, update);
+//    }
 
     // APIs to read primitive data from a byte[] using Unsafe way
 
@@ -74,11 +81,9 @@ public final class UnsafeHelp {
      * @param offset offset into array
      * @return the short value
      */
-    public static short toShort(byte[] bytes, int offset) {
-
-        return UNSAFE.getShort(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
-
-    }
+//    public static short toShort(byte[] bytes, int offset) {
+//        return UNSAFE.getShort(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+//    }
 
     /**
      * Converts a byte array to an int value considering it was written in big-endian format.
@@ -87,10 +92,9 @@ public final class UnsafeHelp {
      * @param offset offset into array
      * @return the int value
      */
-    public static int toInt(byte[] bytes, int offset) {
-        return UNSAFE.getInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
-
-    }
+//    public static int toInt(byte[] bytes, int offset) {
+//        return UNSAFE.getInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+//    }
 
     /**
      * Converts a byte array to a long value considering it was written in big-endian format.
@@ -99,95 +103,65 @@ public final class UnsafeHelp {
      * @param offset offset into array
      * @return the long value
      */
-    public static long toLong(byte[] bytes, int offset) {
-        return UNSAFE.getLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+//    public static long toLong(byte[] bytes, int offset) {
+//        return UNSAFE.getLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+//    }
 
-    }
-
-    public static int putByte(byte[] bytes, int offset, byte val) {
+    // for byte
+    public static void putByte(byte[] bytes, int offset, byte val) {
         UNSAFE.putByte(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
-        return offset + Bytes.SIZEOF_INT;
     }
 
-    // APIs to write primitive data to a byte[] using Unsafe way
-
-    /**
-     * Put a short value out to the specified byte array position in big-endian format.
-     *
-     * @param bytes  the byte array
-     * @param offset position in the array
-     * @param val    short to write out
-     * @return incremented offset
-     */
-    public static int putShort(byte[] bytes, int offset, short val) {
-        UNSAFE.putShort(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
-        return offset + Bytes.SIZEOF_SHORT;
+    public static byte toByte(byte[] bytes, int offset) {
+        return UNSAFE.getByte(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
     }
 
-    /**
-     * Put an int value out to the specified byte array position in big-endian format.
-     *
-     * @param bytes  the byte array
-     * @param offset position in the array
-     * @param val    int to write out
-     * @return incremented offset
-     */
-    public static int putInt(byte[] bytes, int offset, int val) {
-        UNSAFE.putInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
-        return offset + Bytes.SIZEOF_INT;
+    public static boolean compareAndSetByte(byte[] bytes, int offset, byte expected,
+                                            byte update) {
+        return UNSAFE.compareAndSwapObject(bytes, offset + BYTE_ARRAY_BASE_OFFSET, expected, update);
     }
 
-    /**
-     * Put a long value out to the specified byte array position in big-endian format.
-     *
-     * @param bytes  the byte array
-     * @param offset position in the array
-     * @param val    long to write out
-     * @return incremented offset
-     */
-    public static int putLong(byte[] bytes, int offset, long val) {
-        UNSAFE.putLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
-        return offset + Bytes.SIZEOF_LONG;
-    }
-
-    // APIs to read primitive data from a ByteBuffer using Unsafe way
-
-    /**
-     * Reads a short value at the given buffer's offset considering it was written in big-endian
-     * format.
-     *
-     * @param buf
-     * @param offset
-     * @return short value at offset
-     */
-    public static short toShort(ByteBuffer buf, int offset) {
-        return getAsShort(buf, offset);
-    }
-
-    /**
-     * Reads a short value at the given Object's offset considering it was written in big-endian
-     * format.
-     *
-     * @param ref
-     * @param offset
-     * @return short value at offset
-     */
-    public static short toShort(Object ref, long offset) {
-        return UNSAFE.getShort(ref, offset);
-    }
-
-    /**
-     * Reads bytes at the given offset as a short value.
-     *
-     * @param buf
-     * @param offset
-     * @return short value at offset
-     */
-    static short getAsShort(ByteBuffer buf, int offset) {
-        if (buf.isDirect()) {
-            return UNSAFE.getShort(((DirectBuffer) buf).address() + offset);
+    // for int
+    public static void putInt(byte[] bytes, int offset, int val) {
+        if (LITTLE_ENDIAN) {
+            val = Integer.reverseBytes(val);
         }
-        return UNSAFE.getShort(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset);
+        UNSAFE.putInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
+    }
+
+    public static int toInt(byte[] bytes, int offset) {
+        if (LITTLE_ENDIAN) {
+            return Integer.reverseBytes(UNSAFE.getInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET));
+        } else {
+            return UNSAFE.getInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+        }
+    }
+
+    public static boolean compareAndSetInt(byte[] bytes, int offset, int expected,
+                                           int update) {
+        if (LITTLE_ENDIAN) {
+            expected = Integer.reverseBytes(expected);
+            update = Integer.reverseBytes(update);
+        }
+        return UNSAFE.compareAndSwapInt(bytes, offset + BYTE_ARRAY_BASE_OFFSET, expected, update);
+    }
+
+    // for long
+    public static void putLong(byte[] bytes, int offset, long val) {
+        UNSAFE.putLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
+    }
+
+    public static long toLong(byte[] bytes, int offset) {
+        if (LITTLE_ENDIAN) {
+            return Long.reverseBytes(UNSAFE.getLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET));
+        } else {
+            return UNSAFE.getLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET);
+        }
+    }
+
+    public static boolean compareAndSetLong(byte[] bytes, int offset, long expected,
+                                            long update) {
+        return UNSAFE.compareAndSwapLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET, expected, update);
     }
 
     /**
@@ -221,7 +195,7 @@ public final class UnsafeHelp {
      * @param offset
      * @return int value at offset
      */
-    static int getAsInt(ByteBuffer buf, int offset) {
+    public static int getAsInt(ByteBuffer buf, int offset) {
         if (buf.isDirect()) {
             return UNSAFE.getInt(((DirectBuffer) buf).address() + offset);
         }
@@ -274,13 +248,12 @@ public final class UnsafeHelp {
      * @param val    int to write out
      * @return incremented offset
      */
-    public static int putInt(ByteBuffer buf, int offset, int val) {
+    public static void putInt(ByteBuffer buf, int offset, int val) {
         if (buf.isDirect()) {
             UNSAFE.putInt(((DirectBuffer) buf).address() + offset, val);
         } else {
             UNSAFE.putInt(buf.array(), offset + buf.arrayOffset() + BYTE_ARRAY_BASE_OFFSET, val);
         }
-        return offset + Bytes.SIZEOF_INT;
     }
 
     // APIs to copy data. This will be direct memory location copy and will be much faster
@@ -294,28 +267,28 @@ public final class UnsafeHelp {
      * @param destOffset
      * @param length
      */
-    public static void copy(byte[] src, int srcOffset, ByteBuffer dest, int destOffset, int length) {
-        long destAddress = destOffset;
-        Object destBase = null;
-        if (dest.isDirect()) {
-            destAddress = destAddress + ((DirectBuffer) dest).address();
-        } else {
-            destAddress = destAddress + BYTE_ARRAY_BASE_OFFSET + dest.arrayOffset();
-            destBase = dest.array();
-        }
-        long srcAddress = srcOffset + BYTE_ARRAY_BASE_OFFSET;
-        unsafeCopy(src, srcAddress, destBase, destAddress, length);
-    }
+//    public static void copy(byte[] src, int srcOffset, ByteBuffer dest, int destOffset, int length) {
+//        long destAddress = destOffset;
+//        Object destBase = null;
+//        if (dest.isDirect()) {
+//            destAddress = destAddress + ((DirectBuffer) dest).address();
+//        } else {
+//            destAddress = destAddress + BYTE_ARRAY_BASE_OFFSET + dest.arrayOffset();
+//            destBase = dest.array();
+//        }
+//        long srcAddress = srcOffset + BYTE_ARRAY_BASE_OFFSET;
+//        unsafeCopy(src, srcAddress, destBase, destAddress, length);
+//    }
 
-    private static void unsafeCopy(Object src, long srcAddr, Object dst, long destAddr, long len) {
-        while (len > 0) {
-            long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
-            UNSAFE.copyMemory(src, srcAddr, dst, destAddr, len);
-            len -= size;
-            srcAddr += size;
-            destAddr += size;
-        }
-    }
+//    private static void unsafeCopy(Object src, long srcAddr, Object dst, long destAddr, long len) {
+//        while (len > 0) {
+//            long size = (len > UNSAFE_COPY_THRESHOLD) ? UNSAFE_COPY_THRESHOLD : len;
+//            UNSAFE.copyMemory(src, srcAddr, dst, destAddr, len);
+//            len -= size;
+//            srcAddr += size;
+//            destAddr += size;
+//        }
+//    }
 
     /**
      * Copies specified number of bytes from given offset of {@code src} ByteBuffer to the
@@ -327,19 +300,19 @@ public final class UnsafeHelp {
      * @param destOffset
      * @param length
      */
-    public static void copy(ByteBuffer src, int srcOffset, byte[] dest, int destOffset,
-                            int length) {
-        long srcAddress = srcOffset;
-        Object srcBase = null;
-        if (src.isDirect()) {
-            srcAddress = srcAddress + ((DirectBuffer) src).address();
-        } else {
-            srcAddress = srcAddress + BYTE_ARRAY_BASE_OFFSET + src.arrayOffset();
-            srcBase = src.array();
-        }
-        long destAddress = destOffset + BYTE_ARRAY_BASE_OFFSET;
-        unsafeCopy(srcBase, srcAddress, dest, destAddress, length);
-    }
+//    public static void copy(ByteBuffer src, int srcOffset, byte[] dest, int destOffset,
+//                            int length) {
+//        long srcAddress = srcOffset;
+//        Object srcBase = null;
+//        if (src.isDirect()) {
+//            srcAddress = srcAddress + ((DirectBuffer) src).address();
+//        } else {
+//            srcAddress = srcAddress + BYTE_ARRAY_BASE_OFFSET + src.arrayOffset();
+//            srcBase = src.array();
+//        }
+//        long destAddress = destOffset + BYTE_ARRAY_BASE_OFFSET;
+//        unsafeCopy(srcBase, srcAddress, dest, destAddress, length);
+//    }
 
     /**
      * Copies specified number of bytes from given offset of {@code src} buffer into the {@code dest}
@@ -351,24 +324,24 @@ public final class UnsafeHelp {
      * @param destOffset
      * @param length
      */
-    public static void copy(ByteBuffer src, int srcOffset, ByteBuffer dest, int destOffset,
-                            int length) {
-        long srcAddress, destAddress;
-        Object srcBase = null, destBase = null;
-        if (src.isDirect()) {
-            srcAddress = srcOffset + ((DirectBuffer) src).address();
-        } else {
-            srcAddress = (long) srcOffset + src.arrayOffset() + BYTE_ARRAY_BASE_OFFSET;
-            srcBase = src.array();
-        }
-        if (dest.isDirect()) {
-            destAddress = destOffset + ((DirectBuffer) dest).address();
-        } else {
-            destAddress = destOffset + BYTE_ARRAY_BASE_OFFSET + dest.arrayOffset();
-            destBase = dest.array();
-        }
-        unsafeCopy(srcBase, srcAddress, destBase, destAddress, length);
-    }
+//    public static void copy(ByteBuffer src, int srcOffset, ByteBuffer dest, int destOffset,
+//                            int length) {
+//        long srcAddress, destAddress;
+//        Object srcBase = null, destBase = null;
+//        if (src.isDirect()) {
+//            srcAddress = srcOffset + ((DirectBuffer) src).address();
+//        } else {
+//            srcAddress = (long) srcOffset + src.arrayOffset() + BYTE_ARRAY_BASE_OFFSET;
+//            srcBase = src.array();
+//        }
+//        if (dest.isDirect()) {
+//            destAddress = destOffset + ((DirectBuffer) dest).address();
+//        } else {
+//            destAddress = destOffset + BYTE_ARRAY_BASE_OFFSET + dest.arrayOffset();
+//            destBase = dest.array();
+//        }
+//        unsafeCopy(srcBase, srcAddress, destBase, destAddress, length);
+//    }
 
     // APIs to add primitives to BBs
 
@@ -380,14 +353,14 @@ public final class UnsafeHelp {
      * @param val    short to write out
      * @return incremented offset
      */
-    public static int putShort(ByteBuffer buf, int offset, short val) {
-        if (buf.isDirect()) {
-            UNSAFE.putShort(((DirectBuffer) buf).address() + offset, val);
-        } else {
-            UNSAFE.putShort(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, val);
-        }
-        return offset + Bytes.SIZEOF_SHORT;
-    }
+//    public static int putShort(ByteBuffer buf, int offset, short val) {
+//        if (buf.isDirect()) {
+//            UNSAFE.putShort(((DirectBuffer) buf).address() + offset, val);
+//        } else {
+//            UNSAFE.putShort(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, val);
+//        }
+//        return offset + Bytes.SIZEOF_SHORT;
+//    }
 
     /**
      * Put a long value out to the specified BB position in big-endian format.
@@ -397,14 +370,14 @@ public final class UnsafeHelp {
      * @param val    long to write out
      * @return incremented offset
      */
-    public static int putLong(ByteBuffer buf, int offset, long val) {
-        if (buf.isDirect()) {
-            UNSAFE.putLong(((DirectBuffer) buf).address() + offset, val);
-        } else {
-            UNSAFE.putLong(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, val);
-        }
-        return offset + Bytes.SIZEOF_LONG;
-    }
+//    public static int putLong(ByteBuffer buf, int offset, long val) {
+//        if (buf.isDirect()) {
+//            UNSAFE.putLong(((DirectBuffer) buf).address() + offset, val);
+//        } else {
+//            UNSAFE.putLong(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, val);
+//        }
+//        return offset + Bytes.SIZEOF_LONG;
+//    }
 
     /**
      * Put a byte value out to the specified BB position in big-endian format.
@@ -414,15 +387,15 @@ public final class UnsafeHelp {
      * @param b      byte to write out
      * @return incremented offset
      */
-    public static int putByte(ByteBuffer buf, int offset, byte b) {
-        if (buf.isDirect()) {
-            UNSAFE.putByte(((DirectBuffer) buf).address() + offset, b);
-        } else {
-            UNSAFE.putByte(buf.array(),
-                    BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, b);
-        }
-        return offset + 1;
-    }
+//    public static int putByte(ByteBuffer buf, int offset, byte b) {
+//        if (buf.isDirect()) {
+//            UNSAFE.putByte(((DirectBuffer) buf).address() + offset, b);
+//        } else {
+//            UNSAFE.putByte(buf.array(),
+//                    BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset, b);
+//        }
+//        return offset + 1;
+//    }
 
     /**
      * Returns the byte at the given offset
@@ -431,13 +404,13 @@ public final class UnsafeHelp {
      * @param offset the offset at which the byte has to be read
      * @return the byte at the given offset
      */
-    public static byte toByte(ByteBuffer buf, int offset) {
-        if (buf.isDirect()) {
-            return UNSAFE.getByte(((DirectBuffer) buf).address() + offset);
-        } else {
-            return UNSAFE.getByte(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset);
-        }
-    }
+//    public static byte toByte(ByteBuffer buf, int offset) {
+//        if (buf.isDirect()) {
+//            return UNSAFE.getByte(((DirectBuffer) buf).address() + offset);
+//        } else {
+//            return UNSAFE.getByte(buf.array(), BYTE_ARRAY_BASE_OFFSET + buf.arrayOffset() + offset);
+//        }
+//    }
 
     /**
      * Returns the byte at the given offset of the object
@@ -446,7 +419,7 @@ public final class UnsafeHelp {
      * @param offset
      * @return the byte at the given offset
      */
-    public static byte toByte(Object ref, long offset) {
-        return UNSAFE.getByte(ref, offset);
-    }
+//    public static byte toByte(Object ref, long offset) {
+//        return UNSAFE.getByte(ref, offset);
+//    }
 }

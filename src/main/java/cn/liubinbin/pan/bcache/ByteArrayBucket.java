@@ -57,7 +57,6 @@ public abstract class ByteArrayBucket extends Bucket{
 	    while (seekOffset < segmentSize ) {
             if (data[seekOffset] == 0 ){
                 // use cas
-                UnsafeAccess
             }
             seekOffset += slotsize;
         }
