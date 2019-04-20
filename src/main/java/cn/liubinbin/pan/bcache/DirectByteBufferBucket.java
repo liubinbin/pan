@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author liubinbin
  */
-public abstract class DirectByteBufferBucket extends Bucket {
+public class DirectByteBufferBucket extends Bucket {
 
 	private int slotsize;
 	private ByteBuffer data;
@@ -22,21 +22,22 @@ public abstract class DirectByteBufferBucket extends Bucket {
 	private AtomicInteger dataTotalSize;
 
 	public DirectByteBufferBucket(int slotSize, int segmentSize) {
+		super(slotSize, segmentSize);
 		this.slotsize = slotSize;
 		this.data = ByteBuffer.allocateDirect(segmentSize);
-		this.dataTotalSize.set(0);
+		this.dataTotalSize = new AtomicInteger(0);
 		this.nextFreeSlot = 0;
 	}
 
 	public byte[] getByByteArray(int offset, int length) {
 		byte[] value = new byte[length];
-		System.arraycopy(data, offset, value, 0, length);
+//		System.arraycopy(data, offset, value, 0, length);
 		return value;
 	}
 
 	public ByteBuf getByByteBuf(int offset, int length) {
-		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
-		return value;
+//		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
+		return null;
 	}
 
 	/**
@@ -55,14 +56,14 @@ public abstract class DirectByteBufferBucket extends Bucket {
 
 
 
-		int offset = writeIdx;
-		System.arraycopy(value, 0, data, writeIdx, value.length);
-		writeIdx += value.length;
-		dataTotalSize += value.length;
-		return offset;
+//		int offset = writeIdx;
+//		System.arraycopy(value, 0, data, writeIdx, value.length);
+//		writeIdx += value.length;
+//		dataTotalSize += value.length;
+		return 1;
 	}
 
-	public void delete(byte[] value, int offset, int length) {
+	public void delete(byte[] key, int offset) {
 
         // find position
 

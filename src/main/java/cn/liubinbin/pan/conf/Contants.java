@@ -29,6 +29,24 @@ public class Contants {
 	
 	public static final String FILE_SEPARATOR = "/";
 
-	public static int MsInADay = 24 * 3600 * 1000;
+	public static long MsInADay = 24 * 3600 * 1000;
+
+	//     private int status;         // 4 byte, 0
+    //     private long expireTime;    // 8 bytes, 0 + 4
+    //     private int hash;           // 4 bytes, 0 + 4 + 8
+    //     private int dataLen;        // 4 bytes, 0 + 4 + 8 + 4
+    //     private int keyLength;      // 4 bytes, 0 + 4 + 8 + 4 + 4
+    //     private int valueLength;    // 4 bytes, 0 + 4 + 8 + 4 + 4 + 4
+    //     // data
+    //     private byte[] key;         // key.length, 0 + 4 + 8 + 4 + 4 + 4 + 4
+    //     private byte[] value;       // value.length, 0 + 4 + 8 + 4 + 4 + 4 + 4 + keyLength
+
+	public static int STATUS_SHIFT = 0;
+	public static int EXPIRETIME_SHIFT = 4;
+    public static int HASH_SHIFT = 12;
+    public static int DATALEN_SHIFT = 16;
+    public static int KEYLENGTH_SHIFT = 20;
+    public static int VALUELENGTH_SHIFT = 24;
+    public static int KEYVALUE_SHIFT = 28;
 
 }

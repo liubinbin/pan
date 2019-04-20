@@ -148,6 +148,9 @@ public final class UnsafeHelp {
 
     // for long
     public static void putLong(byte[] bytes, int offset, long val) {
+        if (LITTLE_ENDIAN) {
+            val = Long.reverseBytes(val);
+        }
         UNSAFE.putLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET, val);
     }
 
@@ -161,7 +164,21 @@ public final class UnsafeHelp {
 
     public static boolean compareAndSetLong(byte[] bytes, int offset, long expected,
                                             long update) {
+        if (LITTLE_ENDIAN) {
+            expected = Long.reverseBytes(expected);
+            update = Long.reverseBytes(update);
+        }
         return UNSAFE.compareAndSwapLong(bytes, offset + BYTE_ARRAY_BASE_OFFSET, expected, update);
+    }
+
+    /**
+     * we use System.arraycopy instead of UNSAFE method
+     * @param byteArray
+     * @param offset
+     * @param val
+     */
+    public static void putBytes(byte[] bytes, int offset, byte[] val) {
+        System.arraycopy(val, 0, bytes, offset, val.length);
     }
 
     /**

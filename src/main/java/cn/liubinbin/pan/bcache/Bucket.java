@@ -1,5 +1,6 @@
 package cn.liubinbin.pan.bcache;
 
+import cn.liubinbin.pan.exceptions.BucketIsFullException;
 import io.netty.buffer.ByteBuf;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,18 +11,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Bucket {
 
-	private int slotsize;
-	private int nextFreeSlot;
+    private int slotsize;
+    private int segmentSize;
 	private byte status; // opening for put; being source of compact; being target of compact
-	/*
-		0 stands for haven't been added
-	 */
-	private AtomicInteger dataTotalSize;
 
 	public Bucket(int slotSize, int segmentSize) {
 		this.slotsize = slotSize;
-		this.dataTotalSize.set(0);
-		this.nextFreeSlot = 0;
+		this.segmentSize = segmentSize;
 	}
 
 	public abstract byte[] getByByteArray(int offset, int length);
@@ -32,43 +28,15 @@ public abstract class Bucket {
 	 * @param value
 	 * @return
 	 */
-	public int put(byte[] key, byte[] value) {
-		// find position
+	public abstract int put(byte[] key, byte[] value) throws BucketIsFullException;
 
+	public abstract void delete(byte[] key, int offset);
 
-        // race to set totalsize
+    public int getSlotsize() {
+        return slotsize;
+    }
 
-
-        // put data
-
-
-
-
-		int offset = writeIdx;
-		System.arraycopy(value, 0, data, writeIdx, value.length);
-		writeIdx += value.length;
-		dataTotalSize += value.length;
-		return offset;
-	}
-
-	public void delete(byte[] value, int offset, int length) {
-
-        // find position
-
-
-        // race to set header
-
-
-        // race to set totalsize
-
-
-	}
-	
-//	public boolean checkWriteForLen(int length) {
-//      return false;
-//	}
-//
-//	public int getdataTotalSize() {
-//		return dataTotalSize.get();
-//	}
+    public int getSegmentSize() {
+        return segmentSize;
+    }
 }

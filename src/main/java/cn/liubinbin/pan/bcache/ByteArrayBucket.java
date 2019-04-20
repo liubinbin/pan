@@ -3,6 +3,7 @@ package cn.liubinbin.pan.bcache;
 import cn.liubinbin.pan.conf.Contants;
 import cn.liubinbin.pan.exceptions.BucketIsFullException;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
+import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -12,24 +13,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author liubinbin
  */
-public abstract class ByteArrayBucket extends Bucket{
+public class ByteArrayBucket extends Bucket{
 
-	private int slotsize;
-	private int segmentSize;
+//	private int slotSize;
+//	private int segmentSize;
 	private byte[] data;
 	private int nextFreeSlot;
 	private byte status; // opening for put; being source of compact; being target of compact
-    private int ttlInDays = 30;
+    private long ttlInDays = 30;
 	/*
 		0 stands for haven't been added
 	 */
 	private AtomicInteger dataTotalSize;
 
 	public ByteArrayBucket(int slotSize, int segmentSize) {
-		this.slotsize = slotSize;
-		this.segmentSize = segmentSize;
+	    super(slotSize, segmentSize);
+//		this.slotSize = slotSize;
+//		this.segmentSize = segmentSize;
 		this.data = new byte[segmentSize];
-		this.dataTotalSize.set(0);
+		this.dataTotalSize = new AtomicInteger(0);
 		this.nextFreeSlot = 0;
 	}
 
@@ -44,69 +46,109 @@ public abstract class ByteArrayBucket extends Bucket{
 		return value;
 	}
 
-    public int putMeta(int offset){
-        return null;
-    }
+
 
 	/**
 	 * @param value
 	 * @return
 	 */
-	public int put(byte[] key, byte[] value) {
+	public int put(byte[] key, byte[] value) throws BucketIsFullException{
         // find position
-        if (dataTotalSize.get() >= segmentSize) {
-            throw new BucketIsFullException("bucket is full, slotSize: " + slotSize);
+        if (dataTotalSize.get() >= getSegmentSize()) {
+            throw new BucketIsFullException("bucket is full, slotSize: " + getSlotsize());
         }
         int seekOffset = seekAndWriteStatus();
 	    if(seekOffset < 0) {
-            throw new BucketIsFullException("bucket is full, slotSize: " + slotSize);
+            throw new BucketIsFullException("bucket is full, slotSize: " + getSlotsize());
         }
 
         // set totalsize
-        dataTotalSize.addAndGet(slotsize);
+        dataTotalSize.addAndGet(getSlotsize());
 
-	    // put meta
-
+	    // put meta;
+		writeMeta(seekOffset, key, value);
 
         // put data
+		writeData(seekOffset, key, value);
 
-
-		return offset;
+		return 0;
 	}
 
 	public int seekAndWriteStatus() {
 		int seekOffset = 0;
-		while (seekOffset < segmentSize ) {
+		while (seekOffset < getSegmentSize() ) {
 			if (ByteArrayUtils.toInt(data, seekOffset) == 0 ){
                 if (ByteArrayUtils.compareAndSetInt(data, seekOffset, 0, 1)) {
                     return seekOffset;
                 }
 			}
+			seekOffset += getSlotsize();
 		}
 		return -1;
 	}
 
     /**
-     // 0 does not exist or deleted, 1 does exist, preserve the rest
-     private int status;         // 4 byte, 0
-     private long expireTime;    // 8 bytes, 0 + 4
-     private int hash;           // 4 bytes, 0 + 4 + 8
-     private int dataLen;        // 4 bytes, 0 + 4 + 8 + 4
-     private int keyLength;      // 4 bytes, 0 + 4 + 8 + 4 + 4
-     private int valueLength;    // 4 bytes, 0 + 4 + 8 + 4 + 4 + 4
-     // data
-     private byte[] key;         // key.length, 0 + 4 + 8 + 4 + 4 + 4 + 4
-     private byte[] value;       // value.length, 0 + 4 + 8 + 4 + 4 + 4 + 4 + keyLength
+     *
      * @param seekOffset
      * @param key
      * @param value
      */
-	public void writeMeta(int seekOffset, byte[] key, byte[] value) {
-        ByteArrayUtils.putLong(System.currentTimeMillis() + ttlInDays * Contants.MsInADay);
+	private void writeMeta(int seekOffset, byte[] key, byte[] value) {
+		// expireTime
+        System.out.println("write expireTime.offset : " + seekOffset + Contants.EXPIRETIME_SHIFT);
+        System.out.println(" expireTime  " + (long)(System.currentTimeMillis() + ttlInDays * Contants.MsInADay));
+        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT, System.currentTimeMillis() + ttlInDays * Contants.MsInADay);
+        // hash
+        System.out.println("write hash.offset : " + (seekOffset + Contants.HASH_SHIFT));
+		ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT, ByteUtils.hashCode(key));
+		// dataLen
+        System.out.println("write dataLen.offset : " + (seekOffset + Contants.DATALEN_SHIFT));
+		ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT, key.length + value.length);
+		// keyLength
+        System.out.println("write keyLength.offset : " + (seekOffset + Contants.KEYLENGTH_SHIFT) + " " + key.length);
+		ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT , key.length);
+		// valueLength
+        System.out.println("write valueLength.offset : " + (seekOffset + Contants.VALUELENGTH_SHIFT) + " " + value.length);
+		ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, value.length);
     }
 
-	public void delete(byte[] value, int offset, int length) {
+	private void writeData(int seekOffset, byte[] key, byte[] value) {
+		// key
+        System.out.println("write key.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT));
+		ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT, key);
+		// value
+        System.out.println("write value.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT + key.length));
+		ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT + key.length, value);
+	}
 
+    public Item readFrom(int offset){
+	    // status
+        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT);
+        System.out.println("readFrom.status " + status + " " + (offset + Contants.STATUS_SHIFT));
+        // expireTime
+        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
+        System.out.println("readFrom.expireTime " + expireTime + " " + (offset + Contants.EXPIRETIME_SHIFT));
+        // hash
+        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT );
+        System.out.println("readFrom.hash " + hash + " " + (Contants.HASH_SHIFT));
+        // datalen
+        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT);
+        System.out.println("readFrom.dataLen " + dataLen + " " + (Contants.DATALEN_SHIFT));
+        // keyLength
+        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT);
+        System.out.println("readFrom.keyLength " + keyLength + " " + (offset + Contants.KEYLENGTH_SHIFT));
+        // valueLength
+        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
+        System.out.println("readFrom.valueLength " + valueLength + " " + (offset + Contants.VALUELENGTH_SHIFT));
+
+        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
+        System.out.println("readFrom.key " + new String(key) + " " + (offset + Contants.KEYVALUE_SHIFT));
+        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
+        System.out.println("readFrom.value " + new String(value) + " " + (offset + Contants.KEYVALUE_SHIFT +  keyLength));
+        return new Item(status, expireTime, hash, dataLen,keyLength, valueLength, key, value);
+    }
+
+	public void delete(byte[] key, int offset) {
         // find position
 
 

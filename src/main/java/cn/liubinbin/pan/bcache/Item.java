@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 
+import cn.liubinbin.pan.utils.ByteArrayUtils;
 import cn.liubinbin.pan.utils.ByteUtils;
 
 import java.nio.ByteBuffer;
@@ -23,6 +24,7 @@ import java.nio.ByteBuffer;
  *      -- byte[] value
  */
 public class Item {
+
     // meta
     // 0 does not exist or deleted, 1 does exist, preserve the rest
     private int status;         // 4 byte, 0
@@ -31,6 +33,7 @@ public class Item {
     private int dataLen;        // 4 bytes, 0 + 4 + 8 + 4
     private int keyLength;      // 4 bytes, 0 + 4 + 8 + 4 + 4
     private int valueLength;    // 4 bytes, 0 + 4 + 8 + 4 + 4 + 4
+
     // data
     private byte[] key;         // key.length, 0 + 4 + 8 + 4 + 4 + 4 + 4
     private byte[] value;       // value.length, 0 + 4 + 8 + 4 + 4 + 4 + 4 + keyLength
@@ -47,6 +50,17 @@ public class Item {
         this.value = value;
 	}
 
+    public Item(int status, long expireTime, int hash, int dataLen, int keyLength, int valueLength, byte[] key, byte[] value){
+        this.status = status;
+        this.expireTime = expireTime;
+        this.hash = hash;
+        this.dataLen = dataLen;
+        this.keyLength = keyLength;
+        this.valueLength = valueLength;
+        this.key = key;
+        this.value = value;
+    }
+
 	public void writeTo(ByteBuffer byteBuffer, int offset){
         byteBuffer.putInt(status); // use cas to race this slot
         byteBuffer.putLong(expireTime);
@@ -58,12 +72,23 @@ public class Item {
         byteBuffer.put(value);
     }
 
+    public void readFrom(byte[] bytes, int offset){
+        this.status = ByteArrayUtils.toInt(bytes, offset);
+        this.expireTime = ByteArrayUtils.toLong(bytes, offset + 4);
+        this.hash = ByteArrayUtils.toInt(bytes, offset + 4 + 8 );
+        this.dataLen = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4);
+        this.keyLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
+        this.valueLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
+        this.key = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4, keyLength);
+        this.value = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4 + keyLength, valueLength);
+    }
+
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("status: ").append(status);
-        sb.append(", expiretime: ").append(expireTime);
-        sb.append(", hahs: " ).append(hash);
+        sb.append(", expireTime: ").append(expireTime);
+        sb.append(", hash: " ).append(hash);
         sb.append(", dataLen: ").append(dataLen);
         sb.append(", keyLength: ").append(keyLength);
         sb.append(", key: ").append(new String(key));
@@ -100,5 +125,37 @@ public class Item {
         System.out.println("key: " + new String(keyre));
         System.out.println("value: " + new String(keyre));
 
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public long getExpireTime() {
+        return expireTime;
+    }
+
+    public int getHash() {
+        return hash;
+    }
+
+    public int getDataLen() {
+        return dataLen;
+    }
+
+    public int getKeyLength() {
+        return keyLength;
+    }
+
+    public int getValueLength() {
+        return valueLength;
+    }
+
+    public byte[] getKey() {
+        return key;
+    }
+
+    public byte[] getValue() {
+        return value;
     }
 }

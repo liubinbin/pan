@@ -6,7 +6,7 @@ public enum BucketMode {
 
   private final byte value;
 
-  NodeStat(byte value) {
+  BucketMode(byte value) {
     this.value = value;
   }
 

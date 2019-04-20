@@ -52,30 +52,16 @@ public class ByteArrayUtils {
         return UnsafeHelp.compareAndSetLong(byteArray, offset, expected, update);
     }
 
+    // for bytes
+    public static void putBytes(byte[] byteArray, int offset, byte[] val) {
+        UnsafeHelp.putBytes(byteArray, offset, val);
+    }
 
-//    public static int toInt(ByteBuffer buffer, int offset) {
-//        return org.apache.hadoop.hbase.util.ByteBufferUtils.toInt(buffer, offset);
-//    }
-
-//    public static long toLong(ByteBuffer buffer, int offset) {
-//        return org.apache.hadoop.hbase.util.ByteBufferUtils.toLong(buffer, offset);
-//    }
-
-//    public static int toShort(ByteBuffer buffer, int offset) {
-//        return org.apache.hadoop.hbase.util.ByteBufferUtils.toShort(buffer, offset);
-//    }
-
-//    public static int toByte(ByteBuffer buffer, int offset) {
-//        return org.apache.hadoop.hbase.util.ByteBufferUtils.toByte(buffer, offset);
-//    }
-
-//    public static void putInt(ByteBuffer buffer, int offset, int val) {
-//        org.apache.hadoop.hbase.util.ByteBufferUtils.putInt(buffer, offset, val);
-//    }
-
-//    public static void putLong(ByteBuffer buffer, int offset, long val) {
-//        org.apache.hadoop.hbase.util.ByteBufferUtils.putLong(buffer, offset, val);
-//    }
+    public static byte[] getBytes(byte[] byteArray, int offset, int length) {
+        byte[] subBytes = new byte[length];
+        System.arraycopy(byteArray, offset, subBytes, 0, length);
+        return subBytes;
+    }
 
     /**
      * Copy from one buffer to another from given offset. This will be absolute positional copying and
