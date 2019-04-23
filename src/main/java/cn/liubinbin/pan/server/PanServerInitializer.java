@@ -15,31 +15,30 @@
  */
 package cn.liubinbin.pan.server;
 
+import cn.liubinbin.pan.oldcache.BucketManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin
- * 
  */
 
 public class PanServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private BucketManager cacheManager;
+    private BucketManager cacheManager;
 
-	public PanServerInitializer(BucketManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
+    public PanServerInitializer(BucketManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
 
-	@Override
-	public void initChannel(SocketChannel ch) {
-		ChannelPipeline p = ch.pipeline();
-		p.addLast(new HttpServerCodec());
-		p.addLast(new HttpServerExpectContinueHandler());
-		p.addLast(new PanServerHandler(cacheManager));
-	}
+    @Override
+    public void initChannel(SocketChannel ch) {
+        ChannelPipeline p = ch.pipeline();
+        p.addLast(new HttpServerCodec());
+        p.addLast(new HttpServerExpectContinueHandler());
+        p.addLast(new PanServerHandler(cacheManager));
+    }
 }

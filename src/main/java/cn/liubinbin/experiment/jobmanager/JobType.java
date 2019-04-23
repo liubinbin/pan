@@ -1,19 +1,17 @@
 package cn.liubinbin.experiment.jobmanager;
 
 /**
- *
  * @author liubinbin
- *
  */
 public enum JobType {
 
-	TYPE1(1), TYPE2(2), TYPE3(3);
+    TYPE1(1), TYPE2(2), TYPE3(3);
 
-	JobType(int value) {
+    JobType(int value) {
 
-	}
+    }
 
-	String getJobType(String jobType) {
-		return this.toString() + "-" + jobType.replace("%", "%%");
-	}
+    String getJobType(String jobType) {
+        return this.toString() + "-" + jobType.replace("%", "%%");
+    }
 }

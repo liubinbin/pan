@@ -9,28 +9,23 @@ import java.lang.reflect.Field;
  */
 public class ByteArrayOp {
 
-    class Node {
-        private int id;
-        Node(int id) {
-            this.id = id;
-        }
-
-        public int getId(){
-            return id;
-        }
+    public static void main(String[] args) throws InterruptedException {
+//        new ArrayOp().doMain();
+        new ByteArrayOp().doMain1();
     }
-    public void doMain(){
+
+    public void doMain() {
         Node[] nodes = new Node[300];
-        for (int i = 0; i < 300; i++){
+        for (int i = 0; i < 300; i++) {
             nodes[i] = new Node(i);
         }
 
         // get unsafe
         Unsafe unsafe = null;
-        try{
+        try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
-            unsafe = (Unsafe)field.get(null);
+            unsafe = (Unsafe) field.get(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,20 +36,19 @@ public class ByteArrayOp {
         int ns = unsafe.arrayIndexScale(nc);
         int NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
 
-        System.out.println("NBASE: " + NBASE + " ns: " + ns + " NSHIFT: " +  NSHIFT);
+        System.out.println("NBASE: " + NBASE + " ns: " + ns + " NSHIFT: " + NSHIFT);
 
         int idx = 234;
-        Node temp = (Node)unsafe.getObjectVolatile(nodes, (long)((idx << NSHIFT) + NBASE));
+        Node temp = (Node) unsafe.getObjectVolatile(nodes, (long) ((idx << NSHIFT) + NBASE));
         System.out.println("temp: " + temp.getId());
 
         Node toAdd = new Node(999999);
-        unsafe.putOrderedObject(nodes, (long)((idx << NSHIFT) + NBASE), toAdd);
+        unsafe.putOrderedObject(nodes, (long) ((idx << NSHIFT) + NBASE), toAdd);
 
-        Node temp1 = (Node)unsafe.getObjectVolatile(nodes, (long)((idx << NSHIFT) + NBASE));
+        Node temp1 = (Node) unsafe.getObjectVolatile(nodes, (long) ((idx << NSHIFT) + NBASE));
         System.out.println("temp: " + temp1.getId());
 
     }
-
 
 
     public void doMain1() {
@@ -70,25 +64,32 @@ public class ByteArrayOp {
         System.out.println("===== use unsafe");
         // get unsafe
         Unsafe unsafe = null;
-        try{
+        try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
-            unsafe = (Unsafe)field.get(null);
+            unsafe = (Unsafe) field.get(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        long BYTE_ARRAY_BASE_OFFSET =  unsafe.arrayBaseOffset(byte[].class);
+        long BYTE_ARRAY_BASE_OFFSET = unsafe.arrayBaseOffset(byte[].class);
         System.out.println("BYTE_ARRAY_BASE_OFFSET " + BYTE_ARRAY_BASE_OFFSET);
-        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 0L) );
-        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 1L ) );
-        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 2L) );
-        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET+ 3L) );
-        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET+ 4L) );
+        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 0L));
+        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 1L));
+        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 2L));
+        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 3L));
+        System.out.println("data[0] " + unsafe.getByte(data, BYTE_ARRAY_BASE_OFFSET + 4L));
 
     }
 
-    public static void main(String[] args) throws InterruptedException {
-//        new ArrayOp().doMain();
-        new ByteArrayOp().doMain1();
+    class Node {
+        private int id;
+
+        Node(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
     }
 }

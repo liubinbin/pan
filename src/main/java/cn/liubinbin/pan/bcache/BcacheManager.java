@@ -9,86 +9,27 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- *
  * @author liubinbin
- *
  */
 
 public class BcacheManager {
 
-	public BcacheManager(Config cacheConfig) {
-//		this.index = new ConcurrentSkipListMap<Key, Addr>();
-//		this.bucketSlotSize = cacheConfig.getBucketSlotSize();
-//		this.buckets = new Bucket[bucketSlotSize.length];
-//		for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-//			this.buckets[bucketIdx] = new ByteArrayBucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
-//		}
-//		this.readWriteLock = new ReentrantReadWriteLock();
-//		this.rLock = readWriteLock.readLock();
-//		this.wLock = readWriteLock.writeLock();
-	}
+    private ConcurrentSkipListMap<Key, Addr> index;
+    private cn.liubinbin.pan.bcache.Bucket[] buckets;
+    private int[] bucketSlotSize;
 
-	public byte[] getByByteArray(byte[] key) {
-		// TODO
-		return null;
-	}
+    public BcacheManager(Config cacheConfig) {
+        this.index = new ConcurrentSkipListMap<Key, Addr>();
+        this.bucketSlotSize = cacheConfig.getBucketSlotSize();
+        this.buckets = new ByteArrayBucket[bucketSlotSize.length];
+        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
+            this.buckets[bucketIdx] = new ByteArrayBucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+        }
+    }
 
-	public ByteBuf getByByteBuf(byte[] key) {
-		// TODO
-		return null;
-	}
-
-	public void delete(byte[] key) {
-        // find bucket that has data for this key
-
-
-        // update index
-
-
-        // mark header and size
-
-
-	}
-
-    /**
-     * two ways:
-     *      1. hash
-     *      2. linked list
-     * @param key
-     * @param value
-     */
-	public void put(byte[] key, byte[] value) {
-		// TODO
-        // init
-
-
-        // find bucket
-
-
-		// put meta
-
-
-
-		// update slotsize
-
-
-        // put data
-
-
-        // update index to let data searchable
-
-        // done
-	}
-
-	public boolean checkContainKey(byte[] key) {
-		// TODO
-		return false;
-	}
-
-	public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
 //		Config cacheConfig = new Config();
 //		BcacheManager cacheManager = new BcacheManager(cacheConfig);
 //		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -101,5 +42,89 @@ public class BcacheManager {
 //		System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
 //		System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
 //		System.out.println(cacheManager.checkContainKey());
-	}
+    }
+
+    /**
+     * must have
+     *
+     * @param key
+     * @return
+     */
+    public byte[] getByByteArray(byte[] key) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * must have
+     *
+     * @param key
+     * @return
+     */
+    public ByteBuf getByByteBuf(byte[] key) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * must have
+     *
+     * @param key
+     */
+    public void delete(byte[] key) {
+        // TODO
+        // find bucket that has data for this key
+
+
+        // update index
+
+
+        // mark header and size
+
+
+    }
+
+    /**
+     * two ways:
+     * 1. hash
+     * 2. linked list
+     *
+     * @param key
+     * @param value
+     */
+    public void put(byte[] key, byte[] value) {
+        // TODO
+        // init
+
+
+        // find bucket
+
+
+        // put meta
+
+
+        // update slotsize
+
+
+        // put data
+
+
+        // update index to let data searchable
+
+        // done
+    }
+
+    public int chooseBucketIdx(int valueLen) {
+        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
+            if (valueLen < bucketSlotSize[bucketIdx]) {
+                return bucketIdx;
+            }
+        }
+        return -1;
+    }
+
+    public boolean checkContainKey(byte[] key) {
+        // TODO
+        return false;
+    }
 }

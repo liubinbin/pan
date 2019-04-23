@@ -15,6 +15,8 @@
  */
 package cn.liubinbin.pan.server;
 
+import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.oldcache.BucketManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -23,40 +25,37 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.manager.BucketManager;
 
 /**
  * @author liubinbin
- * 
  */
 public final class PanServer {
 
-	public static void main(String[] args) throws Exception {
-		Config cacheConfig = new Config();
-		BucketManager cacheManager = new BucketManager(cacheConfig);
-		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
-		byte[] CONTENT2 = new byte[73060];
-		CONTENT2[73060 - 1 ] = '1';
-		cacheManager.put("abcd".getBytes(), CONTENT);
-		cacheManager.put("abc".getBytes(), CONTENT1);
-		cacheManager.put("abcde".getBytes(), CONTENT2);
-		
-		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-		EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
-		try {
-			ServerBootstrap b = new ServerBootstrap();
-			b.option(ChannelOption.SO_BACKLOG, 1024);
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.ERROR)).childHandler(new PanServerInitializer(cacheManager));
+    public static void main(String[] args) throws Exception {
+        Config cacheConfig = new Config();
+        BucketManager cacheManager = new BucketManager(cacheConfig);
+        byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+        byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
+        byte[] CONTENT2 = new byte[73060];
+        CONTENT2[73060 - 1] = '1';
+        cacheManager.put("abcd".getBytes(), CONTENT);
+        cacheManager.put("abc".getBytes(), CONTENT1);
+        cacheManager.put("abcde".getBytes(), CONTENT2);
 
-			Channel ch = b.bind(cacheConfig.getPort()).sync().channel();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.option(ChannelOption.SO_BACKLOG, 1024);
+            b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.ERROR)).childHandler(new PanServerInitializer(cacheManager));
 
-			ch.closeFuture().sync();
-		} finally {
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
-		}
-	}
+            Channel ch = b.bind(cacheConfig.getPort()).sync().channel();
+
+            ch.closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
 }

@@ -11,19 +11,17 @@ import java.security.PrivilegedAction;
 
 public final class UnsafeHelp {
 
-    // Unsafe mechanics
-    static final Unsafe UNSAFE;
-
     /**
      * The offset to the first element in a byte array.
      */
     public static final long BYTE_ARRAY_BASE_OFFSET;
-
     /**
-     *  we should deal with LITTLE_ENDIAN and BIG_ENDIAN
+     * we should deal with LITTLE_ENDIAN and BIG_ENDIAN
      */
     public static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder()
             .equals(ByteOrder.LITTLE_ENDIAN);
+    // Unsafe mechanics
+    static final Unsafe UNSAFE;
 
     static {
         try {
@@ -173,6 +171,7 @@ public final class UnsafeHelp {
 
     /**
      * we use System.arraycopy instead of UNSAFE method
+     *
      * @param byteArray
      * @param offset
      * @param val

@@ -17,24 +17,23 @@
  */
 package cn.liubinbin.experiment.byteop;
 
+import sun.misc.Unsafe;
+import sun.nio.ch.DirectBuffer;
+
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import sun.misc.Unsafe;
-import sun.nio.ch.DirectBuffer;
 
 public final class UnsafeHelp {
-
-    // Unsafe mechanics
-    static final Unsafe UNSAFE;
 
     /**
      * The offset to the first element in a byte array.
      */
     public static final long BYTE_ARRAY_BASE_OFFSET;
-
+    // Unsafe mechanics
+    static final Unsafe UNSAFE;
     static final boolean littleEndian = ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN);
 
     static {

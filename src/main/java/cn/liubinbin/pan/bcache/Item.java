@@ -7,21 +7,20 @@ import cn.liubinbin.pan.utils.ByteUtils;
 import java.nio.ByteBuffer;
 
 /**
- *
  * @author liubinbin
- *
- * BaseCCSMap is the map who have the diff key and value.
- * for BaseCCSMap:
- * - meta:
- * - int status:
- * - int expiretime :expire time
- * - int hash: key.hash
- * - int dataLen :total data len
- * - data:
- *      -- int keyLen
- *      -- int valueLen
- *      -- byte[] key
- *      -- byte[] value
+ *         <p>
+ *         BaseCCSMap is the map who have the diff key and value.
+ *         for BaseCCSMap:
+ *         - meta:
+ *         - int status:
+ *         - int expiretime :expire time
+ *         - int hash: key.hash
+ *         - int dataLen :total data len
+ *         - data:
+ *         -- int keyLen
+ *         -- int valueLen
+ *         -- byte[] key
+ *         -- byte[] value
  */
 public class Item {
 
@@ -38,7 +37,7 @@ public class Item {
     private byte[] key;         // key.length, 0 + 4 + 8 + 4 + 4 + 4 + 4
     private byte[] value;       // value.length, 0 + 4 + 8 + 4 + 4 + 4 + 4 + keyLength
 
-    public Item(byte[] key, byte[] value){
+    public Item(byte[] key, byte[] value) {
         this.status = 1;
         this.expireTime = System.currentTimeMillis();
         this.hash = ByteUtils.hashCode(key);
@@ -48,9 +47,9 @@ public class Item {
 
         this.key = key;
         this.value = value;
-	}
+    }
 
-    public Item(int status, long expireTime, int hash, int dataLen, int keyLength, int valueLength, byte[] key, byte[] value){
+    public Item(int status, long expireTime, int hash, int dataLen, int keyLength, int valueLength, byte[] key, byte[] value) {
         this.status = status;
         this.expireTime = expireTime;
         this.hash = hash;
@@ -61,48 +60,12 @@ public class Item {
         this.value = value;
     }
 
-	public void writeTo(ByteBuffer byteBuffer, int offset){
-        byteBuffer.putInt(status); // use cas to race this slot
-        byteBuffer.putLong(expireTime);
-        byteBuffer.putInt(hash);
-        byteBuffer.putInt(dataLen);
-        byteBuffer.putInt(keyLength);
-        byteBuffer.putInt(valueLength);
-        byteBuffer.put(key);
-        byteBuffer.put(value);
-    }
-
-    public void readFrom(byte[] bytes, int offset){
-        this.status = ByteArrayUtils.toInt(bytes, offset);
-        this.expireTime = ByteArrayUtils.toLong(bytes, offset + 4);
-        this.hash = ByteArrayUtils.toInt(bytes, offset + 4 + 8 );
-        this.dataLen = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4);
-        this.keyLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
-        this.valueLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
-        this.key = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4, keyLength);
-        this.value = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4 + keyLength, valueLength);
-    }
-
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("status: ").append(status);
-        sb.append(", expireTime: ").append(expireTime);
-        sb.append(", hash: " ).append(hash);
-        sb.append(", dataLen: ").append(dataLen);
-        sb.append(", keyLength: ").append(keyLength);
-        sb.append(", key: ").append(new String(key));
-        sb.append(", value: ").append(new String(value));
-        sb.append("}");
-        return sb.toString();
-    }
-
     public static void main(String[] args) {
         ByteBuffer bBucket = ByteBuffer.allocate(1024 * 1024 * 2);
         byte[] key = "item.key".getBytes();
         byte[] value = "item.value".getBytes();
 
-        Item bItem  = new Item(key, value);
+        Item bItem = new Item(key, value);
         System.out.println("bItem " + bItem.toString());
         bItem.writeTo(bBucket, 0);
         System.out.println("bBucket " + bBucket.toString());
@@ -125,6 +88,42 @@ public class Item {
         System.out.println("key: " + new String(keyre));
         System.out.println("value: " + new String(keyre));
 
+    }
+
+    public void writeTo(ByteBuffer byteBuffer, int offset) {
+        byteBuffer.putInt(status); // use cas to race this slot
+        byteBuffer.putLong(expireTime);
+        byteBuffer.putInt(hash);
+        byteBuffer.putInt(dataLen);
+        byteBuffer.putInt(keyLength);
+        byteBuffer.putInt(valueLength);
+        byteBuffer.put(key);
+        byteBuffer.put(value);
+    }
+
+    public void readFrom(byte[] bytes, int offset) {
+        this.status = ByteArrayUtils.toInt(bytes, offset);
+        this.expireTime = ByteArrayUtils.toLong(bytes, offset + 4);
+        this.hash = ByteArrayUtils.toInt(bytes, offset + 4 + 8);
+        this.dataLen = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4);
+        this.keyLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
+        this.valueLength = ByteArrayUtils.toInt(bytes, offset + 4 + 8 + 4 + 4);
+        this.key = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4, keyLength);
+        this.value = ByteArrayUtils.getBytes(bytes, offset + 4 + 8 + 4 + 4 + keyLength, valueLength);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("status: ").append(status);
+        sb.append(", expireTime: ").append(expireTime);
+        sb.append(", hash: ").append(hash);
+        sb.append(", dataLen: ").append(dataLen);
+        sb.append(", keyLength: ").append(keyLength);
+        sb.append(", key: ").append(new String(key));
+        sb.append(", value: ").append(new String(value));
+        sb.append("}");
+        return sb.toString();
     }
 
     public int getStatus() {

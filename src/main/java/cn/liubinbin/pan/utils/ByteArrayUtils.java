@@ -1,7 +1,5 @@
 package cn.liubinbin.pan.utils;
 
-import sun.misc.Unsafe;
-
 /**
  * @author liubinbin
  */
@@ -34,7 +32,7 @@ public class ByteArrayUtils {
     }
 
     public static boolean compareAndSetInt(byte[] byteArray, int offset, int expected,
-                                            int update) {
+                                           int update) {
         return UnsafeHelp.compareAndSetInt(byteArray, offset, expected, update);
     }
 

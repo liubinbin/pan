@@ -1,33 +1,31 @@
 package cn.liubinbin.experiment.linkedlistsort;
 
 /**
- * 
  * @author liubinbin
- *
  */
 public class Node {
-	
-	private int number = 0;
-	private Node next = null;
-	
-	public Node(int number) {
-		this.setNumber(number);
-		this.setNext(null);
-	}
 
-	public Node getNext() {
-		return next;
-	}
+    private int number = 0;
+    private Node next = null;
 
-	public void setNext(Node next) {
-		this.next = next;
-	}
+    public Node(int number) {
+        this.setNumber(number);
+        this.setNext(null);
+    }
 
-	public int getNumber() {
-		return number;
-	}
+    public Node getNext() {
+        return next;
+    }
 
-	public void setNumber(int number) {
-		this.number = number;
-	}
+    public void setNext(Node next) {
+        this.next = next;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 }

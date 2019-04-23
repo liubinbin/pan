@@ -10,14 +10,14 @@ import java.nio.channels.FileChannel;
 
 /**
  * there is pos, lim and cap in ByteBuffer. there is also mark
-    0 <= postition <= limit <= capacity
+ * 0 <= postition <= limit <= capacity
  * Created by bin on 2019/4/17.
  */
 public class ByteBufferUsage {
 
-    public static void test1(){
+    public static void test1() {
         byte[] data = "abc".getBytes();
-        System.out.println("data " + data.length +  " " + new String(data));
+        System.out.println("data " + data.length + " " + new String(data));
         ByteBuffer byteBuffer = ByteBuffer.allocate(20);
         // java.nio.HeapByteBuffer[pos=0 lim=20 cap=20]
         System.out.println("bytebuffer1 " + byteBuffer.toString());
@@ -27,7 +27,7 @@ public class ByteBufferUsage {
         byteBuffer.flip();
         // java.nio.HeapByteBuffer[pos=0 lim=3 cap=20]
         System.out.println("bytebuffer3 " + byteBuffer.toString());
-        for (;byteBuffer.hasRemaining();) {
+        for (; byteBuffer.hasRemaining(); ) {
             System.out.println("byte from bytebuffer " + byteBuffer.get() + " " + byteBuffer.toString());
         }
         // java.nio.HeapByteBuffer[pos=3 lim=3 cap=20]
@@ -35,7 +35,7 @@ public class ByteBufferUsage {
         byteBuffer.rewind();
         // java.nio.HeapByteBuffer[pos=0 lim=3 cap=20]
         System.out.println("bytebuffer5 " + byteBuffer.toString());
-        for (;byteBuffer.hasRemaining();) {
+        for (; byteBuffer.hasRemaining(); ) {
             System.out.println("byte from bytebuffer " + byteBuffer.get() + " " + byteBuffer.toString());
         }
         // java.nio.HeapByteBuffer[pos=3 lim=3 cap=20]
@@ -50,7 +50,7 @@ public class ByteBufferUsage {
         System.out.println("bytebuffer8 " + byteBuffer.toString());
     }
 
-    public static void test3() throws FileNotFoundException, IOException{
+    public static void test3() throws FileNotFoundException, IOException {
         String pathName = "README.md";
         File file = new File(pathName);
         long size = file.length();
@@ -69,11 +69,11 @@ public class ByteBufferUsage {
         ByteBuffer byteBuffer = ByteBuffer.allocate(256);
         int byteRead = fileChannel.read(byteBuffer);
 
-        while (byteRead != -1){
+        while (byteRead != -1) {
             byteBuffer.flip();
 
-            while(byteBuffer.hasRemaining()) {
-                System.out.println("char " + (char)byteBuffer.get());
+            while (byteBuffer.hasRemaining()) {
+                System.out.println("char " + (char) byteBuffer.get());
             }
 
             byteBuffer.clear();

@@ -1,7 +1,6 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.exceptions.BucketIsFullException;
-import cn.liubinbin.pan.utils.ByteArrayUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,7 +29,7 @@ public class ByteArrayBucketTest {
     }
 
     @Test
-    public void testseekAndWriteStatus(){
+    public void testseekAndWriteStatus() {
         int slotSize = 1024;
         int segmentSize = 1024 * 1024;
         ByteArrayBucket byteArrayBucket = new ByteArrayBucket(slotSize, segmentSize);
