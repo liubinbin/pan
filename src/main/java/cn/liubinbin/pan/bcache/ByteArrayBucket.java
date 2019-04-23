@@ -108,6 +108,24 @@ public class ByteArrayBucket extends Bucket {
         ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, value.length);
     }
 
+    /**
+     * @param seekOffset
+     * @param key
+     * @param value
+     */
+    private void resetMeta(int seekOffset) {
+        // expireTime
+        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT, 0);
+        // hash
+        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT, 0);
+        // dataLen
+        ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT, 0);
+        // keyLength
+        ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT, 0);
+        // valueLength
+        ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, 0);
+    }
+
     private void writeData(int seekOffset, byte[] key, byte[] value) {
         // key
         System.out.println("write key.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT));
@@ -145,19 +163,15 @@ public class ByteArrayBucket extends Bucket {
     }
 
     public void delete(byte[] key, int offset) {
-        // find position
-
+        ByteArrayUtils.compareAndSetInt(data, offset, 1, 0);
 
         // race to set header
-
+        resetMeta(offset);
 
         // race to set totalsize
+        while(dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())){
 
-
-    }
-
-    public void markDeleted(byte[] key, int offset) {
-        // TODO
+        }
     }
 
     public boolean checkWriteForLen(int length) {
