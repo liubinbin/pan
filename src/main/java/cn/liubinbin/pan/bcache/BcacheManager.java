@@ -1,14 +1,11 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.server.Addr;
-import cn.liubinbin.pan.server.Key;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * @author liubinbin
@@ -16,12 +13,10 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class BcacheManager {
 
-    private ConcurrentSkipListMap<Key, Addr> index;
-    private cn.liubinbin.pan.bcache.Bucket[] buckets;
+    private Bucket[] buckets;
     private int[] bucketSlotSize;
 
     public BcacheManager(Config cacheConfig) {
-        this.index = new ConcurrentSkipListMap<Key, Addr>();
         this.bucketSlotSize = cacheConfig.getBucketSlotSize();
         this.buckets = new ByteArrayBucket[bucketSlotSize.length];
         for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
@@ -85,9 +80,7 @@ public class BcacheManager {
     }
 
     /**
-     * two ways:
-     * 1. hash
-     * 2. linked list
+     * must have
      *
      * @param key
      * @param value

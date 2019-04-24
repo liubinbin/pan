@@ -1,4 +1,4 @@
-package cn.liubinbin.pan.server;
+package cn.liubinbin.pan.module;
 
 import cn.liubinbin.pan.utils.ByteUtils;
 

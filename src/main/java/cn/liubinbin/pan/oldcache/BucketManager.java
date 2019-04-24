@@ -1,8 +1,8 @@
 package cn.liubinbin.pan.oldcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.server.Addr;
-import cn.liubinbin.pan.server.Key;
+import cn.liubinbin.pan.module.Addr;
+import cn.liubinbin.pan.module.Key;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 

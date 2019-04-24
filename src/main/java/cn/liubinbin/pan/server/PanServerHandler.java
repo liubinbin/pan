@@ -51,6 +51,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     private byte[] key = null;
     private boolean isGet = true;
     private HttpRequest HttpRequest = null;
+
     public PanServerHandler(BucketManager cacheManager) {
         this.cacheManager = cacheManager;
         this.tempData = Unpooled.compositeBuffer();

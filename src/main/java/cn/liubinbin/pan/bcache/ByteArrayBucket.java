@@ -2,6 +2,7 @@ package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Contants;
 import cn.liubinbin.pan.exceptions.BucketIsFullException;
+import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
 import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
@@ -34,6 +35,12 @@ public class ByteArrayBucket extends Bucket {
     }
 
     public byte[] getByByteArray(int offset, int length) {
+        byte[] value = new byte[length];
+//		System.arraycopy(data, offset, value, 0, length);
+        return value;
+    }
+
+    public byte[] getByByteArray(byte[] key) {
         byte[] value = new byte[length];
 //		System.arraycopy(data, offset, value, 0, length);
         return value;
@@ -169,7 +176,7 @@ public class ByteArrayBucket extends Bucket {
         resetMeta(offset);
 
         // race to set totalsize
-        while(dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())){
+        while (dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())) {
 
         }
     }
