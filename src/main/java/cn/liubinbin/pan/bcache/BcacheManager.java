@@ -13,14 +13,14 @@ import java.io.IOException;
 
 public class BcacheManager {
 
-    private Bucket[] buckets;
+    private Chunk[] chunks;
     private int[] bucketSlotSize;
 
     public BcacheManager(Config cacheConfig) {
         this.bucketSlotSize = cacheConfig.getBucketSlotSize();
-        this.buckets = new ByteArrayBucket[bucketSlotSize.length];
+        this.chunks = new ByteArrayChunk[bucketSlotSize.length];
         for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            this.buckets[bucketIdx] = new ByteArrayBucket(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+            this.chunks[bucketIdx] = new ByteArrayChunk(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
         }
     }
 

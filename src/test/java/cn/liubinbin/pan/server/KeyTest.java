@@ -1,6 +1,6 @@
 package test.java.cn.liubinbin.pan.server;
 
-import cn.liubinbin.pan.server.Key;
+import cn.liubinbin.pan.module.Key;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

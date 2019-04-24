@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * @author liubinbin
  */
-public class Bucket {
+public class Chunk {
 
     private int slotsize;
     private byte[] data;
@@ -19,7 +19,7 @@ public class Bucket {
     private Lock wLock;
     private int dataTotalSize;
 
-    public Bucket(int slotSize, int segmentSize) {
+    public Chunk(int slotSize, int segmentSize) {
         this.slotsize = slotSize;
         this.data = new byte[segmentSize];
         this.writeIdx = 0;

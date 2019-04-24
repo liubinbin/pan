@@ -1,7 +1,7 @@
 package test.java.cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.oldcache.BucketManager;
+import cn.liubinbin.pan.oldcache.ChunkManager;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
@@ -16,10 +16,10 @@ import static org.junit.Assert.*;
  */
 public class ManagerTest {
 
-    private BucketManager bucketManager;
+    private ChunkManager bucketManager;
 
     public ManagerTest() throws FileNotFoundException, ConfigurationException, IOException {
-        this.bucketManager = new BucketManager(new Config());
+        this.bucketManager = new ChunkManager(new Config());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ManagerTest {
 
     public void testget() throws FileNotFoundException, ConfigurationException, IOException {
         Config cacheConfig = new Config();
-        BucketManager cacheManager = new BucketManager(cacheConfig);
+        ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
         byte[] CONTENT2 = new byte[73060];

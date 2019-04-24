@@ -6,13 +6,13 @@ import io.netty.buffer.ByteBuf;
 /**
  * @author liubinbin
  */
-public abstract class Bucket {
+public abstract class Chunk {
 
     private int slotsize;
     private int segmentSize;
     private byte status; // opening for put; being source of compact; being target of compact
 
-    public Bucket(int slotSize, int segmentSize) {
+    public Chunk(int slotSize, int segmentSize) {
         this.slotsize = slotSize;
         this.segmentSize = segmentSize;
     }

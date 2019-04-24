@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author liubinbin
  */
-public class DirectByteBufferBucket extends Bucket {
+public class DirectByteBufferChunk extends Chunk {
 
     private int slotsize;
     private ByteBuffer data;
@@ -19,7 +19,7 @@ public class DirectByteBufferBucket extends Bucket {
      */
     private AtomicInteger dataTotalSize;
 
-    public DirectByteBufferBucket(int slotSize, int segmentSize) {
+    public DirectByteBufferChunk(int slotSize, int segmentSize) {
         super(slotSize, segmentSize);
         this.slotsize = slotSize;
         this.data = ByteBuffer.allocateDirect(segmentSize);

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author liubinbin
  */
-public class ByteArrayBucket extends Bucket {
+public class ByteArrayChunk extends Chunk {
 
     //	private int slotSize;
 //	private int segmentSize;
@@ -25,7 +25,7 @@ public class ByteArrayBucket extends Bucket {
      */
     private AtomicInteger dataTotalSize;
 
-    public ByteArrayBucket(int slotSize, int segmentSize) {
+    public ByteArrayChunk(int slotSize, int segmentSize) {
         super(slotSize, segmentSize);
 //		this.slotSize = slotSize;
 //		this.segmentSize = segmentSize;
@@ -41,7 +41,7 @@ public class ByteArrayBucket extends Bucket {
     }
 
     public byte[] getByByteArray(byte[] key) {
-        byte[] value = new byte[length];
+        byte[] value = new byte[1];
 //		System.arraycopy(data, offset, value, 0, length);
         return value;
     }
