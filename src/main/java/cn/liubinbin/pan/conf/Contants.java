@@ -13,10 +13,10 @@ public class Contants {
 
     public static final int DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT = 8;
 
-    public static final String CACHE_SEGMENT_SIZE = "cache.segment.size";
+    public static final String CACHE_CHUNK_SIZE = "cache.chunk.size";
 
     // 132096 = 1024 * 129
-    public static final int DEFAULT_CACHE_SEGMENT_SIZE = 132096;
+    public static final int DEFAULT_CACHE_CHUNK_SIZE = 132096;
 
     public static final String CACHE_TOTAL_SIZE = "pan.total.size";
 
@@ -25,7 +25,11 @@ public class Contants {
 
     public static final String SLOT_SIZE = "pan.slot.size";
 
+    public static final String HASH_MOD = "pan.hashmod";
+
     public static final String DEFAULT_SLOT_SIZE = "128,512,132096";
+
+    public static final int DEFAULT_HASHMOD = 4;
 
     public static final String FILE_SEPARATOR = "/";
 

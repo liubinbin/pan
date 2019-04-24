@@ -27,13 +27,13 @@ public class HeapByteBufferChunk extends Chunk {
         this.nextFreeSlot = 0;
     }
 
-    public byte[] getByByteArray(int offset, int length) {
-        byte[] value = new byte[length];
+    public byte[] getByByteArray(byte[] key) {
+        byte[] value = new byte[1];
 //		System.arraycopy(data, offset, value, 0, length);
         return value;
     }
 
-    public ByteBuf getByByteBuf(int offset, int length) {
+    public ByteBuf getByByteBuf(byte[] key) {
 //		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
         return null;
     }
@@ -59,7 +59,7 @@ public class HeapByteBufferChunk extends Chunk {
         return 1;
     }
 
-    public void delete(byte[] key, int offset) {
+    public void delete(byte[] key) {
 
         // find position
 

@@ -3,10 +3,13 @@ package cn.liubinbin.pan.bcache;
 import cn.liubinbin.pan.conf.Contants;
 import cn.liubinbin.pan.exceptions.BucketIsFullException;
 import cn.liubinbin.pan.module.Item;
+import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
 import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -14,8 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ByteArrayChunk extends Chunk {
 
-    //	private int slotSize;
-//	private int segmentSize;
     private byte[] data;
     private int nextFreeSlot;
     private byte status; // opening for put; being source of compact; being target of compact
@@ -25,28 +26,27 @@ public class ByteArrayChunk extends Chunk {
      */
     private AtomicInteger dataTotalSize;
 
-    public ByteArrayChunk(int slotSize, int segmentSize) {
-        super(slotSize, segmentSize);
-//		this.slotSize = slotSize;
-//		this.segmentSize = segmentSize;
-        this.data = new byte[segmentSize];
+    public ByteArrayChunk(int slotSize, int chunkSize) {
+        super(slotSize, chunkSize);
+        this.data = new byte[chunkSize];
         this.dataTotalSize = new AtomicInteger(0);
         this.nextFreeSlot = 0;
     }
 
-    public byte[] getByByteArray(int offset, int length) {
-        byte[] value = new byte[length];
-//		System.arraycopy(data, offset, value, 0, length);
-        return value;
-    }
-
     public byte[] getByByteArray(byte[] key) {
-        byte[] value = new byte[1];
-//		System.arraycopy(data, offset, value, 0, length);
-        return value;
+        int keyHash = ByteUtils.hashCode(key);
+        int seekOffset = 0;
+        while (seekOffset < getChunkSize()) {
+            if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
+                    && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
+                return getValue(seekOffset);
+            }
+            seekOffset += getSlotsize();
+        }
+        return null;
     }
 
-    public ByteBuf getByByteBuf(int offset, int length) {
+    public ByteBuf getByByteBuf(byte[] key) {
         ByteBuf value = null;
 //		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
         return value;
@@ -58,7 +58,7 @@ public class ByteArrayChunk extends Chunk {
      */
     public int put(byte[] key, byte[] value) throws BucketIsFullException {
         // find position
-        if (dataTotalSize.get() >= getSegmentSize()) {
+        if (dataTotalSize.get() >= getChunkSize()) {
             throw new BucketIsFullException("bucket is full, slotSize: " + getSlotsize());
         }
         int seekOffset = seekAndWriteStatus();
@@ -80,7 +80,7 @@ public class ByteArrayChunk extends Chunk {
 
     public int seekAndWriteStatus() {
         int seekOffset = 0;
-        while (seekOffset < getSegmentSize()) {
+        while (seekOffset < getChunkSize()) {
             if (ByteArrayUtils.toInt(data, seekOffset) == 0) {
                 if (ByteArrayUtils.compareAndSetInt(data, seekOffset, 0, 1)) {
                     return seekOffset;
@@ -169,7 +169,67 @@ public class ByteArrayChunk extends Chunk {
         return new Item(status, expireTime, hash, dataLen, keyLength, valueLength, key, value);
     }
 
-    public void delete(byte[] key, int offset) {
+    public int getStatus(int offset) {
+        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT);
+        return status;
+    }
+
+    public long getExpireTime(int offset){
+        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
+        return expireTime;
+    }
+
+    public int getHash(int offset){
+        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT);
+        return hash;
+    }
+
+    public int getDataLen(int offset) {
+        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT);
+        return dataLen;
+    }
+
+    public int getKeyLength(int offset) {
+        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT);
+        return keyLength;
+    }
+
+    public int getValueLength(int offset){
+        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
+        return valueLength;
+    }
+
+    public byte[] getKey(int offset){
+        int keyLength = getKeyLength(offset);
+        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
+        return key;
+    }
+
+    public byte[] getValue(int offset){
+        int keyLength = getKeyLength(offset);
+        int valueLength = getValueLength(offset);
+        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
+        return value;
+    }
+
+    public void delete(byte[] key) {
+        int offset = -1;
+        int keyHash = ByteUtils.hashCode(key);
+        int seekOffset = 0;
+        while (seekOffset < getChunkSize()) {
+            if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
+                    && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
+                offset = seekOffset;
+                break;
+            }
+            seekOffset += getSlotsize();
+        }
+
+        // this means "not found"
+        if (offset == -1) {
+            return;
+        }
+
         ByteArrayUtils.compareAndSetInt(data, offset, 1, 0);
 
         // race to set header
@@ -179,6 +239,22 @@ public class ByteArrayChunk extends Chunk {
         while (dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())) {
 
         }
+    }
+
+    public boolean containKey(byte[] key) {
+        return getByByteArray(key) != null;
+    }
+
+    public ArrayList<Key> getAllKeys() {
+        ArrayList<Key> keys = new ArrayList<Key>();
+        int seekOffset = 0;
+        while (seekOffset < getChunkSize()) {
+            if (getStatus(seekOffset) == 1 ) {
+                keys.add(new Key(getKey(seekOffset)));
+            }
+            seekOffset += getSlotsize();
+        }
+        return keys;
     }
 
     public boolean checkWriteForLen(int length) {

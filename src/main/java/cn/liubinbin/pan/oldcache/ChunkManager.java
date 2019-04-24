@@ -32,7 +32,7 @@ public class ChunkManager {
         this.bucketSlotSize = cacheConfig.getBucketSlotSize();
         this.chunks = new Chunk[bucketSlotSize.length];
         for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            this.chunks[bucketIdx] = new Chunk(bucketSlotSize[bucketIdx], cacheConfig.getSegmentSize());
+            this.chunks[bucketIdx] = new Chunk(bucketSlotSize[bucketIdx], cacheConfig.getChunkSize());
         }
         this.readWriteLock = new ReentrantReadWriteLock();
         this.rLock = readWriteLock.readLock();
