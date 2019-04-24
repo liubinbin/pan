@@ -6,20 +6,20 @@ import io.netty.buffer.ByteBuf;
 /**
  * @author liubinbin
  */
-public abstract class Bucket {
+public abstract class Chunk {
 
     private int slotsize;
-    private int segmentSize;
+    private int chunkSize;
     private byte status; // opening for put; being source of compact; being target of compact
 
-    public Bucket(int slotSize, int segmentSize) {
+    public Chunk(int slotSize, int chunkSize) {
         this.slotsize = slotSize;
-        this.segmentSize = segmentSize;
+        this.chunkSize = chunkSize;
     }
 
-    public abstract byte[] getByByteArray(int offset, int length);
+    public abstract byte[] getByByteArray(byte[] key);
 
-    public abstract ByteBuf getByByteBuf(int offset, int length);
+    public abstract ByteBuf getByByteBuf(byte[] key);
 
     /**
      * @param value
@@ -27,13 +27,13 @@ public abstract class Bucket {
      */
     public abstract int put(byte[] key, byte[] value) throws BucketIsFullException;
 
-    public abstract void delete(byte[] key, int offset);
+    public abstract void delete(byte[] key);
 
     public int getSlotsize() {
         return slotsize;
     }
 
-    public int getSegmentSize() {
-        return segmentSize;
+    public int getChunkSize() {
+        return chunkSize;
     }
 }

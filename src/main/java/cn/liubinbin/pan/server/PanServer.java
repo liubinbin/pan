@@ -16,7 +16,7 @@
 package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.oldcache.BucketManager;
+import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -33,7 +33,7 @@ public final class PanServer {
 
     public static void main(String[] args) throws Exception {
         Config cacheConfig = new Config();
-        BucketManager cacheManager = new BucketManager(cacheConfig);
+        ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
         byte[] CONTENT2 = new byte[73060];

@@ -1,9 +1,15 @@
 package cn.liubinbin.pan.utils;
 
+import java.util.Arrays;
+
 /**
  * @author liubinbin
  */
 public class ByteUtils {
+
+    public static boolean IsByteArrayEqual(byte[] buf1, byte[] buf2){
+        return Arrays.equals(buf1, buf2);
+    }
 
     public static int hashCode(byte[] buf) {
         int hash = 1;

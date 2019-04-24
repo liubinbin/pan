@@ -39,8 +39,13 @@ public class Config {
         return bucketSlotSize;
     }
 
-    public int getSegmentSize() {
-        return configuration.getInt(Contants.CACHE_SEGMENT_SIZE, Contants.DEFAULT_CACHE_SEGMENT_SIZE);
+    public int getHashMod() {
+        int hashMod = configuration.getInt(Contants.HASH_MOD, Contants.DEFAULT_HASHMOD);
+        return hashMod;
+    }
+
+    public int getChunkSize() {
+        return configuration.getInt(Contants.CACHE_CHUNK_SIZE, Contants.DEFAULT_CACHE_CHUNK_SIZE);
     }
 
     public int getTotalSize() {

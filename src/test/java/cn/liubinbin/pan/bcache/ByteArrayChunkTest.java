@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by bin on 2019/4/19.
  */
-public class ByteArrayBucketTest {
+public class ByteArrayChunkTest {
 
     @Test
     public void testPut() throws BucketIsFullException {
-        ByteArrayBucket byteArrayBucket = new ByteArrayBucket(1024, 1024 * 1024);
+        ByteArrayChunk byteArrayBucket = new ByteArrayChunk(1024, 1024 * 1024);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         byteArrayBucket.put(key, value);
@@ -33,7 +33,7 @@ public class ByteArrayBucketTest {
     public void testseekAndWriteStatus() {
         int slotSize = 1024;
         int segmentSize = 1024 * 1024;
-        ByteArrayBucket byteArrayBucket = new ByteArrayBucket(slotSize, segmentSize);
+        ByteArrayChunk byteArrayBucket = new ByteArrayChunk(slotSize, segmentSize);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         int seekOffset = byteArrayBucket.seekAndWriteStatus();

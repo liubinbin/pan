@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author liubinbin
  */
-public class HeapByteBufferBucket extends Bucket {
+public class HeapByteBufferChunk extends Chunk {
 
     private int slotsize;
     private ByteBuffer data;
@@ -19,7 +19,7 @@ public class HeapByteBufferBucket extends Bucket {
      */
     private AtomicInteger dataTotalSize;
 
-    public HeapByteBufferBucket(int slotSize, int segmentSize) {
+    public HeapByteBufferChunk(int slotSize, int segmentSize) {
         super(slotSize, segmentSize);
         this.slotsize = slotSize;
         this.data = ByteBuffer.allocate(segmentSize);
@@ -27,13 +27,13 @@ public class HeapByteBufferBucket extends Bucket {
         this.nextFreeSlot = 0;
     }
 
-    public byte[] getByByteArray(int offset, int length) {
-        byte[] value = new byte[length];
+    public byte[] getByByteArray(byte[] key) {
+        byte[] value = new byte[1];
 //		System.arraycopy(data, offset, value, 0, length);
         return value;
     }
 
-    public ByteBuf getByByteBuf(int offset, int length) {
+    public ByteBuf getByByteBuf(byte[] key) {
 //		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
         return null;
     }
@@ -59,7 +59,7 @@ public class HeapByteBufferBucket extends Bucket {
         return 1;
     }
 
-    public void delete(byte[] key, int offset) {
+    public void delete(byte[] key) {
 
         // find position
 

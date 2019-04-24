@@ -16,7 +16,7 @@
 package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.oldcache.BucketManager;
+import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
@@ -46,13 +46,13 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     private static final AsciiString CONNECTION = AsciiString.cached("Connection");
     private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
     //	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
-    private BucketManager cacheManager;
+    private ChunkManager cacheManager;
     private CompositeByteBuf tempData = null;
     private byte[] key = null;
     private boolean isGet = true;
     private HttpRequest HttpRequest = null;
 
-    public PanServerHandler(BucketManager cacheManager) {
+    public PanServerHandler(ChunkManager cacheManager) {
         this.cacheManager = cacheManager;
         this.tempData = Unpooled.compositeBuffer();
     }
