@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.exceptions.BucketIsFullException;
+import cn.liubinbin.pan.module.Item;
 import org.junit.Test;
 
 import java.util.Arrays;
