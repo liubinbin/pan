@@ -3,18 +3,19 @@ package cn.liubinbin.pan.bcache;
 import cn.liubinbin.pan.conf.Config;
 
 /**
+ *
  * Created by bin on 2019/4/24.
  */
 public class ChunkPool {
 
     private Chunk[] chunks;
-    private int[] bucketSlotSize;
+    private int[] chunkSlotSize;
 
     public ChunkPool(Config cacheConfig) {
-        this.bucketSlotSize = cacheConfig.getBucketSlotSize();
-        this.chunks = new ByteArrayChunk[bucketSlotSize.length];
-        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            this.chunks[bucketIdx] = new ByteArrayChunk(bucketSlotSize[bucketIdx], cacheConfig.getChunkSize());
+        this.chunkSlotSize = cacheConfig.getChunkSlotSize();
+        this.chunks = new ByteArrayChunk[chunkSlotSize.length];
+        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
+            this.chunks[chunkIdx] = null;
         }
     }
 

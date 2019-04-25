@@ -22,17 +22,17 @@ public class ChunkManager {
     private ConcurrentSkipListMap<Key, Addr> index;
     // TODO do we need volatile, we have already lock.
     private Chunk[] chunks;
-    private int[] bucketSlotSize;
+    private int[] chunkSlotSize;
     private ReentrantReadWriteLock readWriteLock;
     private Lock rLock;
     private Lock wLock;
 
     public ChunkManager(Config cacheConfig) {
-        this.index = new ConcurrentSkipListMap<Key, Addr>();
-        this.bucketSlotSize = cacheConfig.getBucketSlotSize();
-        this.chunks = new Chunk[bucketSlotSize.length];
-        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            this.chunks[bucketIdx] = new Chunk(bucketSlotSize[bucketIdx], cacheConfig.getChunkSize());
+        this.index = new ConcurrentSkipListMap<>();
+        this.chunkSlotSize = cacheConfig.getChunkSlotSize();
+        this.chunks = new Chunk[chunkSlotSize.length];
+        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
+            this.chunks[chunkIdx] = new Chunk(chunkSlotSize[chunkIdx], cacheConfig.getChunkSize());
         }
         this.readWriteLock = new ReentrantReadWriteLock();
         this.rLock = readWriteLock.readLock();
@@ -62,7 +62,7 @@ public class ChunkManager {
                 System.out.println("not found for " + new String(key));
                 return null;
             }
-            byte[] value = chunks[addr.getBucketIdx()].getByByteArray(addr.getOffset(), addr.getLength());
+            byte[] value = chunks[addr.getChunkIdx()].getByByteArray(addr.getOffset(), addr.getLength());
             return value;
         } finally {
             rLock.unlock();
@@ -77,7 +77,7 @@ public class ChunkManager {
             if (addr == null) {
                 return null;
             }
-            ByteBuf value = chunks[addr.getBucketIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
+            ByteBuf value = chunks[addr.getChunkIdx()].getByByteBuf(addr.getOffset(), addr.getLength());
             return value;
         } finally {
             rLock.unlock();
@@ -89,7 +89,7 @@ public class ChunkManager {
         try {
             Addr addr = index.get(new Key(key));
             index.remove(new Key(key));
-            chunks[addr.getBucketIdx()].delete(key, addr.getOffset(), addr.getLength());
+            chunks[addr.getChunkIdx()].delete(key, addr.getOffset(), addr.getLength());
         } finally {
             rLock.unlock();
         }
@@ -98,27 +98,27 @@ public class ChunkManager {
     public void put(byte[] key, byte[] value) {
         rLock.lock();
         try {
-            int bucketIdx = chooseBucketIdx(value.length);
-            int offset = chunks[bucketIdx].put(value);
+            int chunkIdx = chooseChunkIdx(value.length);
+            int offset = chunks[chunkIdx].put(value);
             Key key1 = new Key(key);
-            Addr addr = new Addr(bucketIdx, offset, value.length);
+            Addr addr = new Addr(chunkIdx, offset, value.length);
             index.put(key1, addr);
         } finally {
             rLock.unlock();
         }
     }
 
-    public int chooseBucketIdx(int valueLen) {
-        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            if (valueLen < bucketSlotSize[bucketIdx]) {
-                return bucketIdx;
+    public int chooseChunkIdx(int valueLen) {
+        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
+            if (valueLen < chunkSlotSize[chunkIdx]) {
+                return chunkIdx;
             }
         }
         return -1;
     }
 
     public String printKeys(Key key1) {
-        ArrayList<String> keys = new ArrayList<String>();
+        ArrayList<String> keys = new ArrayList<>();
         for (Key key : index.keySet()) {
             keys.add(new String(key.getKey()));
         }

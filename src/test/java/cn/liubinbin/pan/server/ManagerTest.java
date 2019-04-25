@@ -1,4 +1,4 @@
-package test.java.cn.liubinbin.pan.server;
+package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.oldcache.ChunkManager;
@@ -16,10 +16,10 @@ import static org.junit.Assert.*;
  */
 public class ManagerTest {
 
-    private ChunkManager bucketManager;
+    private ChunkManager chunkManager;
 
-    public ManagerTest() throws FileNotFoundException, ConfigurationException, IOException {
-        this.bucketManager = new ChunkManager(new Config());
+    public ManagerTest() throws ConfigurationException, IOException {
+        this.chunkManager = new ChunkManager(new Config());
     }
 
     @Test
@@ -29,9 +29,9 @@ public class ManagerTest {
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
         byte[] value1 = {'v', 'a', 'l', 'u', 'e', '1'};
 
-        bucketManager.put(key, value);
-        bucketManager.put(key1, value1);
-        byte[] valueFromCache = bucketManager.getByByteArray(key);
+        chunkManager.put(key, value);
+        chunkManager.put(key1, value1);
+        byte[] valueFromCache = chunkManager.getByByteArray(key);
         assertTrue(Arrays.equals(value, valueFromCache));
     }
 
@@ -42,17 +42,17 @@ public class ManagerTest {
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
         byte[] value1 = {'v', 'a', 'l', 'u', 'e', '1'};
 
-        bucketManager.put(key, value);
-        bucketManager.put(key1, value1);
-        bucketManager.delete(key);
-        assertNull(bucketManager.getByByteArray(key));
-        assertNull(bucketManager.getByByteBuf(key));
-        assertNotNull(bucketManager.getByByteArray(key1));
-        assertNotNull(bucketManager.getByByteBuf(key1));
+        chunkManager.put(key, value);
+        chunkManager.put(key1, value1);
+        chunkManager.delete(key);
+        assertNull(chunkManager.getByByteArray(key));
+        assertNull(chunkManager.getByByteBuf(key));
+        assertNotNull(chunkManager.getByByteArray(key1));
+        assertNotNull(chunkManager.getByByteBuf(key1));
     }
 
     @Test
-    public void testGet() throws FileNotFoundException, ConfigurationException, IOException {
+    public void testGet() throws ConfigurationException, IOException {
         Config cacheConfig = new Config();
         ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

@@ -1,6 +1,6 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.pan.exceptions.BucketIsFullException;
+import cn.liubinbin.pan.exceptions.ChunkIsFullException;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -25,7 +25,7 @@ public abstract class Chunk {
      * @param value
      * @return
      */
-    public abstract int put(byte[] key, byte[] value) throws BucketIsFullException;
+    public abstract int put(byte[] key, byte[] value) throws ChunkIsFullException;
 
     public abstract void delete(byte[] key);
 

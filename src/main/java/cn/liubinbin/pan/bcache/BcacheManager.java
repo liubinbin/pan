@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
@@ -15,19 +16,19 @@ public class BcacheManager {
 
     private ChunkPool chunkPool;
     private Chunk[] chunks;
-    private int[] bucketSlotSize;
+    private int[] chunkSlotSize;
     private int hashMod;
 
     public BcacheManager(Config cacheConfig) {
         this.hashMod = cacheConfig.getHashMod();
-        this.bucketSlotSize = cacheConfig.getBucketSlotSize();
+        this.chunkSlotSize = cacheConfig.getChunkSlotSize();
         this.chunks = new ByteArrayChunk[hashMod];
-        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            this.chunks[bucketIdx] = new ByteArrayChunk(bucketSlotSize[bucketIdx], cacheConfig.getChunkSize());
+        for (int chunkIdx = 0; chunkIdx < hashMod; chunkIdx++) {
+            this.chunks[chunkIdx] = null;
         }
     }
 
-    public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
+    public static void main(String[] args) throws ConfigurationException, IOException {
 //		Config cacheConfig = new Config();
 //		BcacheManager cacheManager = new BcacheManager(cacheConfig);
 //		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
@@ -71,7 +72,7 @@ public class BcacheManager {
      */
     public void delete(byte[] key) {
         // TODO
-        // find bucket that has data for this key
+        // find chunk that has data for this key
 
 
         // update index
@@ -91,36 +92,51 @@ public class BcacheManager {
     public void put(byte[] key, byte[] value) {
         // TODO
         // init
+        int keyHash = ByteUtils.hashCode(key);
+
+        while (true) {
+            // find chunk
 
 
-        // find bucket
 
 
-        // put meta
+            // if chunk is null, allocate a chunk
 
 
-        // update slotsize
 
 
-        // put data
+            // put data
 
 
-        // update index to let data searchable
+
+        }
 
         // done
     }
 
-    public int chooseBucketIdx(int valueLen) {
-        for (int bucketIdx = 0; bucketIdx < bucketSlotSize.length; bucketIdx++) {
-            if (valueLen < bucketSlotSize[bucketIdx]) {
-                return bucketIdx;
+    /**
+     * return a chunk
+     * @param key
+     * @param hashKey
+     * @return
+     */
+    public Chunk findChunk(byte[] key, int hashKey){
+
+        return null;
+    }
+
+    public int chooseChunkIdx(int valueLen) {
+        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
+            if (valueLen < chunkSlotSize[chunkIdx]) {
+                return chunkIdx;
             }
         }
         return -1;
     }
 
     public boolean checkContainKey(byte[] key) {
-        // TODO
+        int keyHash = ByteUtils.hashCode(key);
+
         return false;
     }
 }

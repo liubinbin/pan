@@ -5,15 +5,16 @@ import cn.liubinbin.pan.module.Item;
 import java.nio.ByteBuffer;
 
 /**
+ *
  * Created by bin on 2019/4/17.
  */
-public class BbucketSimulation {
+public class BchunkSimulation {
 
     public static void main(String[] args) {
-        System.out.println("hello BbucketSimulation");
-        ByteBuffer bBucket = ByteBuffer.allocate(1024 * 1024 * 2);
-        System.out.println("bBucket " + bBucket.toString());
-        int bucketOffset = 0;
+        System.out.println("hello BchunkSimulation");
+        ByteBuffer bChunk = ByteBuffer.allocate(1024 * 1024 * 2);
+        System.out.println("bChunk " + bChunk.toString());
+        int chunkOffset = 0;
 
         int slotSize = 10240;
         byte[] firstKey = "first".getBytes();
@@ -25,7 +26,7 @@ public class BbucketSimulation {
 
         // write first KeyValue
         int offsetFirst = 0;
-        bucketOffset = offsetFirst;
+        chunkOffset = offsetFirst;
 
 
         // write second KeyValue

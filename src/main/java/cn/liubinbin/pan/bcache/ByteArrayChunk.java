@@ -1,7 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.exceptions.BucketIsFullException;
+import cn.liubinbin.pan.exceptions.ChunkIsFullException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
@@ -63,24 +63,26 @@ public class ByteArrayChunk extends Chunk {
      * @param value
      * @return
      */
-    public int put(byte[] key, byte[] value) throws BucketIsFullException {
+    public int put(byte[] key, byte[] value) throws ChunkIsFullException {
         // find position
         if (dataTotalSize.get() >= getChunkSize()) {
-            throw new BucketIsFullException("bucket is full, slotSize: " + getSlotsize());
+            throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());
         }
         int seekOffset = seekAndWriteStatus();
         if (seekOffset < 0) {
-            throw new BucketIsFullException("bucket is full, slotSize: " + getSlotsize());
+            throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());
         }
 
         // set totalsize
         dataTotalSize.addAndGet(getSlotsize());
 
-        // put meta;
-        writeMeta(seekOffset, key, value);
-
         // put data
         writeData(seekOffset, key, value);
+
+        // we can find this key after we write meta, so before write meta.
+        // we should make sure that key and value be written.
+        // put meta;
+        writeMeta(seekOffset, key, value);
 
         return seekOffset;
     }
@@ -124,8 +126,6 @@ public class ByteArrayChunk extends Chunk {
 
     /**
      * @param seekOffset
-     * @param key
-     * @param value
      */
     private void resetMeta(int seekOffset) {
         // expireTime

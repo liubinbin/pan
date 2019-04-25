@@ -5,12 +5,12 @@ package cn.liubinbin.pan.module;
  */
 public class Addr {
 
-    private int bucketIdx;
+    private int chunkIdx;
     private int offset;
     private int length;
 
-    public Addr(int bucketIdx, int offset, int length) {
-        this.setBucketIdx(bucketIdx);
+    public Addr(int chunkIdx, int offset, int length) {
+        this.setChunkIdx(chunkIdx);
         this.setOffset(offset);
         this.setLength(length);
     }
@@ -23,12 +23,12 @@ public class Addr {
         this.offset = offset;
     }
 
-    public int getBucketIdx() {
-        return bucketIdx;
+    public int getChunkIdx() {
+        return chunkIdx;
     }
 
-    public void setBucketIdx(int bucketIdx) {
-        this.bucketIdx = bucketIdx;
+    public void setChunkIdx(int chunkIdx) {
+        this.chunkIdx = chunkIdx;
     }
 
     public int getLength() {
@@ -41,6 +41,6 @@ public class Addr {
 
     @Override
     public String toString() {
-        return String.format("{bucketIdx: %d ; offset: %d ; length: %d }", bucketIdx, offset, length);
+        return String.format("{chunkIdx: %d ; offset: %d ; length: %d }", chunkIdx, offset, length);
     }
 }

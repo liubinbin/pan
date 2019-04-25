@@ -28,15 +28,15 @@ public class Config {
                 Contants.DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT);
     }
 
-    public int[] getBucketSlotSize() {
-        int[] bucketSlotSize = null;
-        String bucketSlotSizeStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
-        String[] bucketSlotSizeStrArray = bucketSlotSizeStr.split(",");
-        bucketSlotSize = new int[bucketSlotSizeStrArray.length];
-        for (int i = 0; i < bucketSlotSizeStrArray.length; i++) {
-            bucketSlotSize[i] = Integer.parseInt(bucketSlotSizeStrArray[i].trim());
+    public int[] getChunkSlotSize() {
+        int[] chunkSlotSize = null;
+        String chunkSlotSizeStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
+        String[] chunkSlotSizeStrArray = chunkSlotSizeStr.split(",");
+        chunkSlotSize = new int[chunkSlotSizeStrArray.length];
+        for (int i = 0; i < chunkSlotSizeStrArray.length; i++) {
+            chunkSlotSize[i] = Integer.parseInt(chunkSlotSizeStrArray[i].trim());
         }
-        return bucketSlotSize;
+        return chunkSlotSize;
     }
 
     public int getHashMod() {
