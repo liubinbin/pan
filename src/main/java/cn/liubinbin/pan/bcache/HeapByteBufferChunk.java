@@ -19,10 +19,10 @@ public class HeapByteBufferChunk extends Chunk {
      */
     private AtomicInteger dataTotalSize;
 
-    public HeapByteBufferChunk(int slotSize, int segmentSize) {
-        super(slotSize, segmentSize);
+    public HeapByteBufferChunk(int slotSize, int chunkSize) {
+        super(slotSize, chunkSize);
         this.slotsize = slotSize;
-        this.data = ByteBuffer.allocate(segmentSize);
+        this.data = ByteBuffer.allocate(chunkSize);
         this.dataTotalSize.set(0);
         this.nextFreeSlot = 0;
     }
@@ -70,6 +70,10 @@ public class HeapByteBufferChunk extends Chunk {
         // race to set totalsize
 
 
+    }
+
+    public boolean containKey(byte[] key) {
+        return getByByteArray(key) != null;
     }
 
     public boolean checkWriteForLen(int length) {

@@ -19,10 +19,10 @@ public class DirectByteBufferChunk extends Chunk {
      */
     private AtomicInteger dataTotalSize;
 
-    public DirectByteBufferChunk(int slotSize, int segmentSize) {
-        super(slotSize, segmentSize);
+    public DirectByteBufferChunk(int slotSize, int chunkSize) {
+        super(slotSize, chunkSize);
         this.slotsize = slotSize;
-        this.data = ByteBuffer.allocateDirect(segmentSize);
+        this.data = ByteBuffer.allocateDirect(chunkSize);
         this.dataTotalSize = new AtomicInteger(0);
         this.nextFreeSlot = 0;
     }
@@ -70,6 +70,10 @@ public class DirectByteBufferChunk extends Chunk {
         // race to set totalsize
 
 
+    }
+
+    public boolean containKey(byte[] key) {
+        return getByByteArray(key) != null;
     }
 
     public boolean checkWriteForLen(int length) {

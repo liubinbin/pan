@@ -22,17 +22,17 @@ public class ChunkManager {
     private ConcurrentSkipListMap<Key, Addr> index;
     // TODO do we need volatile, we have already lock.
     private Chunk[] chunks;
-    private int[] chunkSlotSize;
+    private int[] slotSizes;
     private ReentrantReadWriteLock readWriteLock;
     private Lock rLock;
     private Lock wLock;
 
     public ChunkManager(Config cacheConfig) {
         this.index = new ConcurrentSkipListMap<>();
-        this.chunkSlotSize = cacheConfig.getChunkSlotSize();
-        this.chunks = new Chunk[chunkSlotSize.length];
-        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
-            this.chunks[chunkIdx] = new Chunk(chunkSlotSize[chunkIdx], cacheConfig.getChunkSize());
+        this.slotSizes = cacheConfig.getSlotSizes();
+        this.chunks = new Chunk[slotSizes.length];
+        for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
+            this.chunks[chunkIdx] = new Chunk(slotSizes[chunkIdx], cacheConfig.getChunkSize());
         }
         this.readWriteLock = new ReentrantReadWriteLock();
         this.rLock = readWriteLock.readLock();
@@ -109,8 +109,8 @@ public class ChunkManager {
     }
 
     public int chooseChunkIdx(int valueLen) {
-        for (int chunkIdx = 0; chunkIdx < chunkSlotSize.length; chunkIdx++) {
-            if (valueLen < chunkSlotSize[chunkIdx]) {
+        for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
+            if (valueLen < slotSizes[chunkIdx]) {
                 return chunkIdx;
             }
         }

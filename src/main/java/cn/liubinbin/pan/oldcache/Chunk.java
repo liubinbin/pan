@@ -19,9 +19,9 @@ public class Chunk {
     private Lock wLock;
     private int dataTotalSize;
 
-    public Chunk(int slotSize, int segmentSize) {
+    public Chunk(int slotSize, int chunkSize) {
         this.slotsize = slotSize;
-        this.data = new byte[segmentSize];
+        this.data = new byte[chunkSize];
         this.writeIdx = 0;
         this.readWriteLock = new ReentrantReadWriteLock();
         this.rLock = readWriteLock.readLock();

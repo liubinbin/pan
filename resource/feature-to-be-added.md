@@ -10,6 +10,4 @@
 
 ##wal
 
-##message queue
-
 ##new memory-management

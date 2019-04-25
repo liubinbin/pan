@@ -271,8 +271,13 @@ public class ByteArrayChunk extends Chunk {
         return keys;
     }
 
+    /**
+     *
+     * @param length
+     * @return true for can be added data, false for full chunk
+     */
     public boolean checkWriteForLen(int length) {
-        return false;
+        return length < getSlotsize() && getdataTotalSize() < getChunkSize();
     }
 
     public int getdataTotalSize() {

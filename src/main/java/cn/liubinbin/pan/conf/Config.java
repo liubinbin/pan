@@ -28,15 +28,15 @@ public class Config {
                 Contants.DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT);
     }
 
-    public int[] getChunkSlotSize() {
-        int[] chunkSlotSize = null;
-        String chunkSlotSizeStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
-        String[] chunkSlotSizeStrArray = chunkSlotSizeStr.split(",");
-        chunkSlotSize = new int[chunkSlotSizeStrArray.length];
-        for (int i = 0; i < chunkSlotSizeStrArray.length; i++) {
-            chunkSlotSize[i] = Integer.parseInt(chunkSlotSizeStrArray[i].trim());
+    public int[] getSlotSizes() {
+        int[] slotSizes = null;
+        String slotSizesStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
+        String[] slotSizesStrArray = slotSizesStr.split(",");
+        slotSizes = new int[slotSizesStrArray.length];
+        for (int i = 0; i < slotSizesStrArray.length; i++) {
+            slotSizes[i] = Integer.parseInt(slotSizesStrArray[i].trim());
         }
-        return chunkSlotSize;
+        return slotSizes;
     }
 
     public int getHashMod() {
@@ -48,7 +48,8 @@ public class Config {
         return configuration.getInt(Contants.CACHE_CHUNK_SIZE, Contants.DEFAULT_CACHE_CHUNK_SIZE);
     }
 
-    public int getTotalSize() {
-        return configuration.getInt(Contants.CACHE_TOTAL_SIZE, Contants.DEFAULT_TOTAL_SEGMENT_SIZE);
+    public int getChunkMaxCount(){
+        return configuration.getInt(Contants.CACHE_CHUNK_MAX_COUNT, Contants.DEFAULT_CACHE_CHUNK_MAX_COUNT);
     }
+
 }

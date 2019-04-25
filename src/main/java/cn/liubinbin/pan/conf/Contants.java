@@ -15,13 +15,14 @@ public class Contants {
 
     public static final String CACHE_CHUNK_SIZE = "pan.cache.chunk.size";
 
+    public static final String CACHE_CHUNK_MAX_COUNT = "pan.cache.chunk.max.count";
+
     // 132096 = 1024 * 129
     public static final int DEFAULT_CACHE_CHUNK_SIZE = 132096;
 
-    public static final String CACHE_TOTAL_SIZE = "pan.total.size";
+    public static final int DEFAULT_CACHE_CHUNK_MAX_COUNT = 128;
 
-    // 262144 = 1024 * 256
-    public static final int DEFAULT_TOTAL_SEGMENT_SIZE = 262144;
+    public static final String CACHE_TOTAL_SIZE = "pan.total.size";
 
     public static final String SLOT_SIZE = "pan.slot.size";
 
