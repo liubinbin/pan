@@ -23,7 +23,7 @@ public class ManagerTest {
     }
 
     @Test
-    public void testput() {
+    public void testPut() {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -35,7 +35,8 @@ public class ManagerTest {
         assertTrue(Arrays.equals(value, valueFromCache));
     }
 
-    public void testdelete() {
+    @Test
+    public void testDelete() {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -50,7 +51,8 @@ public class ManagerTest {
         assertNotNull(bucketManager.getByByteBuf(key1));
     }
 
-    public void testget() throws FileNotFoundException, ConfigurationException, IOException {
+    @Test
+    public void testGet() throws FileNotFoundException, ConfigurationException, IOException {
         Config cacheConfig = new Config();
         ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

@@ -13,7 +13,7 @@ public class Contants {
 
     public static final int DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT = 8;
 
-    public static final String CACHE_CHUNK_SIZE = "cache.chunk.size";
+    public static final String CACHE_CHUNK_SIZE = "pan.cache.chunk.size";
 
     // 132096 = 1024 * 129
     public static final int DEFAULT_CACHE_CHUNK_SIZE = 132096;

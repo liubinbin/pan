@@ -7,8 +7,8 @@ import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
 import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,9 +47,16 @@ public class ByteArrayChunk extends Chunk {
     }
 
     public ByteBuf getByByteBuf(byte[] key) {
-        ByteBuf value = null;
-//		ByteBuf value = Unpooled.wrappedBuffer(data, offset, length);
-        return value;
+        int keyHash = ByteUtils.hashCode(key);
+        int seekOffset = 0;
+        while (seekOffset < getChunkSize()) {
+            if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
+                    && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
+                return getValueByByteBuffer(seekOffset);
+            }
+            seekOffset += getSlotsize();
+        }
+        return null;
     }
 
     /**
@@ -98,20 +105,20 @@ public class ByteArrayChunk extends Chunk {
      */
     private void writeMeta(int seekOffset, byte[] key, byte[] value) {
         // expireTime
-        System.out.println("write expireTime.offset : " + seekOffset + Contants.EXPIRETIME_SHIFT);
-        System.out.println(" expireTime  " + (long) (System.currentTimeMillis() + ttlInDays * Contants.MsInADay));
+//        System.out.println("write expireTime.offset : " + seekOffset + Contants.EXPIRETIME_SHIFT);
+//        System.out.println(" expireTime  " + (long) (System.currentTimeMillis() + ttlInDays * Contants.MsInADay));
         ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT, System.currentTimeMillis() + ttlInDays * Contants.MsInADay);
         // hash
-        System.out.println("write hash.offset : " + (seekOffset + Contants.HASH_SHIFT));
+//        System.out.println("write hash.offset : " + (seekOffset + Contants.HASH_SHIFT));
         ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT, ByteUtils.hashCode(key));
         // dataLen
-        System.out.println("write dataLen.offset : " + (seekOffset + Contants.DATALEN_SHIFT));
+//        System.out.println("write dataLen.offset : " + (seekOffset + Contants.DATALEN_SHIFT));
         ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT, key.length + value.length);
         // keyLength
-        System.out.println("write keyLength.offset : " + (seekOffset + Contants.KEYLENGTH_SHIFT) + " " + key.length);
+//        System.out.println("write keyLength.offset : " + (seekOffset + Contants.KEYLENGTH_SHIFT) + " " + key.length);
         ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT, key.length);
         // valueLength
-        System.out.println("write valueLength.offset : " + (seekOffset + Contants.VALUELENGTH_SHIFT) + " " + value.length);
+//        System.out.println("write valueLength.offset : " + (seekOffset + Contants.VALUELENGTH_SHIFT) + " " + value.length);
         ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, value.length);
     }
 
@@ -135,37 +142,37 @@ public class ByteArrayChunk extends Chunk {
 
     private void writeData(int seekOffset, byte[] key, byte[] value) {
         // key
-        System.out.println("write key.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT));
+//        System.out.println("write key.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT));
         ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT, key);
         // value
-        System.out.println("write value.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT + key.length));
+//        System.out.println("write value.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT + key.length));
         ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT + key.length, value);
     }
 
     public Item readFrom(int offset) {
         // status
         int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT);
-        System.out.println("readFrom.status " + status + " " + (offset + Contants.STATUS_SHIFT));
+//        System.out.println("readFrom.status " + status + " " + (offset + Contants.STATUS_SHIFT));
         // expireTime
         long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
-        System.out.println("readFrom.expireTime " + expireTime + " " + (offset + Contants.EXPIRETIME_SHIFT));
+//        System.out.println("readFrom.expireTime " + expireTime + " " + (offset + Contants.EXPIRETIME_SHIFT));
         // hash
         int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT);
-        System.out.println("readFrom.hash " + hash + " " + (Contants.HASH_SHIFT));
+//        System.out.println("readFrom.hash " + hash + " " + (Contants.HASH_SHIFT));
         // datalen
         int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT);
-        System.out.println("readFrom.dataLen " + dataLen + " " + (Contants.DATALEN_SHIFT));
+//        System.out.println("readFrom.dataLen " + dataLen + " " + (Contants.DATALEN_SHIFT));
         // keyLength
         int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT);
-        System.out.println("readFrom.keyLength " + keyLength + " " + (offset + Contants.KEYLENGTH_SHIFT));
+//        System.out.println("readFrom.keyLength " + keyLength + " " + (offset + Contants.KEYLENGTH_SHIFT));
         // valueLength
         int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
-        System.out.println("readFrom.valueLength " + valueLength + " " + (offset + Contants.VALUELENGTH_SHIFT));
+//        System.out.println("readFrom.valueLength " + valueLength + " " + (offset + Contants.VALUELENGTH_SHIFT));
 
         byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
-        System.out.println("readFrom.key " + new String(key) + " " + (offset + Contants.KEYVALUE_SHIFT));
+//        System.out.println("readFrom.key " + new String(key) + " " + (offset + Contants.KEYVALUE_SHIFT));
         byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
-        System.out.println("readFrom.value " + new String(value) + " " + (offset + Contants.KEYVALUE_SHIFT + keyLength));
+//        System.out.println("readFrom.value " + new String(value) + " " + (offset + Contants.KEYVALUE_SHIFT + keyLength));
         return new Item(status, expireTime, hash, dataLen, keyLength, valueLength, key, value);
     }
 
@@ -212,6 +219,13 @@ public class ByteArrayChunk extends Chunk {
         return value;
     }
 
+    public ByteBuf getValueByByteBuffer(int offset){
+        int keyLength = getKeyLength(offset);
+        int valueLength = getValueLength(offset);
+        ByteBuf value = Unpooled.wrappedBuffer(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
+        return value;
+    }
+
     public void delete(byte[] key) {
         int offset = -1;
         int keyHash = ByteUtils.hashCode(key);
@@ -236,8 +250,8 @@ public class ByteArrayChunk extends Chunk {
         resetMeta(offset);
 
         // race to set totalsize
-        while (dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())) {
-
+        while (!dataTotalSize.compareAndSet(dataTotalSize.get(), dataTotalSize.get() - getSlotsize())) {
+            System.out.println("dataTotalSize " + getdataTotalSize());
         }
     }
 
