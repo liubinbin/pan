@@ -9,6 +9,7 @@ public class Client {
 
     private String cacheServerHost;
     private String cacheServerPort;
+    private final String bucketName = "default";
 
     public Client(String cacheServerHost, String cacheServerPort) {
         this.cacheServerHost = cacheServerHost;

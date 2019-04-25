@@ -22,6 +22,7 @@ public class BcacheManager {
     private int hashMod;
 
     public BcacheManager(Config cacheConfig) {
+        this.chunkPool = new ChunkPool(cacheConfig);
         this.hashMod = cacheConfig.getHashMod();
         this.slotSizes = cacheConfig.getSlotSizes();
         this.chunksInManager = new ByteArrayChunk[hashMod];
