@@ -7,8 +7,10 @@ import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.configuration2.ex.ConfigurationException;
+import sun.misc.Unsafe;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 /**
  * @author liubinbin
@@ -20,6 +22,9 @@ public class BcacheManager {
     private Chunk[] chunksInManager;
     private int[] slotSizes;
     private int hashMod;
+    private sun.misc.Unsafe unsafe;
+    private int NBASE;
+    private int NSHIFT;
 
     public BcacheManager(Config cacheConfig) {
         this.chunkPool = new ChunkPool(cacheConfig);
@@ -29,6 +34,19 @@ public class BcacheManager {
         for (int chunkIdx = 0; chunkIdx < hashMod; chunkIdx++) {
             this.chunksInManager[chunkIdx] = null;
         }
+
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            unsafe = (Unsafe) field.get(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Class nc = Chunk[].class;
+        NBASE = unsafe.arrayBaseOffset(nc);
+        int ns = unsafe.arrayIndexScale(nc);
+        NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
     /**
@@ -40,7 +58,7 @@ public class BcacheManager {
     public byte[] getByByteArray(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
         // find chunk
-        Chunk chunk = chunksInManager[keyHash];
+        Chunk chunk = getChunkByIdx(keyHash);
         byte[] value = null;
         while (chunk != null) {
             if ( (value = chunk.getByByteArray(key)) != null){
@@ -59,7 +77,7 @@ public class BcacheManager {
     public ByteBuf getByByteBuf(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
         // find chunk
-        Chunk chunk = chunksInManager[keyHash];
+        Chunk chunk = getChunkByIdx(keyHash);
         ByteBuf value;
         while (chunk != null) {
             if ( (value = chunk.getByByteBuf(key)) != null){
@@ -77,7 +95,7 @@ public class BcacheManager {
     public void delete(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
         // find chunk
-        Chunk chunk = chunksInManager[keyHash];
+        Chunk chunk = getChunkByIdx(keyHash);
         while (chunk != null) {
             chunk.delete(key);
             chunk = chunk.getNext();
@@ -95,7 +113,7 @@ public class BcacheManager {
 
         while (true) {
             // find chunk
-            Chunk chunk = chunksInManager[keyHash];
+            Chunk chunk = getChunkByIdx(keyHash);
             while (chunk != null) {
                 if (chunk.checkWriteForLen(value.length)) {
                     break;
@@ -125,8 +143,18 @@ public class BcacheManager {
         }
     }
 
-    public void addChunk(int hashKey, Chunk chunk) {
-        // TODO
+    public void addChunk(int hashKey, Chunk update) {
+        if (getChunkByIdx(hashKey) == null) {
+            if (casChunkByIdx(hashKey, null, update)) {
+                return;
+            }
+        }
+        Chunk expected = getChunkByIdx(hashKey);
+        update.setNext(expected);
+        while (!casChunkByIdx(hashKey, expected, update)) {
+            expected = getChunkByIdx(hashKey);
+            update.setNext(expected);
+        }
     }
 
     public int chooseChunkIdx(int valueLen) {
@@ -140,13 +168,21 @@ public class BcacheManager {
 
     public boolean checkContainKey(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
-        Chunk chunk = chunksInManager[keyHash];
+        Chunk chunk = getChunkByIdx(keyHash);
         while (chunk != null) {
             if (chunk.containKey(key)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Chunk getChunkByIdx(int idx){
+        return (Chunk)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE));
+    }
+
+    public boolean casChunkByIdx(int idx, Chunk expected, Chunk update){
+        return unsafe.compareAndSwapObject(chunksInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
     public static void main(String[] args) throws ConfigurationException, IOException {

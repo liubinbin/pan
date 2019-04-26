@@ -5,6 +5,8 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 
 /**
+ * getObjectVolatile 提供了可见性
+ * putOrderedObject 避免了写写指令重排序，
  * Created by bin on 2019/4/9.
  */
 public class ArrayOp {
