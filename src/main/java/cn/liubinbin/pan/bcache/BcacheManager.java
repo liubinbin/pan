@@ -61,7 +61,7 @@ public class BcacheManager {
         Chunk chunk = getChunkByIdx(keyHash);
         byte[] value = null;
         while (chunk != null) {
-            if ( (value = chunk.getByByteArray(key)) != null){
+            if ((value = chunk.getByByteArray(key)) != null) {
                 return value;
             }
         }
@@ -80,7 +80,7 @@ public class BcacheManager {
         Chunk chunk = getChunkByIdx(keyHash);
         ByteBuf value;
         while (chunk != null) {
-            if ( (value = chunk.getByByteBuf(key)) != null){
+            if ((value = chunk.getByByteBuf(key)) != null) {
                 return value;
             }
         }
@@ -125,7 +125,7 @@ public class BcacheManager {
             // if chunk is null, allocate a chunk
             if (chunk == null) {
                 chunk = chunkPool.allocate(value.length);
-                if (chunk == null){
+                if (chunk == null) {
                     // we cannot allocate chunk, maybe we have already too many chunksInManager.
                     // TODO expire item by value.length
                     continue;
@@ -177,27 +177,27 @@ public class BcacheManager {
         return false;
     }
 
-    public Chunk getChunkByIdx(int idx){
-        return (Chunk)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE));
+    public Chunk getChunkByIdx(int idx) {
+        return (Chunk) unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE));
     }
 
-    public boolean casChunkByIdx(int idx, Chunk expected, Chunk update){
+    public boolean casChunkByIdx(int idx, Chunk expected, Chunk update) {
         return unsafe.compareAndSwapObject(chunksInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException {
-//		Config cacheConfig = new Config();
-//		BcacheManager cacheManager = new BcacheManager(cacheConfig);
-//		byte[] CONTENT = { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-//		byte[] CONTENT1 = { 'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't' };
-//		byte[] CONTENT2 = new byte[73060];
-//		CONTENT2[73060 - 1] = '1';
-//		cacheManager.put("abcd".getBytes(), CONTENT);
-//		cacheManager.put("abc".getBytes(), CONTENT1);
-//		cacheManager.put("abcde".getBytes(), CONTENT2);
-//		System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
-//		System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
-//		System.out.println(cacheManager.checkContainKey());
+    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException {
+//        Config cacheConfig = new Config();
+//        BcacheManager cacheManager = new BcacheManager(cacheConfig);
+//        byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+//        byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
+//        byte[] CONTENT2 = new byte[73060];
+//        CONTENT2[73060 - 1] = '1';
+//        cacheManager.put("abcd".getBytes(), CONTENT);
+//        cacheManager.put("abc".getBytes(), CONTENT1);
+//        cacheManager.put("abcde".getBytes(), CONTENT2);
+//        System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
+//        System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
+//        System.out.println(cacheManager.checkContainKey("abcd".getBytes()));
     }
 
 }
