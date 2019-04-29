@@ -50,6 +50,7 @@ public class BcacheManagerTest {
         assertNull(bcacheManager.getByByteBuf(key));
         assertNotNull(bcacheManager.getByByteArray(key1));
         assertNotNull(bcacheManager.getByByteBuf(key1));
+        assertTrue(Arrays.equals(bcacheManager.getByByteArray(key1), value1));
     }
 
     @Test

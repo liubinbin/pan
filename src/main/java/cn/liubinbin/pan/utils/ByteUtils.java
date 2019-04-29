@@ -19,6 +19,14 @@ public class ByteUtils {
         return hash;
     }
 
+    public static int hashCodeMod(byte[] buf, int mod) {
+        int hash = 1;
+        for (int i = 0; i < buf.length; i++) {
+            hash = (31 * hash) + (int) buf[i];
+        }
+        return hash % mod;
+    }
+
     public static int byteArrayToInt(byte[] b) {
         return b[3] & 0xFF |
                 (b[2] & 0xFF) << 8 |

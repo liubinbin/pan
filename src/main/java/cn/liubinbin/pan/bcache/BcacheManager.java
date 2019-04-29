@@ -56,14 +56,15 @@ public class BcacheManager {
      * @return return data for key in byte[]
      */
     public byte[] getByByteArray(byte[] key) {
-        int keyHash = ByteUtils.hashCode(key);
+        int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHash);
+        Chunk chunk = getChunkByIdx(keyHashRemainder);
         byte[] value = null;
         while (chunk != null) {
             if ((value = chunk.getByByteArray(key)) != null) {
                 return value;
             }
+            chunk = chunk.getNext();
         }
         return null;
     }
@@ -75,14 +76,15 @@ public class BcacheManager {
      * @return return data for key in ByteBuf
      */
     public ByteBuf getByByteBuf(byte[] key) {
-        int keyHash = ByteUtils.hashCode(key);
+        int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHash);
+        Chunk chunk = getChunkByIdx(keyHashRemainder);
         ByteBuf value;
         while (chunk != null) {
             if ((value = chunk.getByByteBuf(key)) != null) {
                 return value;
             }
+            chunk = chunk.getNext();
         }
         return null;
     }
@@ -93,9 +95,9 @@ public class BcacheManager {
      * @param key key to location data
      */
     public void delete(byte[] key) {
-        int keyHash = ByteUtils.hashCode(key);
+        int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHash);
+        Chunk chunk = getChunkByIdx(keyHashRemainder);
         while (chunk != null) {
             chunk.delete(key);
             chunk = chunk.getNext();
@@ -110,10 +112,10 @@ public class BcacheManager {
      */
     public void put(byte[] key, byte[] value) throws DataTooBiglException, ChunkTooManyException {
         int keyHash = ByteUtils.hashCode(key);
-
+        int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
             // find chunk
-            Chunk chunk = getChunkByIdx(keyHash);
+            Chunk chunk = getChunkByIdx(keyHashRemainder);
             while (chunk != null) {
                 if (chunk.checkWriteForLen(value.length)) {
                     break;
@@ -121,7 +123,6 @@ public class BcacheManager {
                     chunk = chunk.getNext();
                 }
             }
-
             // if chunk is null, allocate a chunk
             if (chunk == null) {
                 chunk = chunkPool.allocate(value.length);
@@ -130,7 +131,7 @@ public class BcacheManager {
                     // TODO expire item by value.length
                     continue;
                 }
-                addChunk(keyHash, chunk);
+                addChunk(keyHashRemainder, chunk);
             }
 
             // put data
@@ -167,8 +168,8 @@ public class BcacheManager {
     }
 
     public boolean checkContainKey(byte[] key) {
-        int keyHash = ByteUtils.hashCode(key);
-        Chunk chunk = getChunkByIdx(keyHash);
+        int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
+        Chunk chunk = getChunkByIdx(keyHashRemainder);
         while (chunk != null) {
             if (chunk.containKey(key)) {
                 return true;
