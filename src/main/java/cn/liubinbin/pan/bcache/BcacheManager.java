@@ -187,18 +187,19 @@ public class BcacheManager {
     }
 
     public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException {
-//        Config cacheConfig = new Config();
-//        BcacheManager cacheManager = new BcacheManager(cacheConfig);
-//        byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
-//        byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
-//        byte[] CONTENT2 = new byte[73060];
-//        CONTENT2[73060 - 1] = '1';
-//        cacheManager.put("abcd".getBytes(), CONTENT);
-//        cacheManager.put("abc".getBytes(), CONTENT1);
-//        cacheManager.put("abcde".getBytes(), CONTENT2);
-//        System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
-//        System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
-//        System.out.println(cacheManager.checkContainKey("abcd".getBytes()));
+        Config cacheConfig = new Config();
+        BcacheManager cacheManager = new BcacheManager(cacheConfig);
+        byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+        byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
+        byte[] CONTENT2 = new byte[73060];
+        CONTENT2[73060 - 1] = '1';
+        cacheManager.put("abcd".getBytes(), CONTENT);
+        cacheManager.put("abc".getBytes(), CONTENT1);
+        cacheManager.put("abcde".getBytes(), CONTENT2);
+        System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
+        System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
+        System.out.println(cacheManager.checkContainKey("abcd".getBytes()));
+        System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
     }
 
 }

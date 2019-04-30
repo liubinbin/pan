@@ -15,6 +15,7 @@
  */
 package cn.liubinbin.pan.server;
 
+import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -28,9 +29,9 @@ import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 
 public class PanServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private ChunkManager cacheManager;
+    private BcacheManager cacheManager;
 
-    public PanServerInitializer(ChunkManager cacheManager) {
+    public PanServerInitializer(BcacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 

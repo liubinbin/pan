@@ -15,7 +15,10 @@
  */
 package cn.liubinbin.pan.server;
 
+import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Contants;
+import cn.liubinbin.pan.exceptions.ChunkTooManyException;
+import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -46,13 +49,13 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     private static final AsciiString CONNECTION = AsciiString.cached("Connection");
     private static final AsciiString KEEP_ALIVE = AsciiString.cached("keep-alive");
     //	private static final Logger logger = LogManager.getLogger(CacheServerHandler.class);
-    private ChunkManager cacheManager;
+    private BcacheManager cacheManager;
     private CompositeByteBuf tempData = null;
     private byte[] key = null;
     private boolean isGet = true;
     private HttpRequest HttpRequest = null;
 
-    public PanServerHandler(ChunkManager cacheManager) {
+    public PanServerHandler(BcacheManager cacheManager) {
         this.cacheManager = cacheManager;
         this.tempData = Unpooled.compositeBuffer();
     }
@@ -83,7 +86,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws DataTooBiglException, ChunkTooManyException {
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
 
@@ -104,6 +107,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
                 byte[] key = path.getBytes();
                 ByteBuf value = cacheManager.getByByteBuf(key);
                 if (value == null) {
+                    System.out.println("result is null");
                     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
                     response.headers().set(CONTENT_TYPE, "text/plain");
                     if (!keepAlive) {
