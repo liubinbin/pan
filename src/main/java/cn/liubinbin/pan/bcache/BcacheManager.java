@@ -179,7 +179,7 @@ public class BcacheManager {
     }
 
     public Chunk getChunkByIdx(int idx) {
-        return (Chunk) unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE));
+        return (Chunk)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE)) ;
     }
 
     public boolean casChunkByIdx(int idx, Chunk expected, Chunk update) {
@@ -200,6 +200,10 @@ public class BcacheManager {
         System.out.println(cacheManager.getByByteArray("abcd".getBytes()).length);
         System.out.println(cacheManager.checkContainKey("abcd".getBytes()));
         System.out.println(cacheManager.getByByteBuf("abcd".getBytes()));
+        System.out.println(cacheManager.getByByteBuf("abcdefsdfa".getBytes()));
+        System.out.println(cacheManager.getByByteBuf("abcdefsdf".getBytes()));
+        System.out.println(cacheManager.getByByteBuf("abcfge".getBytes()));
+        System.out.println(cacheManager.getByByteBuf("ab".getBytes()));
     }
 
 }

@@ -107,7 +107,6 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
                 byte[] key = path.getBytes();
                 ByteBuf value = cacheManager.getByByteBuf(key);
                 if (value == null) {
-                    System.out.println("result is null");
                     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
                     response.headers().set(CONTENT_TYPE, "text/plain");
                     if (!keepAlive) {
