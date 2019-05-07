@@ -12,8 +12,6 @@ public abstract class Chunk {
     private int chunkSize;
     private byte status; // opening for put; being source of compact; being target of compact
 
-
-
     private Chunk next;
 
     public Chunk(int slotSize, int chunkSize, Chunk chunk) {

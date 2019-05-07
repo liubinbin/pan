@@ -9,5 +9,3 @@
 ##offheap
 
 ##wal
-
-##new memory-management
