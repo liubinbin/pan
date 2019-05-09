@@ -13,6 +13,17 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ *  - meta:
+ *  -- int status:
+ *  -- int expiretime :expire time
+ *  -- int hash; hash of key
+ *  -- int next: offset of next time
+ *  -- int dataLen :total data len
+ *  -- int keyLen
+ *  -- int valueLen
+ *  - data:
+ *  -- byte[] key
+ *  -- byte[] value
  * @author liubinbin
  */
 public class ByteArrayLinkedChunk extends Chunk {
@@ -113,19 +124,19 @@ public class ByteArrayLinkedChunk extends Chunk {
         // expireTime
 //        System.out.println("write expireTime.offset : " + seekOffset + Contants.EXPIRETIME_SHIFT);
 //        System.out.println(" expireTime  " + (long) (System.currentTimeMillis() + ttlInDays * Contants.MsInADay));
-        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT, System.currentTimeMillis() + ttlInDays * Contants.MsInADay);
+        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT_LINKED, System.currentTimeMillis() + ttlInDays * Contants.MsInADay);
         // hash
 //        System.out.println("write hash.offset : " + (seekOffset + Contants.HASH_SHIFT));
-        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT, ByteUtils.hashCode(key));
+        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT_LINKED, ByteUtils.hashCode(key));
         // dataLen
 //        System.out.println("write dataLen.offset : " + (seekOffset + Contants.DATALEN_SHIFT));
-        ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT, key.length + value.length);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT_LINKED, key.length + value.length);
         // keyLength
 //        System.out.println("write keyLength.offset : " + (seekOffset + Contants.KEYLENGTH_SHIFT) + " " + key.length);
-        ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT, key.length);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT_LINKED, key.length);
         // valueLength
 //        System.out.println("write valueLength.offset : " + (seekOffset + Contants.VALUELENGTH_SHIFT) + " " + value.length);
-        ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, value.length);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT_LINKED, value.length);
     }
 
     /**
@@ -133,93 +144,100 @@ public class ByteArrayLinkedChunk extends Chunk {
      */
     private void resetMeta(int seekOffset) {
         // expireTime
-        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT, 0);
+        ByteArrayUtils.putLong(data, seekOffset + Contants.EXPIRETIME_SHIFT_LINKED, 0);
         // hash
-        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT, 0);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT_LINKED, 0);
+        // next
+        ByteArrayUtils.putInt(data, seekOffset + Contants.HASH_SHIFT_LINKED, -1);
         // dataLen
-        ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT, 0);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.DATALEN_SHIFT_LINKED, 0);
         // keyLength
-        ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT, 0);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.KEYLENGTH_SHIFT_LINKED, 0);
         // valueLength
-        ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT, 0);
+        ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT_LINKED, 0);
     }
 
     private void writeData(int seekOffset, byte[] key, byte[] value) {
         // key
 //        System.out.println("write key.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT));
-        ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT, key);
+        ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT_LINKED, key);
         // value
 //        System.out.println("write value.offset : " + (seekOffset + Contants.KEYVALUE_SHIFT + key.length));
-        ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT + key.length, value);
+        ByteArrayUtils.putBytes(data, seekOffset + Contants.KEYVALUE_SHIFT_LINKED + key.length, value);
     }
 
     public Item readFrom(int offset) {
         // status
-        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT);
+        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT_LINKED);
 //        System.out.println("readFrom.status " + status + " " + (offset + Contants.STATUS_SHIFT));
         // expireTime
-        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
+        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT_LINKED);
 //        System.out.println("readFrom.expireTime " + expireTime + " " + (offset + Contants.EXPIRETIME_SHIFT));
         // hash
-        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT);
+        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT_LINKED);
 //        System.out.println("readFrom.hash " + hash + " " + (Contants.HASH_SHIFT));
         // datalen
-        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT);
+        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT_LINKED);
 //        System.out.println("readFrom.dataLen " + dataLen + " " + (Contants.DATALEN_SHIFT));
         // keyLength
-        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT);
+        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT_LINKED);
 //        System.out.println("readFrom.keyLength " + keyLength + " " + (offset + Contants.KEYLENGTH_SHIFT));
         // valueLength
-        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
+        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT_LINKED);
 //        System.out.println("readFrom.valueLength " + valueLength + " " + (offset + Contants.VALUELENGTH_SHIFT));
 
-        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
+        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT_LINKED, keyLength);
 //        System.out.println("readFrom.key " + new String(key) + " " + (offset + Contants.KEYVALUE_SHIFT));
-        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
+        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT_LINKED + keyLength, valueLength);
 //        System.out.println("readFrom.value " + new String(value) + " " + (offset + Contants.KEYVALUE_SHIFT + keyLength));
         return new Item(status, expireTime, hash, dataLen, keyLength, valueLength, key, value);
     }
 
     public int getStatus(int offset) {
-        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT);
+        int status = ByteArrayUtils.toInt(data, offset + Contants.STATUS_SHIFT_LINKED);
         return status;
     }
 
     public long getExpireTime(int offset) {
-        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
+        long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT_LINKED);
         return expireTime;
     }
 
     public int getHash(int offset) {
-        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT);
+        int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT_LINKED);
+        return hash;
+    }
+
+    public int getNext(int offset) {
+        int hash = ByteArrayUtils.toInt(data, offset + Contants.NEXT_SHIFT_LINKED);
         return hash;
     }
 
     public int getDataLen(int offset) {
-        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT);
+        int dataLen = ByteArrayUtils.toInt(data, offset + Contants.DATALEN_SHIFT_LINKED);
         return dataLen;
     }
 
     public int getKeyLength(int offset) {
-        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT);
+        int keyLength = ByteArrayUtils.toInt(data, offset + Contants.KEYLENGTH_SHIFT_LINKED);
         return keyLength;
     }
 
     public int getValueLength(int offset) {
-        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
+        int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT_LINKED);
         return valueLength;
     }
 
     public byte[] getKey(int offset) {
         int keyLength = getKeyLength(offset);
-        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
+        byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT_LINKED, keyLength);
         return key;
     }
 
     public byte[] getValue(int offset) {
         int keyLength = getKeyLength(offset);
         int valueLength = getValueLength(offset);
-        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
+        byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT_LINKED + keyLength, valueLength);
         return value;
     }
 
