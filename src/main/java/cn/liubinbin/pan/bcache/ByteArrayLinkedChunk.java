@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *  -- int status:
  *  -- int expiretime :expire time
  *  -- int hash; hash of key
- *  -- int next: offset of next time
+ *  -- int next: offset of next object
  *  -- int dataLen :total data len
  *  -- int keyLen
  *  -- int valueLen
