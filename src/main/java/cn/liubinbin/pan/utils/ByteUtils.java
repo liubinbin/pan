@@ -11,6 +11,31 @@ public class ByteUtils {
         return Arrays.equals(buf1, buf2);
     }
 
+    /**
+     * if buf1 > buf2, return 1
+     * if buf1 = buf2, return 0
+     * if buf1 < buf2, return -1
+     * @param buf1
+     * @param buf2
+     * @return
+     */
+    public static int compare(byte[] buf1, byte[] buf2) {
+        if (buf1.length > buf2.length) {
+            return 1;
+        } else if (buf2.length < buf2.length) {
+            return -1;
+        }
+        if (Arrays.equals(buf1, buf2)) {
+            return 0;
+        }
+        for (int keyIdx = 0; keyIdx < buf1.length; keyIdx++) {
+            if (buf1[keyIdx] > buf2[keyIdx]) {
+                return 1;
+            }
+        }
+        return -1;
+    }
+
     public static int hashCode(byte[] buf) {
         int hash = 1;
         for (int i = 0; i < buf.length; i++) {

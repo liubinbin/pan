@@ -36,16 +36,18 @@ public class ByteArrayLinkedChunk extends Chunk {
         0 stands for haven't been added
      */
     private AtomicInteger dataTotalSize;
-    private int head;
-    private int tail;
+    private final static int NULL_HEAD = -1;
+    private final static int NULL_TAIL = -1;
+    private AtomicInteger head;
+    private AtomicInteger tail;
 
     public ByteArrayLinkedChunk(int slotSize, int chunkSize) {
         super(slotSize, chunkSize);
         this.data = new byte[chunkSize];
         this.dataTotalSize = new AtomicInteger(0);
         this.nextFreeSlot = 0;
-        this.head = -1;
-        this.tail = -1;
+        this.head = new AtomicInteger(NULL_HEAD);
+        this.tail = new AtomicInteger(NULL_HEAD);
     }
 
     public byte[] getByByteArray(byte[] key) {
@@ -74,11 +76,14 @@ public class ByteArrayLinkedChunk extends Chunk {
         return null;
     }
 
+    public int put(byte[] key, byte[] value) throws ChunkIsFullException {
+        return put(key, value, false);
+    }
     /**
      * @param value
      * @return
      */
-    public int put(byte[] key, byte[] value) throws ChunkIsFullException {
+    public int put(byte[] key, byte[] value, boolean replace) throws ChunkIsFullException {
         // find position
         if (dataTotalSize.get() >= getChunkSize()) {
             throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());
@@ -99,6 +104,41 @@ public class ByteArrayLinkedChunk extends Chunk {
         // put meta;
         writeMeta(seekOffset, key, value);
 
+        while (true) {
+            // no data in this chunk
+            if (head.get() == NULL_HEAD) {
+                writeNext(seekOffset, NULL_TAIL);
+                if (head.compareAndSet(NULL_HEAD, seekOffset)) {
+                    tail.compareAndSet(NULL_TAIL, seekOffset);
+                    break;
+                }
+            } else {
+                // seek position to put data and put in
+                int p, s; // predecessor, successor
+
+                if (head.get() == NULL_HEAD) {
+                    return NULL_HEAD;
+                } else {
+                    // find predecessor for key
+                    int cur = head.get();
+                    p = NULL_HEAD;
+                    while ( cur != NULL_TAIL) {
+                        if (ByteUtils.compare(getKey(cur), key) > 0) {
+                            break;
+                        } else if (ByteUtils.compare(getKey(cur), key) == 0) {
+                            if (!replace) {
+                                return cur;
+                            }
+                        }
+                        p = cur;
+                        cur = getNext(cur);
+                    }
+
+
+                }
+                return head.get();
+            }
+        }
         return seekOffset;
     }
 
@@ -106,7 +146,7 @@ public class ByteArrayLinkedChunk extends Chunk {
         int seekOffset = 0;
         while (seekOffset < getChunkSize()) {
             if (ByteArrayUtils.toInt(data, seekOffset) == 0) {
-                if (ByteArrayUtils.compareAndSetInt(data, seekOffset, 0, 1)) {
+                if (ByteArrayUtils.compareAndSetInt(data, seekOffset + Contants.STATUS_SHIFT_LINKED, 0, 1)) {
                     return seekOffset;
                 }
             }
@@ -137,6 +177,10 @@ public class ByteArrayLinkedChunk extends Chunk {
         // valueLength
 //        System.out.println("write valueLength.offset : " + (seekOffset + Contants.VALUELENGTH_SHIFT) + " " + value.length);
         ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT_LINKED, value.length);
+    }
+
+    private void writeNext(int seekOffset, int next){
+        ByteArrayUtils.putInt(data, seekOffset + Contants.NEXT_SHIFT_LINKED, next);
     }
 
     /**

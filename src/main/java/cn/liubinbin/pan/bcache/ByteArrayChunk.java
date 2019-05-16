@@ -91,7 +91,7 @@ public class ByteArrayChunk extends Chunk {
         int seekOffset = 0;
         while (seekOffset < getChunkSize()) {
             if (ByteArrayUtils.toInt(data, seekOffset) == 0) {
-                if (ByteArrayUtils.compareAndSetInt(data, seekOffset, 0, 1)) {
+                if (ByteArrayUtils.compareAndSetInt(data, seekOffset + Contants.STATUS_SHIFT_LINKED, 0, 1)) {
                     return seekOffset;
                 }
             }
