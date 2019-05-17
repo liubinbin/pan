@@ -5,6 +5,7 @@ package cn.liubinbin.experiment.jmx;
  */
 public class Hello implements HelloMBean {
     private String name;
+
     @Override
     public String getName() {
         return name;
@@ -17,12 +18,12 @@ public class Hello implements HelloMBean {
 
     @Override
     public void printHello() {
-        System.out.println("Hello world, "+ name);
+        System.out.println("Hello world, " + name);
     }
 
     @Override
     public void printHello(String whoName) {
-        System.out.println("Hello, "+whoName);
+        System.out.println("Hello, " + whoName);
     }
 }
 

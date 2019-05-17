@@ -140,10 +140,12 @@ public class ByteArrayLinkedChunk extends Chunk {
                 if (p == NULL_HEAD) {
                     continue;
                 }
-                writeNext(seekOffset, getNext(p));
-                writeNext(p, seekOffset);
-                if (getNext(p) == seekOffset){
-                    break;
+                while(true) {
+                    writeNext(seekOffset, getNext(p));
+                    writeNext(p, seekOffset);
+                    if (getNext(p) == seekOffset){
+                        break;
+                    }
                 }
             }
         }
