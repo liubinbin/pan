@@ -117,13 +117,15 @@ public class ByteArrayLinkedChunkTest {
     public void testGetAllKeys() throws ChunkIsFullException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArrayLinkedChunk byteArrayLinkedChunk = new ByteArrayLinkedChunk(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
         for (int i = 0; i < chunkSize / slotSize; i++) {
-            byteArrayChunk.put((keyPrefixStr + i).getBytes(), (valuePrefixStr + i).getBytes());
+            System.out.println("put one object");
+            byteArrayLinkedChunk.put((keyPrefixStr + i).getBytes(), (valuePrefixStr + i).getBytes());
+            byteArrayLinkedChunk.scanAndPrintAllKeys();
         }
-        ArrayList<Key> allKeys = byteArrayChunk.getAllKeys();
+        ArrayList<Key> allKeys = byteArrayLinkedChunk.getAllKeys();
         for (int i = 0; i < chunkSize / slotSize; i++) {
             assertTrue(allKeys.contains(new Key((keyPrefixStr + i).getBytes())));
         }

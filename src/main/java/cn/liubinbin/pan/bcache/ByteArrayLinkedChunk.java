@@ -13,17 +13,18 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *  - meta:
- *  -- int status:
- *  -- int expiretime :expire time
- *  -- int hash; hash of key
- *  -- int next: offset of next object
- *  -- int dataLen :total data len
- *  -- int keyLen
- *  -- int valueLen
- *  - data:
- *  -- byte[] key
- *  -- byte[] value
+ * - meta:
+ * -- int status:
+ * -- int expiretime :expire time
+ * -- int hash; hash of key
+ * -- int next: offset of next object
+ * -- int dataLen :total data len
+ * -- int keyLen
+ * -- int valueLen
+ * - data:
+ * -- byte[] key
+ * -- byte[] value
+ *
  * @author liubinbin
  */
 public class ByteArrayLinkedChunk extends Chunk {
@@ -79,6 +80,7 @@ public class ByteArrayLinkedChunk extends Chunk {
     public int put(byte[] key, byte[] value) throws ChunkIsFullException {
         return put(key, value, false);
     }
+
     /**
      * @param value
      * @return
@@ -105,6 +107,7 @@ public class ByteArrayLinkedChunk extends Chunk {
         writeMeta(seekOffset, key, value);
 
         while (true) {
+            System.out.println("put one round");
             // no data in this chunk
             if (head.get() == NULL_HEAD) {
                 writeNext(seekOffset, NULL_TAIL);
@@ -114,32 +117,45 @@ public class ByteArrayLinkedChunk extends Chunk {
                 }
             } else {
                 // seek position to put data and put in
-                int p, s; // predecessor, successor
-
-                if (head.get() == NULL_HEAD) {
-                    return NULL_HEAD;
-                } else {
-                    // find predecessor for key
-                    int cur = head.get();
-                    p = NULL_HEAD;
-                    while ( cur != NULL_TAIL) {
-                        if (ByteUtils.compare(getKey(cur), key) > 0) {
-                            break;
-                        } else if (ByteUtils.compare(getKey(cur), key) == 0) {
-                            if (!replace) {
-                                return cur;
-                            }
+                int p = NULL_HEAD;; // predecessor, successor
+                // find predecessor for key
+                int cur = head.get();
+                while (cur != NULL_TAIL) {
+                    System.out.println("get p one round");
+                    // cur < key
+                    System.out.println("cur " + new String(getKey(cur)) + " key " + new String(key));
+                    if (ByteUtils.compare(getKey(cur), key) > 0) {
+                        System.out.println("break ");
+                        break;
+                    } else if (ByteUtils.compare(getKey(cur), key) == 0) {
+                        if (!replace) {
+                            return cur;
                         }
-                        p = cur;
-                        cur = getNext(cur);
                     }
-
-
+                    p = cur;
+                    cur = getNext(cur);
                 }
-                return head.get();
+                System.out.println("p " + p);
+                // we find cur
+                if (p == NULL_HEAD) {
+                    continue;
+                }
+                writeNext(seekOffset, getNext(p));
+                writeNext(p, seekOffset);
+                if (getNext(p) == seekOffset){
+                    break;
+                }
             }
         }
         return seekOffset;
+    }
+
+    public void scanAndPrintAllKeys(){
+        int cur = head.get();
+        while (cur != NULL_TAIL) {
+            System.out.println("key " + new String(getKey(cur)));
+            cur = getNext(cur);
+        }
     }
 
     public int seekAndWriteStatus() {
@@ -179,7 +195,7 @@ public class ByteArrayLinkedChunk extends Chunk {
         ByteArrayUtils.putInt(data, seekOffset + Contants.VALUELENGTH_SHIFT_LINKED, value.length);
     }
 
-    private void writeNext(int seekOffset, int next){
+    private void writeNext(int seekOffset, int next) {
         ByteArrayUtils.putInt(data, seekOffset + Contants.NEXT_SHIFT_LINKED, next);
     }
 
