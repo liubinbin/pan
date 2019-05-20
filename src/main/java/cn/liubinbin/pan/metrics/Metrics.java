@@ -21,8 +21,9 @@ public class Metrics {
     }
 
     public void addOpMetrics(OpEnum op, long latency) {
+        System.out.println("addOpMetrics");
         this.latencyMetrics.add(op, latency);
-//        this.qpsMetrics.
+        this.qpsMetrics.inc(op);
     }
 
     class MetricsShowTask implements Runnable {
@@ -34,6 +35,8 @@ public class Metrics {
             System.out.println("latencyMetrics put latency " + latencyMetrics.getHistogramStr(OpEnum.PUT));
             System.out.println("latencyMetrics delete latency " + latencyMetrics.getHistogramStr(OpEnum.DELETE));
             System.out.println("latencyMetrics all latency " + latencyMetrics.getHistogramStr(OpEnum.ALL));
+            // qps
+            System.out.println("qpsMetrics " + qpsMetrics.getQpsStr());
         }
     }
 
