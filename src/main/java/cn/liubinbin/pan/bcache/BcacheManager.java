@@ -4,6 +4,8 @@ import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkIsFullException;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.metrics.Metrics;
+import cn.liubinbin.pan.module.OpEnum;
 import cn.liubinbin.pan.utils.ByteUtils;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -25,6 +27,7 @@ public class BcacheManager {
     private sun.misc.Unsafe unsafe;
     private int NBASE;
     private int NSHIFT;
+    private Metrics metrics;
 
     public BcacheManager(Config cacheConfig) {
         this.chunkPool = new ChunkPool(cacheConfig);
@@ -49,6 +52,11 @@ public class BcacheManager {
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
+    public BcacheManager(Config cacheConfig, Metrics metrics) {
+        this(cacheConfig);
+        this.metrics = metrics;
+    }
+
     /**
      * must have
      *
@@ -56,16 +64,19 @@ public class BcacheManager {
      * @return return data for key in byte[]
      */
     public byte[] getByByteArray(byte[] key) {
+        long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
         Chunk chunk = getChunkByIdx(keyHashRemainder);
         byte[] value = null;
         while (chunk != null) {
             if ((value = chunk.getByByteArray(key)) != null) {
+                metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
                 return value;
             }
             chunk = chunk.getNext();
         }
+        metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
         return null;
     }
 
@@ -76,16 +87,19 @@ public class BcacheManager {
      * @return return data for key in ByteBuf
      */
     public ByteBuf getByByteBuf(byte[] key) {
+        long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
         Chunk chunk = getChunkByIdx(keyHashRemainder);
         ByteBuf value;
         while (chunk != null) {
             if ((value = chunk.getByByteBuf(key)) != null) {
+                metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
                 return value;
             }
             chunk = chunk.getNext();
         }
+        metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
         return null;
     }
 
@@ -95,6 +109,7 @@ public class BcacheManager {
      * @param key key to location data
      */
     public void delete(byte[] key) {
+        long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
         Chunk chunk = getChunkByIdx(keyHashRemainder);
@@ -102,6 +117,7 @@ public class BcacheManager {
             chunk.delete(key);
             chunk = chunk.getNext();
         }
+        metrics.addOpMetrics(OpEnum.DELETE, (System.currentTimeMillis() - startTime));
     }
 
     /**
@@ -111,6 +127,7 @@ public class BcacheManager {
      * @param value data related to key
      */
     public void put(byte[] key, byte[] value) throws DataTooBiglException, ChunkTooManyException {
+        long startTime = System.currentTimeMillis();
         int keyHash = ByteUtils.hashCode(key);
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
@@ -142,6 +159,7 @@ public class BcacheManager {
                 // just retry, do nothing
             }
         }
+        metrics.addOpMetrics(OpEnum.PUT, (System.currentTimeMillis() - startTime));
     }
 
     public void addChunk(int hashKey, Chunk update) {

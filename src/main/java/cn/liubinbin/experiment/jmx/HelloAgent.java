@@ -18,8 +18,6 @@ public class HelloAgent {
     public static void main(String[] args) throws MalformedObjectNameException,
             NotCompliantMBeanException, InstanceAlreadyExistsException,
             MBeanRegistrationException, IOException {
-//  下面这种方式不能再JConsole中使用
-//  MBeanServer server = MBeanServerFactory.createMBeanServer();
 //  首先建立一个MBeanServer,MBeanServer用来管理我们的MBean,通常是通过MBeanServer来获取我们MBean的信息，间接
 //  调用MBean的方法，然后生产我们的资源的一个对象。
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();

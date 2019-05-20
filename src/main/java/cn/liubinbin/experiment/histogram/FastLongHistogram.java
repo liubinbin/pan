@@ -91,7 +91,7 @@ public class FastLongHistogram {
 
     private int getIndex(long value) {
       if (value < this.binsMin) {
-        return 0;
+         return 0;
       } else if (value > this.bins10XMax) {
         return this.counts.length - 1;
       } else if (value >= this.binsMax) {

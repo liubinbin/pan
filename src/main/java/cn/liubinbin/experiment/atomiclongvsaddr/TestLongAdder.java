@@ -11,9 +11,8 @@ import java.util.concurrent.atomic.LongAdder;
 public class TestLongAdder {
 
     public static void main(String[] args) throws InterruptedException {
-        TestAtomicLong testAtomicLong = new TestAtomicLong();
-//		testAtomicLong.oneThreadWay();
-        testAtomicLong.multiThreadsWay();
+        TestLongAdder testLongAdder = new TestLongAdder();
+        testLongAdder.multiThreadsWay();
     }
 
     public void multiThreadsWay() throws InterruptedException {

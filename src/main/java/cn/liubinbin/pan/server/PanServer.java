@@ -17,6 +17,7 @@ package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.metrics.Metrics;
 import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -34,8 +35,9 @@ public final class PanServer {
 
     public static void main(String[] args) throws Exception {
         Config cacheConfig = new Config();
+        Metrics metrics = new Metrics();
         // ChunkManager cacheManager = new ChunkManager(cacheConfig);
-        BcacheManager cacheManager = new BcacheManager(cacheConfig);
+        BcacheManager cacheManager = new BcacheManager(cacheConfig, metrics);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
         byte[] CONTENT2 = new byte[73060];
@@ -43,6 +45,8 @@ public final class PanServer {
         cacheManager.put("abcd".getBytes(), CONTENT);
         cacheManager.put("abc".getBytes(), CONTENT1);
         cacheManager.put("abcde".getBytes(), CONTENT2);
+
+        metrics.start();
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup(cacheConfig.getNettyThreadCount());

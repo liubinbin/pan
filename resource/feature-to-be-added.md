@@ -4,8 +4,8 @@
 
 ##client api
 
-##shell calcite
-
 ##offheap
 
 ##wal
+
+##shell calcite

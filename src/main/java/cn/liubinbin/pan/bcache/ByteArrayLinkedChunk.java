@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -41,6 +42,7 @@ public class ByteArrayLinkedChunk extends Chunk {
     private final static int NULL_TAIL = -1;
     private AtomicInteger head;
     private AtomicInteger tail;
+    private ConcurrentHashMap<Integer, Integer> deleteMarkers = new ConcurrentHashMap<Integer, Integer>();
 
     public ByteArrayLinkedChunk(int slotSize, int chunkSize) {
         super(slotSize, chunkSize);
