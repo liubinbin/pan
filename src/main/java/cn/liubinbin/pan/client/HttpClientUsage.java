@@ -157,7 +157,7 @@ public class HttpClientUsage {
         // Configure the connection manager to use socket configuration either
         // by default or for a specific host.
         connManager.setDefaultSocketConfig(socketConfig);
-        connManager.setSocketConfig(new HttpHost("somehost", 80), socketConfig);
+        connManager.setSocketConfig(new HttpHost("localhost", 50503), socketConfig);
         // Validate connections after 1 sec of inactivity
 //        connManager.set.setValidateAfterInactivity(1000);
 
@@ -176,7 +176,7 @@ public class HttpClientUsage {
         // Configure the connection manager to use connection configuration either
         // by default or for a specific host.
         connManager.setDefaultConnectionConfig(connectionConfig);
-        connManager.setConnectionConfig(new HttpHost("somehost", 80), ConnectionConfig.DEFAULT);
+        connManager.setConnectionConfig(new HttpHost("localhost", 50503), ConnectionConfig.DEFAULT);
 
         // Configure total max or per route limits for persistent connections
         // that can be kept in the pool or leased by the connection manager.
