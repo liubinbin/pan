@@ -60,29 +60,20 @@ public class QpsMetrics {
         return null;
     }
 
-    public synchronized String getQpsStr() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("qps ");
+    public synchronized void toServerLoad(ServerLoad serverLoad) {
         long now = System.currentTimeMillis();
-        stringBuilder.append(" [ get: ");
-        stringBuilder.append((getCount.sum() - lastGetCount) * 1000 / (now - lastCompTime));
+        serverLoad.setGetQps((getCount.sum() - lastGetCount) * 1000 / (now - lastCompTime));
         lastGetCount = getCount.sum();
 
-        stringBuilder.append(" ], [ put: ");
-        stringBuilder.append((putCount.sum() - lastPutCount) * 1000 / (now - lastCompTime));
+        serverLoad.setPutQps((putCount.sum() - lastPutCount) * 1000 / (now - lastCompTime));
         lastPutCount = putCount.sum();
 
-        stringBuilder.append(" ], [ delete: ");
-        stringBuilder.append((deleteCount.sum() - lastDeleteCount) * 1000 / (now - lastCompTime));
+        serverLoad.setDeleteQps((deleteCount.sum() - lastDeleteCount) * 1000 / (now - lastCompTime));
         lastDeleteCount = deleteCount.sum();
 
-        stringBuilder.append(" ], [ all: ");
-        stringBuilder.append((allCount.sum() - lastAllCount) * 1000 / (now - lastCompTime));
+        serverLoad.setAllQps((allCount.sum() - lastAllCount) * 1000 / (now - lastCompTime));
         lastAllCount = allCount.sum();
 
-        stringBuilder.append(" ]");
         lastCompTime = now;
-
-        return stringBuilder.toString();
     }
 }

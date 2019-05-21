@@ -1,7 +1,6 @@
 package cn.liubinbin.pan.metrics;
 
 import cn.liubinbin.pan.module.OpEnum;
-import javafx.concurrent.ScheduledService;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,14 +13,15 @@ public class Metrics {
 
     private LatencyMetrics latencyMetrics;
     private QpsMetrics qpsMetrics;
+    private ServerLoad serverLoad;
 
     public Metrics() {
         this.latencyMetrics = new LatencyMetrics();
         this.qpsMetrics = new QpsMetrics();
+        this.serverLoad = new ServerLoad();
     }
 
     public void addOpMetrics(OpEnum op, long latency) {
-        System.out.println("addOpMetrics");
         this.latencyMetrics.add(op, latency);
         this.qpsMetrics.inc(op);
     }
@@ -31,12 +31,18 @@ public class Metrics {
         @Override
         public void run() {
             // latency
-            System.out.println("latencyMetrics get latency " + latencyMetrics.getHistogramStr(OpEnum.GET));
-            System.out.println("latencyMetrics put latency " + latencyMetrics.getHistogramStr(OpEnum.PUT));
-            System.out.println("latencyMetrics delete latency " + latencyMetrics.getHistogramStr(OpEnum.DELETE));
-            System.out.println("latencyMetrics all latency " + latencyMetrics.getHistogramStr(OpEnum.ALL));
+            latencyMetrics.getHisToServerLoad(serverLoad);
+            latencyMetrics.putHisToServerLoad(serverLoad);
+            latencyMetrics.deleteHisToServerLoad(serverLoad);
+            latencyMetrics.allHisToServerLoad(serverLoad);
             // qps
-            System.out.println("qpsMetrics " + qpsMetrics.getQpsStr());
+            qpsMetrics.toServerLoad(serverLoad);
+
+            // print
+            System.out.println("qps " + serverLoad.getQpsStr());
+            System.out.println("gethistogram " + serverLoad.getGetHistogramStr());
+            System.out.println("puthistogram " + serverLoad.getPutHistogramStr());
+            System.out.println("deletehistogram " + serverLoad.getDeleteHistogramStr());
         }
     }
 

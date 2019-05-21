@@ -5,9 +5,9 @@ import cn.liubinbin.pan.module.OpEnum;
 
 /**
  * three methods
- *  GET
- *  PUT
- *  DELETE
+ * GET
+ * PUT
+ * DELETE
  * Created by bin on 2019/5/20.
  */
 public class LatencyMetrics {
@@ -27,13 +27,14 @@ public class LatencyMetrics {
         this.allHistogram = new FastLongHistogram();
     }
 
-    public void add(OpEnum op, long latency){
+    public void add(OpEnum op, long latency) {
         allHistogram.add(latency, 1);
         if (op == OpEnum.GET) {
             getHistogram.add(latency, 1);
         } else if (op == OpEnum.PUT) {
             putHistogram.add(latency, 1);
-        } if (op == OpEnum.DELETE) {
+        }
+        if (op == OpEnum.DELETE) {
             deleteHistogram.add(latency, 1);
         } else {
             // skip
@@ -45,7 +46,8 @@ public class LatencyMetrics {
             return getHistogram;
         } else if (op == OpEnum.PUT) {
             return putHistogram;
-        } if (op == OpEnum.DELETE) {
+        }
+        if (op == OpEnum.DELETE) {
             return deleteHistogram;
         } else if (op == OpEnum.ALL) {
             return allHistogram;
@@ -55,14 +57,41 @@ public class LatencyMetrics {
         }
     }
 
-    public String getHistogramStr(OpEnum op) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("op ").append(op.getOp());
-        long[] histogram = getHistogram(op).getQuantiles(CUSTOM_QUANTILES);
-        for (int i = 0; i < histogram.length; i++) {
-            stringBuilder.append(" [ quantile: ").append(CUSTOM_QUANTILES[i]).append(", latency: ").append(histogram[i]).append("] ");
-        }
-        return stringBuilder.toString();
+    public void getHisToServerLoad(ServerLoad serverLoad) {
+        long[] histogram = getHistogram(OpEnum.GET).getQuantiles(CUSTOM_QUANTILES);
+        serverLoad.setGetLatency50th(histogram[0]);
+        serverLoad.setGetLatency90th(histogram[1]);
+        serverLoad.setGetLatency95th(histogram[2]);
+        serverLoad.setGetLatency99th(histogram[3]);
+        serverLoad.setGetLatency999th(histogram[4]);
     }
+
+    public void putHisToServerLoad(ServerLoad serverLoad) {
+        long[] histogram = getHistogram(OpEnum.PUT).getQuantiles(CUSTOM_QUANTILES);
+        serverLoad.setPutLatency50th(histogram[0]);
+        serverLoad.setPutLatency90th(histogram[1]);
+        serverLoad.setPutLatency95th(histogram[2]);
+        serverLoad.setPutLatency99th(histogram[3]);
+        serverLoad.setPutLatency999th(histogram[4]);
+    }
+
+    public void deleteHisToServerLoad(ServerLoad serverLoad) {
+        long[] histogram = getHistogram(OpEnum.DELETE).getQuantiles(CUSTOM_QUANTILES);
+        serverLoad.setDeleteLatency50th(histogram[0]);
+        serverLoad.setDeleteLatency90th(histogram[1]);
+        serverLoad.setDeleteLatency95th(histogram[2]);
+        serverLoad.setDeleteLatency99th(histogram[3]);
+        serverLoad.setDeleteLatency999th(histogram[4]);
+    }
+
+    public void allHisToServerLoad(ServerLoad serverLoad) {
+        long[] histogram = getHistogram(OpEnum.ALL).getQuantiles(CUSTOM_QUANTILES);
+        serverLoad.setAllLatency50th(histogram[0]);
+        serverLoad.setAllLatency90th(histogram[1]);
+        serverLoad.setAllLatency95th(histogram[2]);
+        serverLoad.setAllLatency99th(histogram[3]);
+        serverLoad.setAllLatency999th(histogram[4]);
+    }
+
 
 }
