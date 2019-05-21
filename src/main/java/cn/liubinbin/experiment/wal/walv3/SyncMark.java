@@ -19,12 +19,12 @@ public class SyncMark {
         this.isDone = isDone;
     }
 
-    public void done() {
+    public synchronized void done() {
         this.isDone = true;
         notify();
     }
 
-    public void WaitForDone() {
+    public synchronized void WaitForDone() {
         while (!isDone()) {
             try {
                 wait(1000);

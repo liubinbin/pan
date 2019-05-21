@@ -43,7 +43,7 @@ public class WalV3 {
 
     private void doMain(String[] args) throws InterruptedException, BrokenBarrierException {
         int threadCount = 4;
-        int batchOfSync = 2;
+        int batchOfSync = 4;
 
         int seqQueueSize = threadCount;
         int disruptorBufSize = 128;
