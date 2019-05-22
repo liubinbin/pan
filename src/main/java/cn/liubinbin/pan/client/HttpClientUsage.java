@@ -230,6 +230,8 @@ public class HttpClientUsage {
                 System.out.println(EntityUtils.toString(response.getEntity()));
                 System.out.println(response.getAllHeaders());
                 System.out.println(response.getEntity().getContent());
+                System.out.println(response.getEntity().getContentLength());
+                System.out.println(response.getEntity().getContentType());
                 System.out.println("----------------------------------------");
 
                 // Once the request has been executed the local context can

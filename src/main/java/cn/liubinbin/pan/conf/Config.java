@@ -52,4 +52,11 @@ public class Config {
         return configuration.getInt(Contants.CACHE_CHUNK_MAX_COUNT, Contants.DEFAULT_CACHE_CHUNK_MAX_COUNT);
     }
 
+    public boolean getMetricsPrint(){
+        return configuration.getBoolean(Contants.PAN_METRICS_PRINT, Contants.DEFAULT_PAN_METRICS_PRINT);
+    }
+
+    public int getRmiPort(){
+        return configuration.getInt(Contants.PAN_METRICS_PRINT, Contants.DEFAULT_PAN_RMI_PORT);
+    }
 }

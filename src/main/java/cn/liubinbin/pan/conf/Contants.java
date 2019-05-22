@@ -17,10 +17,16 @@ public class Contants {
 
     public static final String CACHE_CHUNK_MAX_COUNT = "pan.cache.chunk.max.count";
 
+    public static final String PAN_METRICS_PRINT = "pan.metrics.print";
+
+    public static final String PAN_RMI_PORT = "pan.rmi.port";
+
     // 132096 = 1024 * 129
     public static final int DEFAULT_CACHE_CHUNK_SIZE = 132096;
 
     public static final int DEFAULT_CACHE_CHUNK_MAX_COUNT = 128;
+
+    public static final boolean DEFAULT_PAN_METRICS_PRINT = false;
 
     public static final String CACHE_TOTAL_SIZE = "pan.total.size";
 
@@ -31,6 +37,8 @@ public class Contants {
     public static final String DEFAULT_SLOT_SIZE = "128,512,132096";
 
     public static final int DEFAULT_HASHMOD = 4;
+
+    public static final int DEFAULT_PAN_RMI_PORT = 1099;
 
     public static final String FILE_SEPARATOR = "/";
 

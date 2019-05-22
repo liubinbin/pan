@@ -1,9 +1,11 @@
 package cn.liubinbin.pan.metrics;
 
+import cn.liubinbin.pan.jmx.QpsMBean;
+
 /**
  * Created by bin on 2019/5/21.
  */
-public class ServerLoad {
+public class ServerLoad implements QpsMBean{
 
     private volatile long getQps;
     private volatile long putQps;

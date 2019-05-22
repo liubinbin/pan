@@ -1,5 +1,6 @@
 package cn.liubinbin.pan.metrics;
 
+import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.module.OpEnum;
 
 import java.util.concurrent.Executors;
@@ -13,12 +14,19 @@ public class Metrics {
 
     private LatencyMetrics latencyMetrics;
     private QpsMetrics qpsMetrics;
-    private ServerLoad serverLoad;
 
-    public Metrics() {
+    public ServerLoad getServerLoad() {
+        return serverLoad;
+    }
+
+    private ServerLoad serverLoad;
+    private boolean metricsPrint;
+
+    public Metrics(Config cacheConfig) {
         this.latencyMetrics = new LatencyMetrics();
         this.qpsMetrics = new QpsMetrics();
         this.serverLoad = new ServerLoad();
+        this.metricsPrint = cacheConfig.getMetricsPrint();
     }
 
     public void addOpMetrics(OpEnum op, long latency) {
@@ -39,10 +47,12 @@ public class Metrics {
             qpsMetrics.toServerLoad(serverLoad);
 
             // print
-            System.out.println("qps " + serverLoad.getQpsStr());
-            System.out.println("gethistogram " + serverLoad.getGetHistogramStr());
-            System.out.println("puthistogram " + serverLoad.getPutHistogramStr());
-            System.out.println("deletehistogram " + serverLoad.getDeleteHistogramStr());
+            if (metricsPrint){
+                System.out.println("qps " + serverLoad.getQpsStr());
+                System.out.println("gethistogram " + serverLoad.getGetHistogramStr());
+                System.out.println("puthistogram " + serverLoad.getPutHistogramStr());
+                System.out.println("deletehistogram " + serverLoad.getDeleteHistogramStr());
+            }
         }
     }
 
