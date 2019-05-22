@@ -1,57 +1,41 @@
 package cn.liubinbin.pan.metrics;
 
-import cn.liubinbin.pan.jmx.QpsMBean;
+import cn.liubinbin.pan.jmx.*;
 
 /**
  * Created by bin on 2019/5/21.
  */
-public class ServerLoad implements QpsMBean{
+public class ServerLoad{
 
-    private volatile long getQps;
-    private volatile long putQps;
-    private volatile long deleteQps;
-    private volatile long allQps;
+    private Qps qps;
+    private GetLatency getLatency;
+    private PutLatency putLatency;
+    private DeleteLatency deleteLatency;
+    private AllLatency allLatency;
 
-    // new double[]{0.5, 0.90, 0.95, 0.99, 0.999};
-    private volatile long getLatency50th;
-    private volatile long getLatency90th;
-    private volatile long getLatency95th;
-    private volatile long getLatency99th;
-    private volatile long getLatency999th;
+    public ServerLoad(){
+        this.qps = new Qps();
+        this.getLatency = new GetLatency();
+        this.putLatency = new PutLatency();
+        this.deleteLatency = new DeleteLatency();
+        this.allLatency = new AllLatency();
+    }
 
-    private volatile long putLatency50th;
-    private volatile long putLatency90th;
-    private volatile long putLatency95th;
-    private volatile long putLatency99th;
-    private volatile long putLatency999th;
-
-    private volatile long deleteLatency50th;
-    private volatile long deleteLatency90th;
-    private volatile long deleteLatency95th;
-    private volatile long deleteLatency99th;
-    private volatile long deleteLatency999th;
-
-    private volatile long allLatency50th;
-    private volatile long allLatency90th;
-    private volatile long allLatency95th;
-    private volatile long allLatency99th;
-    private volatile long allLatency999th;
-
-    public synchronized String getQpsStr() {
+    public String getQpsStr() {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("qps ");
         stringBuilder.append(" [ get: ");
-        stringBuilder.append(getQps);
+        stringBuilder.append(getGetQps());
 
         stringBuilder.append(" ], [ put: ");
-        stringBuilder.append(putQps);
+        stringBuilder.append(getPutQps());
 
         stringBuilder.append(" ], [ delete: ");
-        stringBuilder.append(deleteQps);
+        stringBuilder.append(getDeleteQps());
 
         stringBuilder.append(" ], [ all: ");
-        stringBuilder.append(allQps);
+        stringBuilder.append(getAllQps());
 
         stringBuilder.append(" ]");
         return stringBuilder.toString();
@@ -102,195 +86,215 @@ public class ServerLoad implements QpsMBean{
         return stringBuilder.toString();
     }
 
+    public Qps getQps() {
+        return qps;
+    }
+
+    public GetLatency getGetLatency() {
+        return getLatency;
+    }
+
+    public PutLatency getPutLatency() {
+        return putLatency;
+    }
+
+    public DeleteLatency getDeleteLatency() {
+        return deleteLatency;
+    }
+
+    public AllLatency getAllLatency() {
+        return allLatency;
+    }
+
     public long getGetQps() {
-        return getQps;
+        return qps.getGetQps();
     }
 
     public void setGetQps(long getQps) {
-        this.getQps = getQps;
+        qps.setGetQps(getQps);
     }
 
     public long getPutQps() {
-        return putQps;
+        return qps.getPutQps();
     }
 
     public void setPutQps(long putQps) {
-        this.putQps = putQps;
+        qps.setPutQps(putQps);
     }
 
     public long getDeleteQps() {
-        return deleteQps;
+        return qps.getDeleteQps();
     }
 
     public void setDeleteQps(long deleteQps) {
-        this.deleteQps = deleteQps;
+        qps.setDeleteQps(deleteQps);
     }
 
     public long getAllQps() {
-        return allQps;
+        return qps.getAllQps();
     }
 
     public void setAllQps(long allQps) {
-        this.allQps = allQps;
+        qps.setAllQps(allQps);
     }
 
     public long getGetLatency50th() {
-        return getLatency50th;
+        return getLatency.getGetLatency50th();
     }
 
     public void setGetLatency50th(long getLatency50th) {
-        this.getLatency50th = getLatency50th;
+        getLatency.setGetLatency50th(getLatency50th);
     }
 
     public long getGetLatency90th() {
-        return getLatency90th;
+        return getLatency.getGetLatency90th();
     }
 
     public void setGetLatency90th(long getLatency90th) {
-        this.getLatency90th = getLatency90th;
+        getLatency.setGetLatency90th(getLatency90th);
     }
 
     public long getGetLatency95th() {
-        return getLatency95th;
+        return getLatency.getGetLatency95th();
     }
 
     public void setGetLatency95th(long getLatency95th) {
-        this.getLatency95th = getLatency95th;
+        getLatency.setGetLatency95th(getLatency95th);
     }
 
     public long getGetLatency99th() {
-        return getLatency99th;
+        return getLatency.getGetLatency99th();
     }
 
     public void setGetLatency99th(long getLatency99th) {
-        this.getLatency99th = getLatency99th;
+        getLatency.setGetLatency99th(getLatency99th);
     }
 
     public long getGetLatency999th() {
-        return getLatency999th;
+        return getLatency.getGetLatency999th();
     }
 
     public void setGetLatency999th(long getLatency999th) {
-        this.getLatency999th = getLatency999th;
+        getLatency.setGetLatency999th(getLatency999th);
     }
 
     public long getPutLatency50th() {
-        return putLatency50th;
+        return putLatency.getPutLatency50th();
     }
 
     public void setPutLatency50th(long putLatency50th) {
-        this.putLatency50th = putLatency50th;
+        putLatency.setPutLatency50th(putLatency50th);
     }
 
     public long getPutLatency90th() {
-        return putLatency90th;
+        return putLatency.getPutLatency90th();
     }
 
     public void setPutLatency90th(long putLatency90th) {
-        this.putLatency90th = putLatency90th;
+        putLatency.setPutLatency90th(putLatency90th);
     }
 
     public long getPutLatency95th() {
-        return putLatency95th;
+        return putLatency.getPutLatency95th();
     }
 
     public void setPutLatency95th(long putLatency95th) {
-        this.putLatency95th = putLatency95th;
+        putLatency.setPutLatency95th(putLatency95th);
     }
 
     public long getPutLatency99th() {
-        return putLatency99th;
+        return putLatency.getPutLatency99th();
     }
 
     public void setPutLatency99th(long putLatency99th) {
-        this.putLatency99th = putLatency99th;
+        putLatency.setPutLatency99th(putLatency99th);
     }
 
     public long getPutLatency999th() {
-        return putLatency999th;
+        return putLatency.getPutLatency999th();
     }
 
     public void setPutLatency999th(long putLatency999th) {
-        this.putLatency999th = putLatency999th;
+        putLatency.setPutLatency999th(putLatency999th);
     }
 
     public long getDeleteLatency50th() {
-        return deleteLatency50th;
+        return deleteLatency.getDeleteLatency50th();
     }
 
     public void setDeleteLatency50th(long deleteLatency50th) {
-        this.deleteLatency50th = deleteLatency50th;
+        deleteLatency.setDeleteLatency50th(deleteLatency50th);
     }
 
     public long getDeleteLatency90th() {
-        return deleteLatency90th;
+        return deleteLatency.getDeleteLatency90th();
     }
 
     public void setDeleteLatency90th(long deleteLatency90th) {
-        this.deleteLatency90th = deleteLatency90th;
+        deleteLatency.setDeleteLatency90th(deleteLatency90th);
     }
 
     public long getDeleteLatency95th() {
-        return deleteLatency95th;
+        return deleteLatency.getDeleteLatency95th();
     }
 
     public void setDeleteLatency95th(long deleteLatency95th) {
-        this.deleteLatency95th = deleteLatency95th;
+        deleteLatency.setDeleteLatency95th(deleteLatency95th);
     }
 
     public long getDeleteLatency99th() {
-        return deleteLatency99th;
+        return deleteLatency.getDeleteLatency99th();
     }
 
     public void setDeleteLatency99th(long deleteLatency99th) {
-        this.deleteLatency99th = deleteLatency99th;
+        deleteLatency.setDeleteLatency99th(deleteLatency99th);
     }
 
     public long getDeleteLatency999th() {
-        return deleteLatency999th;
+        return deleteLatency.getDeleteLatency999th();
     }
 
     public void setDeleteLatency999th(long deleteLatency999th) {
-        this.deleteLatency999th = deleteLatency999th;
+        deleteLatency.setDeleteLatency999th(deleteLatency999th);
     }
 
     public long getAllLatency50th() {
-        return allLatency50th;
+        return allLatency.getAllLatency50th();
     }
 
     public void setAllLatency50th(long allLatency50th) {
-        this.allLatency50th = allLatency50th;
+        allLatency.setAllLatency50th(allLatency50th);
     }
 
     public long getAllLatency90th() {
-        return allLatency90th;
+        return allLatency.getAllLatency90th();
     }
 
     public void setAllLatency90th(long allLatency90th) {
-        this.allLatency90th = allLatency90th;
+        allLatency.setAllLatency90th(allLatency90th);
     }
 
     public long getAllLatency95th() {
-        return allLatency95th;
+        return allLatency.getAllLatency95th();
     }
 
     public void setAllLatency95th(long allLatency95th) {
-        this.allLatency95th = allLatency95th;
+        allLatency.setAllLatency95th(allLatency95th);
     }
 
     public long getAllLatency99th() {
-        return allLatency99th;
+        return allLatency.getAllLatency99th();
     }
 
     public void setAllLatency99th(long allLatency99th) {
-        this.allLatency99th = allLatency99th;
+        allLatency.setAllLatency99th(allLatency99th);
     }
 
     public long getAllLatency999th() {
-        return allLatency999th;
+        return allLatency.getAllLatency999th();
     }
 
     public void setAllLatency999th(long allLatency999th) {
-        this.allLatency999th = allLatency999th;
+        allLatency.setAllLatency999th(allLatency999th);
     }
 }

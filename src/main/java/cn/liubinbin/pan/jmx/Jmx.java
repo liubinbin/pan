@@ -12,9 +12,6 @@ import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.registry.LocateRegistry;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by bin on 2019/5/20.
@@ -24,71 +21,30 @@ public class Jmx {
     private ServerLoad serverLoad;
     private final String DOMAIN_NAME = "pan";
     private int rmiPort;
-    private Qps qps;
-    private GetLantency getLantency;
-    private PutLantency putLantency;
-    private DeleteLatency deleteLatency;
-    private AllLatency allLatency;
 
     public Jmx(Config cacheConfig, ServerLoad serverLoad) {
         this.rmiPort = cacheConfig.getRmiPort();
         this.serverLoad = serverLoad;
-        this.qps = new Qps();
-        this.getLantency = new GetLantency();
-        this.putLantency = new PutLantency();
-        this.deleteLatency = new DeleteLatency();
-        this.allLatency = new AllLatency();
-    }
-
-    class MetricsToMBeanTask implements Runnable {
-
-        @Override
-        public void run() {
-            // qps
-            qps.setGetQps(serverLoad.getGetQps());
-            qps.setPutQps(serverLoad.getPutQps());
-            qps.setDeleteQps(serverLoad.getDeleteQps());
-            qps.setAllQps(serverLoad.getAllQps());
-
-            // getLatency
-            getLantency.setGetLatency50th(serverLoad.getGetLatency50th());
-            getLantency.setGetLatency90th(serverLoad.getGetLatency90th());
-            getLantency.setGetLatency95th(serverLoad.getGetLatency95th());
-            getLantency.setGetLatency99th(serverLoad.getGetLatency99th());
-            getLantency.setGetLatency999th(serverLoad.getGetLatency999th());
-
-            // putLatency
-            putLantency.setPutLatency50th(serverLoad.getPutLatency50th());
-            putLantency.setPutLatency90th(serverLoad.getPutLatency90th());
-            putLantency.setPutLatency95th(serverLoad.getPutLatency95th());
-            putLantency.setPutLatency99th(serverLoad.getPutLatency99th());
-            putLantency.setPutLatency999th(serverLoad.getPutLatency999th());
-
-            // deleteLatency
-            deleteLatency.setDeleteLatency50th(serverLoad.getDeleteLatency50th());
-            deleteLatency.setDeleteLatency90th(serverLoad.getDeleteLatency90th());
-            deleteLatency.setDeleteLatency95th(serverLoad.getDeleteLatency95th());
-            deleteLatency.setDeleteLatency99th(serverLoad.getDeleteLatency99th());
-            deleteLatency.setDeleteLatency999th(serverLoad.getDeleteLatency999th());
-
-            // allLatency
-            allLatency.setAllLatency50th(serverLoad.getAllLatency50th());
-            allLatency.setAllLatency90th(serverLoad.getAllLatency90th());
-            allLatency.setAllLatency95th(serverLoad.getAllLatency95th());
-            allLatency.setAllLatency99th(serverLoad.getAllLatency99th());
-            allLatency.setAllLatency999th(serverLoad.getAllLatency999th());
-        }
     }
 
     public void start() throws MalformedObjectNameException, NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException, IOException {
-        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        MetricsToMBeanTask metricsShowTask = new MetricsToMBeanTask();
-        scheduledExecutorService.scheduleAtFixedRate(metricsShowTask, 1, 5, TimeUnit.SECONDS);
 
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
         ObjectName qpsObjName = new ObjectName(DOMAIN_NAME + ":name=qps");
-        mbs.registerMBean(qps, qpsObjName);
+        mbs.registerMBean(serverLoad.getQps(), qpsObjName);
+
+        ObjectName putLatencyObjName = new ObjectName(DOMAIN_NAME + ":name=putLatency");
+        mbs.registerMBean(serverLoad.getPutLatency(), putLatencyObjName);
+
+        ObjectName getLatencyObjName = new ObjectName(DOMAIN_NAME + ":name=getLatency");
+        mbs.registerMBean(serverLoad.getGetLatency(), getLatencyObjName);
+
+        ObjectName deleteLatencyObjName = new ObjectName(DOMAIN_NAME + ":name=deleteLatency");
+        mbs.registerMBean(serverLoad.getDeleteLatency(), deleteLatencyObjName);
+
+        ObjectName allLatencyObjName = new ObjectName(DOMAIN_NAME + ":name=allLatency");
+        mbs.registerMBean(serverLoad.getAllLatency(), allLatencyObjName);
 
         ObjectName adapterName = new ObjectName(DOMAIN_NAME + ":name=htmladapter,port=8082");
         HtmlAdaptorServer adapter = new HtmlAdaptorServer();
