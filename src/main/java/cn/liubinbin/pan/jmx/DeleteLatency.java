@@ -3,7 +3,7 @@ package cn.liubinbin.pan.jmx;
 /**
  * Created by bin on 2019/5/22.
  */
-public class DeleteLatency implements DeleteLantencyMBean {
+public class DeleteLatency implements DeleteLatencyMBean {
 
     private volatile long deleteLatency50th;
     private volatile long deleteLatency90th;

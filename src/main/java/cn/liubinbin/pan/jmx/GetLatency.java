@@ -3,7 +3,7 @@ package cn.liubinbin.pan.jmx;
 /**
  * Created by bin on 2019/5/22.
  */
-public class GetLantency implements GetLantencyMBean {
+public class GetLatency implements GetLatencyMBean {
 
     private volatile long getLatency50th;
     private volatile long getLatency90th;

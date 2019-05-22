@@ -3,7 +3,7 @@ package cn.liubinbin.pan.jmx;
 /**
  * Created by bin on 2019/5/22.
  */
-public interface PutLantencyMBean {
+public interface PutLatencyMBean {
 
     public long getPutLatency50th();
     public long getPutLatency90th();

@@ -3,7 +3,7 @@ package cn.liubinbin.pan.jmx;
 /**
  * Created by bin on 2019/5/22.
  */
-public class AllLatency implements AllLantencyMBean {
+public class AllLatency implements AllLatencyMBean {
 
     private volatile long allLatency50th;
     private volatile long allLatency90th;
