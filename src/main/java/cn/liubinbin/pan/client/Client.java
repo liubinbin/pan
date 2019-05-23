@@ -5,7 +5,9 @@ import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.*;
 import org.apache.http.conn.HttpConnectionFactory;
@@ -13,6 +15,8 @@ import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -32,6 +36,7 @@ import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,45 +156,55 @@ public class Client {
         // get a address to connect
     }
 
-    public void close() {
-
+    public void close() throws IOException {
+        httpclient.close();
     }
 
     public ArrayList<String> listObject() {
         return null;
     }
 
-    public void getObject(String bucketName, String key) throws IOException {
-        getObject(key);
+    public InputStream getObject(String bucketName, String key) throws IOException {
+        return getObject(key);
     }
 
-    public void getObject(String key) throws IOException {
-        HttpGet httpget = new HttpGet("http://localhost:50503/" + key);
+    public InputStream getObject(String key) throws IOException {
+        HttpGet httpPut = new HttpGet("http://localhost:50503/" + key);
 
         // Execution context can be customized locally.
         HttpClientContext context = HttpClientContext.create();
 
-        System.out.println("executing request " + httpget.getURI());
-        CloseableHttpResponse response = httpclient.execute(httpget, context);
+        CloseableHttpResponse response = httpclient.execute(httpPut, context);
         try {
-            System.out.println("----------------------------------------");
-            System.out.println(response.getStatusLine());
+//            System.out.println("----------------------------------------");
+//            System.out.println(response.getStatusLine());
             System.out.println(EntityUtils.toString(response.getEntity()));
-            System.out.println(response.getAllHeaders());
-            System.out.println(response.getEntity().getContent());
-            System.out.println("----------------------------------------");
+//            System.out.println(response.getAllHeaders());
 
+            System.out.println(response.getEntity().getContent());
+//            System.out.println("----------------------------------------");
+//            byte[] ret = null;
+//            ret = ResourceUtil.readStream(inputStream);
+            return response.getEntity().getContent();
         } finally {
             response.close();
         }
 
     }
 
-    public void putOBject(String bucketName, String key, String filePath) {
+    public void putOBject(String bucketName, String key, String filePath) throws IOException {
+        HttpPut httpPut = new HttpPut("http://localhost:50503/" + key);
+        httpPut.setEntity(new StringEntity("Hello, World key"));
 
+        CloseableHttpResponse response = httpclient.execute(httpPut);
+        System.out.println(response.getStatusLine());
+        response.close();
     }
 
-    public void deleteObject(String bucketName, String key) {
-
+    public void deleteObject(String bucketName, String key) throws IOException {
+        HttpDelete httpDelete = new HttpDelete("http://localhost:50503/" + key);
+        CloseableHttpResponse response = httpclient.execute(httpDelete);
+        System.out.println(response.getStatusLine());
+        response.close();
     }
 }
