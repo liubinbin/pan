@@ -109,7 +109,6 @@ public class ByteArrayLinkedChunk extends Chunk {
         writeMeta(seekOffset, key, value);
 
         while (true) {
-            System.out.println("put one round");
             // no data in this chunk
             if (head.get() == NULL_HEAD) {
                 writeNext(seekOffset, NULL_TAIL);
@@ -123,11 +122,8 @@ public class ByteArrayLinkedChunk extends Chunk {
                 // find predecessor for key
                 int cur = head.get();
                 while (cur != NULL_TAIL) {
-                    System.out.println("get p one round");
                     // cur < key
-                    System.out.println("cur " + new String(getKey(cur)) + " key " + new String(key));
                     if (ByteUtils.compare(getKey(cur), key) > 0) {
-                        System.out.println("break ");
                         break;
                     } else if (ByteUtils.compare(getKey(cur), key) == 0) {
                         if (!replace) {
@@ -137,7 +133,6 @@ public class ByteArrayLinkedChunk extends Chunk {
                     p = cur;
                     cur = getNext(cur);
                 }
-                System.out.println("p " + p);
                 // we find cur
                 if (p == NULL_HEAD) {
                     continue;
@@ -157,7 +152,6 @@ public class ByteArrayLinkedChunk extends Chunk {
     public void scanAndPrintAllKeys(){
         int cur = head.get();
         while (cur != NULL_TAIL) {
-            System.out.println("key " + new String(getKey(cur)));
             cur = getNext(cur);
         }
     }

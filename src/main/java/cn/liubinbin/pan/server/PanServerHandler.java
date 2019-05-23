@@ -73,7 +73,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status,
-                Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
+                Unpooled.copiedBuffer(status.toString(), CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
         // Close the connection as soon as the error message is sent.
@@ -109,12 +109,8 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
                 if (value == null) {
                     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
                     response.headers().set(CONTENT_TYPE, "text/plain");
-                    if (!keepAlive) {
-                        ctx.write(response).addListener(ChannelFutureListener.CLOSE);
-                    } else {
-                        response.headers().set(CONNECTION, KEEP_ALIVE);
-                        ctx.write(response);
-                    }
+                    response.headers().setInt(CONTENT_LENGTH, 0);
+                    sendError(ctx, NOT_FOUND);
                 } else {
                     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, value);
                     response.headers().set(CONTENT_TYPE, "text/plain");
@@ -124,6 +120,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
                     } else {
                         response.headers().set(CONNECTION, KEEP_ALIVE);
                         ctx.write(response);
+                        ctx.flush();
                     }
                 }
 

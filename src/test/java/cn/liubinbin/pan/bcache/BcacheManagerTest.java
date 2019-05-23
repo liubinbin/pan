@@ -69,7 +69,23 @@ public class BcacheManagerTest {
         bcacheManager.put(key, CONTENT);
         bcacheManager.put(key1, CONTENT1);
         bcacheManager.put(key2, CONTENT2);
+        bcacheManager.put("key4".getBytes(), CONTENT2);
         assertNotNull(bcacheManager.getByByteBuf(key));
         assertTrue(bcacheManager.checkContainKey(key));
+    }
+
+
+    @Test
+    public void testUse() throws DataTooBiglException, ChunkTooManyException, IOException, ConfigurationException {
+        Config cacheConfig = new Config();
+        BcacheManager cacheManager = new BcacheManager(cacheConfig);
+        byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+        byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
+        byte[] CONTENT2 = new byte[73060];
+        CONTENT2[73060 - 1] = '1';
+        cacheManager.put("key".getBytes(), CONTENT);
+        cacheManager.put("key1".getBytes(), CONTENT1);
+        cacheManager.put("key2".getBytes(), CONTENT2);
+        cacheManager.getByByteBuf("abc".getBytes());
     }
 }

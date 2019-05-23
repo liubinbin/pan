@@ -145,8 +145,6 @@ public class Client {
         // Create an HttpClient with the given custom dependencies and configuration.
         this.httpclient = HttpClients.custom()
                 .setConnectionManager(connManager)
-//            .setDefaultCookieStore(cookieStore)
-//            .setDefaultCredentialsProvider(credentialsProvider)
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .build();
 
@@ -162,7 +160,11 @@ public class Client {
     }
 
     public void getObject(String bucketName, String key) throws IOException {
-        HttpGet httpget = new HttpGet("http://localhost:50503/abcde");
+        getObject(key);
+    }
+
+    public void getObject(String key) throws IOException {
+        HttpGet httpget = new HttpGet("http://localhost:50503/" + key);
 
         // Execution context can be customized locally.
         HttpClientContext context = HttpClientContext.create();
@@ -176,25 +178,6 @@ public class Client {
             System.out.println(response.getAllHeaders());
             System.out.println(response.getEntity().getContent());
             System.out.println("----------------------------------------");
-
-            // Once the request has been executed the local context can
-            // be used to examine updated state and various objects affected
-            // by the request execution.
-
-            // Last executed request
-            context.getRequest();
-            // Execution route
-            context.getHttpRoute();
-            // Target auth state
-            context.getTargetAuthState();
-            // Proxy auth state
-            context.getProxyAuthState();
-            // Cookie origin
-            context.getCookieOrigin();
-            // Cookie spec used
-            context.getCookieSpec();
-            // User security token
-            context.getUserToken();
 
         } finally {
             response.close();

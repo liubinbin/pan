@@ -71,12 +71,16 @@ public class BcacheManager {
         byte[] value = null;
         while (chunk != null) {
             if ((value = chunk.getByByteArray(key)) != null) {
-                metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+                if (metrics != null) {
+                    metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+                }
                 return value;
             }
             chunk = chunk.getNext();
         }
-        metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+        if (metrics != null) {
+            metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+        }
         return null;
     }
 
@@ -94,12 +98,16 @@ public class BcacheManager {
         ByteBuf value;
         while (chunk != null) {
             if ((value = chunk.getByByteBuf(key)) != null) {
-                metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+                if (metrics != null) {
+                    metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+                }
                 return value;
             }
             chunk = chunk.getNext();
         }
-        metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+        if (metrics != null) {
+            metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
+        }
         return null;
     }
 
@@ -117,7 +125,9 @@ public class BcacheManager {
             chunk.delete(key);
             chunk = chunk.getNext();
         }
-        metrics.addOpMetrics(OpEnum.DELETE, (System.currentTimeMillis() - startTime));
+        if (metrics != null) {
+            metrics.addOpMetrics(OpEnum.DELETE, (System.currentTimeMillis() - startTime));
+        }
     }
 
     /**
@@ -159,7 +169,9 @@ public class BcacheManager {
                 // just retry, do nothing
             }
         }
-        metrics.addOpMetrics(OpEnum.PUT, (System.currentTimeMillis() - startTime));
+        if (metrics != null) {
+            metrics.addOpMetrics(OpEnum.PUT, (System.currentTimeMillis() - startTime));
+        }
     }
 
     public void addChunk(int hashKey, Chunk update) {

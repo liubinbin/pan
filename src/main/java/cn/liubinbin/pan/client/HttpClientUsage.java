@@ -227,7 +227,7 @@ public class HttpClientUsage {
             try {
                 System.out.println("----------------------------------------");
                 System.out.println(response.getStatusLine());
-                System.out.println(EntityUtils.toString(response.getEntity()));
+//                System.out.println(EntityUtils.toString(response.getEntity()));
                 System.out.println(response.getAllHeaders());
                 System.out.println(response.getEntity().getContent());
                 System.out.println(response.getEntity().getContentLength());

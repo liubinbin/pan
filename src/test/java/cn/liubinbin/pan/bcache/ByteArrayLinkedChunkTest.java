@@ -121,7 +121,6 @@ public class ByteArrayLinkedChunkTest {
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
         for (int i = 0; i < chunkSize / slotSize; i++) {
-            System.out.println("put one object");
             byteArrayLinkedChunk.put((keyPrefixStr + i).getBytes(), (valuePrefixStr + i).getBytes());
             byteArrayLinkedChunk.scanAndPrintAllKeys();
         }
