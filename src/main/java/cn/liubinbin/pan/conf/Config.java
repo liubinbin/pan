@@ -1,5 +1,6 @@
 package cn.liubinbin.pan.conf;
 
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
@@ -28,13 +29,17 @@ public class Config {
                 Contants.DEFAULT_CACHE_NETTY_SERVER_THREAD_COUNT);
     }
 
-    public int[] getSlotSizes() {
+    public int[] getSlotSizes() throws SlotBiggerThanChunkException {
+        int chunkSize = getChunkSize();
         int[] slotSizes = null;
         String slotSizesStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
         String[] slotSizesStrArray = slotSizesStr.split(",");
         slotSizes = new int[slotSizesStrArray.length];
         for (int i = 0; i < slotSizesStrArray.length; i++) {
             slotSizes[i] = Integer.parseInt(slotSizesStrArray[i].trim());
+            if (slotSizes[i] > chunkSize) {
+                throw new SlotBiggerThanChunkException("slotSize " + slotSizes[i] +  " is bigger than chunkSize " + chunkSize);
+            }
         }
         return slotSizes;
     }

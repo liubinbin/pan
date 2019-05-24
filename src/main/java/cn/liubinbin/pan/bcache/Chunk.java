@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -15,12 +16,14 @@ public abstract class Chunk {
     private Chunk next;
 
     public Chunk(int slotSize, int chunkSize, Chunk chunk) {
+        System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.chunkSize = chunkSize;
         this.next = chunk;
     }
 
     public Chunk(int slotSize, int chunkSize) {
+        System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.chunkSize = chunkSize;
         this.next = null;
@@ -34,7 +37,7 @@ public abstract class Chunk {
      * @param value
      * @return
      */
-    public abstract int put(byte[] key, byte[] value) throws ChunkIsFullException;
+    public abstract int put(byte[] key, byte[] value) throws ChunkIsFullException, DataTooBiglException;
 
     public abstract void delete(byte[] key);
 

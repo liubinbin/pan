@@ -1,5 +1,6 @@
 package cn.liubinbin.pan.conf;
 
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +21,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void testChunkSlotSize() {
+    public void testChunkSlotSize() throws SlotBiggerThanChunkException {
         int[] slotSizes = cacheConfig.getSlotSizes();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         assertEquals(slotSizes[0], 5120);

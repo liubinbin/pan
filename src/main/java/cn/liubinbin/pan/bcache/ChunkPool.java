@@ -4,6 +4,7 @@ import cn.liubinbin.experiment.unsafeUsage.ArrayOp;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -25,7 +26,7 @@ public class ChunkPool {
     private int NBASE;
     private int NSHIFT;
 
-    public ChunkPool(Config cacheConfig) {
+    public ChunkPool(Config cacheConfig) throws SlotBiggerThanChunkException {
         this.slotSizes = cacheConfig.getSlotSizes();
         this.chunkSize = cacheConfig.getChunkSize();
         this.chunkMaxCount = cacheConfig.getChunkMaxCount();

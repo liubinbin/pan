@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
 import io.netty.buffer.ByteBuf;
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
 public class ByteArrayLinkedChunkTest {
 
     @Test
-    public void testPut() throws ChunkIsFullException {
+    public void testPut() throws ChunkIsFullException, DataTooBiglException {
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(1024, 1024 * 1024);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
@@ -64,7 +65,7 @@ public class ByteArrayLinkedChunkTest {
     }
 
     @Test
-    public void testGetByByteArray() throws ChunkIsFullException {
+    public void testGetByByteArray() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
@@ -81,7 +82,7 @@ public class ByteArrayLinkedChunkTest {
     }
 
     @Test
-    public void testgetByByteBuf() throws ChunkIsFullException {
+    public void testgetByByteBuf() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
@@ -102,7 +103,7 @@ public class ByteArrayLinkedChunkTest {
 
 
     @Test
-    public void testContainKey() throws ChunkIsFullException {
+    public void testContainKey() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
@@ -134,7 +135,7 @@ public class ByteArrayLinkedChunkTest {
     }
 
     @Test
-    public void testGetdataTotalSize() throws ChunkIsFullException {
+    public void testGetdataTotalSize() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
@@ -145,7 +146,7 @@ public class ByteArrayLinkedChunkTest {
     }
 
     @Test
-    public void testDelete() throws ChunkIsFullException {
+    public void testDelete() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
@@ -171,7 +172,7 @@ public class ByteArrayLinkedChunkTest {
     }
 
     @Test
-    public void testTime() throws ChunkIsFullException {
+    public void testTime() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);

@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import cn.liubinbin.pan.oldcache.ChunkManager;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class ManagerTest {
 
     private ChunkManager chunkManager;
 
-    public ManagerTest() throws ConfigurationException, IOException {
+    public ManagerTest() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
         this.chunkManager = new ChunkManager(new Config());
     }
 
@@ -52,7 +53,7 @@ public class ManagerTest {
     }
 
     @Test
-    public void testGet() throws ConfigurationException, IOException {
+    public void testGet() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

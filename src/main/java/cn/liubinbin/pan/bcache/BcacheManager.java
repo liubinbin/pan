@@ -4,6 +4,7 @@ import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkIsFullException;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import cn.liubinbin.pan.metrics.Metrics;
 import cn.liubinbin.pan.module.OpEnum;
 import cn.liubinbin.pan.utils.ByteUtils;
@@ -29,7 +30,7 @@ public class BcacheManager {
     private int NSHIFT;
     private Metrics metrics;
 
-    public BcacheManager(Config cacheConfig) {
+    public BcacheManager(Config cacheConfig) throws SlotBiggerThanChunkException {
         this.chunkPool = new ChunkPool(cacheConfig);
         this.hashMod = cacheConfig.getHashMod();
         this.slotSizes = cacheConfig.getSlotSizes();
@@ -52,7 +53,7 @@ public class BcacheManager {
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
-    public BcacheManager(Config cacheConfig, Metrics metrics) {
+    public BcacheManager(Config cacheConfig, Metrics metrics) throws SlotBiggerThanChunkException {
         this(cacheConfig);
         this.metrics = metrics;
     }
@@ -216,7 +217,7 @@ public class BcacheManager {
         return unsafe.compareAndSwapObject(chunksInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException {
+    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         BcacheManager cacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

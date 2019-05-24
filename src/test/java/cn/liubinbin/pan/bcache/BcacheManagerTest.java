@@ -3,6 +3,7 @@ package cn.liubinbin.pan.bcache;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import cn.liubinbin.pan.oldcache.ChunkManager;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class BcacheManagerTest {
 
     private BcacheManager bcacheManager;
 
-    public BcacheManagerTest() throws ConfigurationException, IOException {
+    public BcacheManagerTest() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
         this.bcacheManager = new BcacheManager(new Config());
     }
 
@@ -54,7 +55,7 @@ public class BcacheManagerTest {
     }
 
     @Test
-    public void testGet() throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException {
+    public void testGet() throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         BcacheManager bcacheManager = new BcacheManager(cacheConfig);
         byte[] key = "abcd".getBytes();
@@ -76,7 +77,7 @@ public class BcacheManagerTest {
 
 
     @Test
-    public void testUse() throws DataTooBiglException, ChunkTooManyException, IOException, ConfigurationException {
+    public void testUse() throws DataTooBiglException, ChunkTooManyException, IOException, ConfigurationException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         BcacheManager cacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

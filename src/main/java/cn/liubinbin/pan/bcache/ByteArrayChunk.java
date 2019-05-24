@@ -2,6 +2,7 @@ package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Contants;
 import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
@@ -63,7 +64,12 @@ public class ByteArrayChunk extends Chunk {
      * @param value
      * @return
      */
-    public int put(byte[] key, byte[] value) throws ChunkIsFullException {
+    public int put(byte[] key, byte[] value) throws ChunkIsFullException, DataTooBiglException {
+        System.out.println("value.length " + value.length + " slotsize " +  getSlotsize() + " chunkSize " + getChunkSize());
+        if (getSlotsize() < value.length || getChunkSize() < value.length) {
+            throw new DataTooBiglException("object is too big, value is " + value.length + " slotSize " + getSlotsize() + " chunkSize " + getChunkSize());
+        }
+
         // find position
         if (dataTotalSize.get() >= getChunkSize()) {
             throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());

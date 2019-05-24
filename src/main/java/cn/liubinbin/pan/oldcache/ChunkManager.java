@@ -1,6 +1,7 @@
 package cn.liubinbin.pan.oldcache;
 
 import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import cn.liubinbin.pan.module.Addr;
 import cn.liubinbin.pan.module.Key;
 import io.netty.buffer.ByteBuf;
@@ -27,7 +28,7 @@ public class ChunkManager {
     private Lock rLock;
     private Lock wLock;
 
-    public ChunkManager(Config cacheConfig) {
+    public ChunkManager(Config cacheConfig) throws SlotBiggerThanChunkException {
         this.index = new ConcurrentSkipListMap<>();
         this.slotSizes = cacheConfig.getSlotSizes();
         this.chunks = new Chunk[slotSizes.length];
@@ -39,7 +40,7 @@ public class ChunkManager {
         this.wLock = readWriteLock.writeLock();
     }
 
-    public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, ConfigurationException, IOException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         ChunkManager cacheManager = new ChunkManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

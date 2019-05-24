@@ -3,6 +3,7 @@ package cn.liubinbin.pan.bcache;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ import static org.junit.Assert.*;
 public class ChunkPoolTest {
 
     @Test
-    public void testChooseChunkIdx() throws IOException, ConfigurationException {
+    public void testChooseChunkIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
 //        System.out.println("getSlotSizes " + Arrays.asList(cacheConfig.getSlotSizes()));
@@ -28,7 +29,7 @@ public class ChunkPoolTest {
     }
 
     @Test
-    public void testCasChunkByIdx() throws IOException, ConfigurationException {
+    public void testCasChunkByIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         ChunkPool chunkPool = new ChunkPool(cacheConfig);
@@ -46,7 +47,7 @@ public class ChunkPoolTest {
     }
 
     @Test
-    public void testgetChunkByIdx() throws IOException, ConfigurationException {
+    public void testgetChunkByIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         ChunkPool chunkPool = new ChunkPool(cacheConfig);
@@ -63,7 +64,7 @@ public class ChunkPoolTest {
     }
 
     @Test
-    public void testAllocate() throws IOException, ConfigurationException, DataTooBiglException, ChunkTooManyException {
+    public void testAllocate() throws IOException, ConfigurationException, DataTooBiglException, ChunkTooManyException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         ChunkPool chunkPool = new ChunkPool(cacheConfig);

@@ -1,5 +1,8 @@
 package cn.liubinbin.pan.client;
 
+import jdk.internal.util.xml.impl.Input;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -20,7 +23,14 @@ public class ClientUsage {
 //        }
 //        System.out.println("time used " + (System.currentTimeMillis() - startTime));
 //        client.putOBject("default","key4", null);
-        client.deleteObject("default","key4");
+//        client.putOBject("key6" , new File("C:\\Users\\viruser.v-desktop\\Desktop\\161709788f82c2ec"));
+//        client.putOBject("key5" , "abc");
+
+        client.getObject("key6", new File("dest"));
+
+//        client.deleteObject("default","key4");
+
+
         client.close();
     }
 }

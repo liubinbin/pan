@@ -16,6 +16,8 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -35,8 +37,7 @@ import org.apache.http.message.LineParser;
 import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -164,11 +165,7 @@ public class Client {
         return null;
     }
 
-    public InputStream getObject(String bucketName, String key) throws IOException {
-        return getObject(key);
-    }
-
-    public InputStream getObject(String key) throws IOException {
+    public void getObject(String key, File destFile) throws IOException {
         HttpGet httpPut = new HttpGet("http://localhost:50503/" + key);
 
         // Execution context can be customized locally.
@@ -178,24 +175,47 @@ public class Client {
         try {
 //            System.out.println("----------------------------------------");
 //            System.out.println(response.getStatusLine());
-            System.out.println(EntityUtils.toString(response.getEntity()));
+//            System.out.println(EntityUtils.toString(response.getEntity()));
 //            System.out.println(response.getAllHeaders());
 
-            System.out.println(response.getEntity().getContent());
+//            System.out.println(response.getEntity().getContent());
 //            System.out.println("----------------------------------------");
 //            byte[] ret = null;
 //            ret = ResourceUtil.readStream(inputStream);
-            return response.getEntity().getContent();
+            InputStream inputStream = response.getEntity().getContent();
+            OutputStream outputStream = new FileOutputStream(destFile);
+            byte[] bytes = new byte[1024];
+            int byteCount = 0;
+            while ( (byteCount = inputStream.read(bytes)) != -1 ){
+                outputStream.write(bytes, 0, byteCount);
+            }
+            outputStream.flush();
+            outputStream.close();
         } finally {
             response.close();
         }
 
     }
 
-    public void putOBject(String bucketName, String key, String filePath) throws IOException {
-        HttpPut httpPut = new HttpPut("http://localhost:50503/" + key);
-        httpPut.setEntity(new StringEntity("Hello, World key"));
+    public void putOBject(String key, File file) throws IOException {
+        putOBject("default", key, file);
+    }
 
+    public void putOBject(String bucketName, String key, File file) throws IOException {
+        HttpPut httpPut = new HttpPut("http://localhost:50503/" + key);
+        httpPut.setEntity(new FileEntity(file, "application/octet-stream"));
+        CloseableHttpResponse response = httpclient.execute(httpPut);
+        System.out.println(response.getStatusLine());
+        response.close();
+    }
+
+    public void putOBject( String key, String content) throws IOException {
+        putOBject("default", key, content);
+    }
+
+    public void putOBject(String bucketName, String key, String content) throws IOException {
+        HttpPut httpPut = new HttpPut("http://localhost:50503/" + key);
+        httpPut.setEntity(new StringEntity(content));
         CloseableHttpResponse response = httpclient.execute(httpPut);
         System.out.println(response.getStatusLine());
         response.close();
