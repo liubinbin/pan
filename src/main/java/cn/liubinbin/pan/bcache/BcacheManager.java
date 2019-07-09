@@ -139,7 +139,6 @@ public class BcacheManager {
      */
     public void put(byte[] key, byte[] value) throws DataTooBiglException, ChunkTooManyException {
         long startTime = System.currentTimeMillis();
-        int keyHash = ByteUtils.hashCode(key);
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
             // find chunk

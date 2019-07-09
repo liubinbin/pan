@@ -65,7 +65,6 @@ public class ByteArrayChunk extends Chunk {
      * @return
      */
     public int put(byte[] key, byte[] value) throws ChunkIsFullException, DataTooBiglException {
-        System.out.println("value.length " + value.length + " slotsize " +  getSlotsize() + " chunkSize " + getChunkSize());
         if (getSlotsize() < value.length || getChunkSize() < value.length) {
             throw new DataTooBiglException("object is too big, value is " + value.length + " slotSize " + getSlotsize() + " chunkSize " + getChunkSize());
         }
