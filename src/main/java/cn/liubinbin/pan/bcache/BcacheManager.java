@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 public class BcacheManager {
 
     private ChunkPool chunkPool;
-    private Chunk[] chunksInManager;
+    private Slab[] chunksInManager;
     private int[] slotSizes;
     private int hashMod;
     private sun.misc.Unsafe unsafe;
@@ -34,9 +34,9 @@ public class BcacheManager {
         this.chunkPool = new ChunkPool(cacheConfig);
         this.hashMod = cacheConfig.getHashMod();
         this.slotSizes = cacheConfig.getSlotSizes();
-        this.chunksInManager = new ByteArrayChunk[hashMod];
-        for (int chunkIdx = 0; chunkIdx < hashMod; chunkIdx++) {
-            this.chunksInManager[chunkIdx] = null;
+        this.chunksInManager = new ByteArraySlab[hashMod];
+        for (int slabIdx = 0; slabIdx < hashMod; slabIdx++) {
+            this.chunksInManager[slabIdx] = null;
         }
 
         try {
@@ -47,7 +47,7 @@ public class BcacheManager {
             e.printStackTrace();
         }
 
-        Class nc = Chunk[].class;
+        Class nc = Slab[].class;
         NBASE = unsafe.arrayBaseOffset(nc);
         int ns = unsafe.arrayIndexScale(nc);
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
@@ -68,7 +68,7 @@ public class BcacheManager {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHashRemainder);
+        Slab chunk = getChunkByIdx(keyHashRemainder);
         byte[] value = null;
         while (chunk != null) {
             if ((value = chunk.getByByteArray(key)) != null) {
@@ -95,7 +95,7 @@ public class BcacheManager {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHashRemainder);
+        Slab chunk = getChunkByIdx(keyHashRemainder);
         ByteBuf value;
         while (chunk != null) {
             if ((value = chunk.getByByteBuf(key)) != null) {
@@ -121,7 +121,7 @@ public class BcacheManager {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         // find chunk
-        Chunk chunk = getChunkByIdx(keyHashRemainder);
+        Slab chunk = getChunkByIdx(keyHashRemainder);
         while (chunk != null) {
             chunk.delete(key);
             chunk = chunk.getNext();
@@ -142,7 +142,7 @@ public class BcacheManager {
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
             // find chunk
-            Chunk chunk = getChunkByIdx(keyHashRemainder);
+            Slab chunk = getChunkByIdx(keyHashRemainder);
             while (chunk != null) {
                 if (chunk.checkWriteForLen(value.length)) {
                     break;
@@ -174,13 +174,13 @@ public class BcacheManager {
         }
     }
 
-    public void addChunk(int hashKey, Chunk update) {
+    public void addChunk(int hashKey, Slab update) {
         if (getChunkByIdx(hashKey) == null) {
             if (casChunkByIdx(hashKey, null, update)) {
                 return;
             }
         }
-        Chunk expected = getChunkByIdx(hashKey);
+        Slab expected = getChunkByIdx(hashKey);
         update.setNext(expected);
         while (!casChunkByIdx(hashKey, expected, update)) {
             expected = getChunkByIdx(hashKey);
@@ -199,7 +199,7 @@ public class BcacheManager {
 
     public boolean checkContainKey(byte[] key) {
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        Chunk chunk = getChunkByIdx(keyHashRemainder);
+        Slab chunk = getChunkByIdx(keyHashRemainder);
         while (chunk != null) {
             if (chunk.containKey(key)) {
                 return true;
@@ -208,11 +208,11 @@ public class BcacheManager {
         return false;
     }
 
-    public Chunk getChunkByIdx(int idx) {
-        return (Chunk)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE)) ;
+    public Slab getChunkByIdx(int idx) {
+        return (Slab)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE)) ;
     }
 
-    public boolean casChunkByIdx(int idx, Chunk expected, Chunk update) {
+    public boolean casChunkByIdx(int idx, Slab expected, Slab update) {
         return unsafe.compareAndSwapObject(chunksInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 

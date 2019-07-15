@@ -33,7 +33,7 @@ public class ChunkManager {
         this.slotSizes = cacheConfig.getSlotSizes();
         this.chunks = new Chunk[slotSizes.length];
         for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
-            this.chunks[chunkIdx] = new Chunk(slotSizes[chunkIdx], cacheConfig.getChunkSize());
+            this.chunks[chunkIdx] = new Chunk(slotSizes[chunkIdx], cacheConfig.getSlabSize());
         }
         this.readWriteLock = new ReentrantReadWriteLock();
         this.rLock = readWriteLock.readLock();

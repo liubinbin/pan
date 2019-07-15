@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author liubinbin
  */
-public class ByteArrayLinkedChunk extends Chunk {
+public class ByteArrayLinkedSlab extends Slab {
 
     private byte[] data;
     private int nextFreeSlot;
@@ -44,7 +44,7 @@ public class ByteArrayLinkedChunk extends Chunk {
     private AtomicInteger tail;
     private ConcurrentHashMap<Integer, Integer> deleteMarkers = new ConcurrentHashMap<Integer, Integer>();
 
-    public ByteArrayLinkedChunk(int slotSize, int chunkSize) {
+    public ByteArrayLinkedSlab(int slotSize, int chunkSize) {
         super(slotSize, chunkSize);
         this.data = new byte[chunkSize];
         this.dataTotalSize = new AtomicInteger(0);

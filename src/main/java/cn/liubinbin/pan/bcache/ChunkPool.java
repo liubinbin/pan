@@ -1,6 +1,5 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.experiment.unsafeUsage.ArrayOp;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.ChunkTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
@@ -16,11 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ChunkPool {
 
-    private Chunk[] chunksInPool;
+    private Slab[] slabsInPool;
     private int[] slotSizes;
     private int biggestSlotSize;
-    private int chunkSize;
-    private int chunkMaxCount;
+    private int slabSize;
+    private int slabMaxCount;
     private AtomicInteger chunkCurrCount;
     private sun.misc.Unsafe unsafe;
     private int NBASE;
@@ -28,12 +27,12 @@ public class ChunkPool {
 
     public ChunkPool(Config cacheConfig) throws SlotBiggerThanChunkException {
         this.slotSizes = cacheConfig.getSlotSizes();
-        this.chunkSize = cacheConfig.getChunkSize();
-        this.chunkMaxCount = cacheConfig.getChunkMaxCount();
+        this.slabSize = cacheConfig.getSlabSize();
+        this.slabMaxCount = cacheConfig.getSlabMaxCount();
         this.chunkCurrCount = new AtomicInteger(0);
-        this.chunksInPool = new ByteArrayChunk[slotSizes.length];
+        this.slabsInPool = new ByteArraySlab[slotSizes.length];
         for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
-            this.chunksInPool[chunkIdx] = null;
+            this.slabsInPool[chunkIdx] = null;
         }
         this.biggestSlotSize = slotSizes[slotSizes.length - 1];
 
@@ -45,41 +44,41 @@ public class ChunkPool {
             e.printStackTrace();
         }
 
-        Class nc = Chunk[].class;
+        Class nc = Slab[].class;
         NBASE = unsafe.arrayBaseOffset(nc);
         int ns = unsafe.arrayIndexScale(nc);
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
-    public Chunk getChunkByIdx(int idx){
-        return (Chunk)unsafe.getObjectVolatile(chunksInPool, (long) ((idx << NSHIFT) + NBASE));
+    public Slab getChunkByIdx(int idx){
+        return (Slab)unsafe.getObjectVolatile(slabsInPool, (long) ((idx << NSHIFT) + NBASE));
     }
 
-    public boolean casChunkByIdx(int idx, Chunk expected, Chunk update){
-        return unsafe.compareAndSwapObject(chunksInPool, (long) ((idx << NSHIFT) + NBASE), expected, update);
+    public boolean casChunkByIdx(int idx, Slab expected, Slab update){
+        return unsafe.compareAndSwapObject(slabsInPool, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
     // TODO we should use datalen( keylength + valuelength)
-    public Chunk allocate(int size) throws DataTooBiglException, ChunkTooManyException {
-        if (chunkCurrCount.get() > chunkMaxCount){
+    public Slab allocate(int size) throws DataTooBiglException, ChunkTooManyException {
+        if (chunkCurrCount.get() > slabMaxCount){
             throw new ChunkTooManyException();
         }
         int choosenChunkIdx = chooseChunkIdx(size);
         if (choosenChunkIdx < 0) {
             throw new DataTooBiglException("object is too big, biggestSlotSize is " + biggestSlotSize);
         }
-        Chunk chunk = new ByteArrayChunk(getSlotSizeForIdx(choosenChunkIdx), chunkSize);
+        Slab chunk = new ByteArraySlab(getSlotSizeForIdx(choosenChunkIdx), slabSize);
         addChunk(choosenChunkIdx, chunk);
         return chunk;
     }
 
-    public void addChunk(int hashKey, Chunk update) {
+    public void addChunk(int hashKey, Slab update) {
         if (getChunkByIdx(hashKey) == null) {
             if (casChunkByIdx(hashKey, null, update)) {
                 return;
             }
         }
-        Chunk expected = getChunkByIdx(hashKey);
+        Slab expected = getChunkByIdx(hashKey);
         update.setNext(expected);
         while (!casChunkByIdx(hashKey, expected, update)) {
             expected = getChunkByIdx(hashKey);

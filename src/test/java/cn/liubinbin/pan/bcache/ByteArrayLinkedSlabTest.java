@@ -16,11 +16,11 @@ import static org.junit.Assert.*;
 /**
  * Created by bin on 2019/4/19.
  */
-public class ByteArrayChunkTest {
+public class ByteArrayLinkedSlabTest {
 
     @Test
     public void testPut() throws ChunkIsFullException, DataTooBiglException {
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(1024, 1024 * 1024);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(1024, 1024 * 1024);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         int offset = -1;
@@ -44,7 +44,7 @@ public class ByteArrayChunkTest {
     public void testSeekAndWriteStatus() {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         int seekOffset = byteArrayChunk.seekAndWriteStatus();
@@ -68,7 +68,7 @@ public class ByteArrayChunkTest {
     public void testGetByByteArray() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
 
@@ -85,7 +85,7 @@ public class ByteArrayChunkTest {
     public void testgetByByteBuf() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
 
@@ -106,7 +106,7 @@ public class ByteArrayChunkTest {
     public void testContainKey() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         byteArrayChunk.put(key, value);
@@ -115,16 +115,17 @@ public class ByteArrayChunkTest {
     }
 
     @Test
-    public void testGetAllKeys() throws ChunkIsFullException, DataTooBiglException {
+    public void testGetAllKeys() throws ChunkIsFullException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArrayLinkedSlab byteArrayLinkedChunk = new ByteArrayLinkedSlab(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
         for (int i = 0; i < chunkSize / slotSize; i++) {
-            byteArrayChunk.put((keyPrefixStr + i).getBytes(), (valuePrefixStr + i).getBytes());
+            byteArrayLinkedChunk.put((keyPrefixStr + i).getBytes(), (valuePrefixStr + i).getBytes());
+            byteArrayLinkedChunk.scanAndPrintAllKeys();
         }
-        ArrayList<Key> allKeys = byteArrayChunk.getAllKeys();
+        ArrayList<Key> allKeys = byteArrayLinkedChunk.getAllKeys();
         for (int i = 0; i < chunkSize / slotSize; i++) {
             assertTrue(allKeys.contains(new Key((keyPrefixStr + i).getBytes())));
         }
@@ -137,7 +138,7 @@ public class ByteArrayChunkTest {
     public void testGetdataTotalSize() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
         byteArrayChunk.put(key, value);
@@ -148,7 +149,7 @@ public class ByteArrayChunkTest {
     public void testDelete() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
         for (int i = 0; i < chunkSize / slotSize; i++) {
@@ -174,7 +175,7 @@ public class ByteArrayChunkTest {
     public void testTime() throws ChunkIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
-        ByteArrayChunk byteArrayChunk = new ByteArrayChunk(slotSize, chunkSize);
+        ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
         String keyPrefixStr = "hellokey";
         String valuePrefixStr = "hellovalue";
 

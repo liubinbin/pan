@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * Created by bin on 2019/4/26.
  */
-public class ChunkPoolTest {
+public class SlabPoolTest {
 
     @Test
     public void testChooseChunkIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
@@ -36,9 +36,9 @@ public class ChunkPoolTest {
 //        System.out.println("cacheConfig.getSlotSizes().length " + cacheConfig.getSlotSizes().length);
         int slotSizes = cacheConfig.getSlotSizes().length;
         for (int i = 0; i < slotSizes; i++) {
-            Chunk chunk1 = new ByteArrayChunk(cacheConfig.getSlotSizes()[i], cacheConfig.getChunkSize());
-            Chunk chunk2 = new ByteArrayChunk(cacheConfig.getSlotSizes()[i], cacheConfig.getChunkSize());
-            Chunk chunk3 = new ByteArrayChunk(cacheConfig.getSlotSizes()[i], cacheConfig.getChunkSize());
+            Slab chunk1 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
+            Slab chunk2 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
+            Slab chunk3 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
             assertFalse(chunkPool.casChunkByIdx(i, chunk2, chunk1));
             assertTrue(chunkPool.casChunkByIdx(i, null, chunk1));
             assertTrue(chunkPool.casChunkByIdx(i, chunk1, chunk3));
@@ -53,10 +53,10 @@ public class ChunkPoolTest {
         ChunkPool chunkPool = new ChunkPool(cacheConfig);
         int tempSlotSize = 234;
         int tempChunkSize = 1234;
-        Chunk chunk = new ByteArrayChunk(tempSlotSize, tempChunkSize);
+        Slab chunk = new ByteArraySlab(tempSlotSize, tempChunkSize);
         assertEquals(null, chunkPool.getChunkByIdx(0));
         chunkPool.casChunkByIdx(0, null, chunk);
-        Chunk chunkGot = chunkPool.getChunkByIdx(0);
+        Slab chunkGot = chunkPool.getChunkByIdx(0);
         assertEquals(tempSlotSize, chunkGot.getSlotsize());
         assertEquals(tempChunkSize, chunkGot.getChunkSize());
         assertEquals(chunkGot, chunkPool.getChunkByIdx(0));
@@ -70,11 +70,11 @@ public class ChunkPoolTest {
         ChunkPool chunkPool = new ChunkPool(cacheConfig);
         int tempSlotSize = 234;
         int tempChunkSize = 1234;
-        Chunk chunk = chunkPool.allocate(2);
+        Slab chunk = chunkPool.allocate(2);
         int choosenIdx = chunkPool.chooseChunkIdx(2);
         assertEquals(chunk, chunkPool.getChunkByIdx(choosenIdx));
         chunkPool.allocate(2);
-        Chunk headChunkForIdx = chunkPool.getChunkByIdx(choosenIdx);
+        Slab headChunkForIdx = chunkPool.getChunkByIdx(choosenIdx);
         boolean in = false;
         while (headChunkForIdx != null){
             if (headChunkForIdx == chunk) {

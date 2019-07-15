@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author liubinbin
  */
-public class ByteArrayChunk extends Chunk {
+public class ByteArraySlab extends Slab {
 
     private byte[] data;
     private int nextFreeSlot;
@@ -27,7 +27,7 @@ public class ByteArrayChunk extends Chunk {
      */
     private AtomicInteger dataTotalSize;
 
-    public ByteArrayChunk(int slotSize, int chunkSize) {
+    public ByteArraySlab(int slotSize, int chunkSize) {
         super(slotSize, chunkSize);
         this.data = new byte[chunkSize];
         this.dataTotalSize = new AtomicInteger(0);

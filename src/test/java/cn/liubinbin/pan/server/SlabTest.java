@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 /**
  * @author liubinbin
  */
-public class ChunkTest {
+public class SlabTest {
 
     @Test
     public void testBytesByByteArray() {

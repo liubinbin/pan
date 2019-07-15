@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Created by bin on 2019/4/19.
  */
-public class HeapByteBufferChunkTest {
+public class HeapByteBufferSlabTest {
 
 //    @Test
 //    public void testPut() throws ChunkIsFullException {

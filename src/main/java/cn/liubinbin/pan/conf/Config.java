@@ -30,7 +30,7 @@ public class Config {
     }
 
     public int[] getSlotSizes() throws SlotBiggerThanChunkException {
-        int chunkSize = getChunkSize();
+        int chunkSize = getSlabSize();
         int[] slotSizes = null;
         String slotSizesStr = configuration.getString(Contants.SLOT_SIZE, Contants.DEFAULT_SLOT_SIZE);
         String[] slotSizesStrArray = slotSizesStr.split(",");
@@ -49,12 +49,12 @@ public class Config {
         return hashMod;
     }
 
-    public int getChunkSize() {
-        return configuration.getInt(Contants.CACHE_CHUNK_SIZE, Contants.DEFAULT_CACHE_CHUNK_SIZE);
+    public int getSlabSize() {
+        return configuration.getInt(Contants.CACHE_SLAB_SIZE, Contants.DEFAULT_CACHE_SLAB_SIZE);
     }
 
-    public int getChunkMaxCount(){
-        return configuration.getInt(Contants.CACHE_CHUNK_MAX_COUNT, Contants.DEFAULT_CACHE_CHUNK_MAX_COUNT);
+    public int getSlabMaxCount(){
+        return configuration.getInt(Contants.CACHE_SLAB_MAX_COUNT, Contants.DEFAULT_CACHE_SLAB_MAX_COUNT);
     }
 
     public boolean getMetricsPrint(){

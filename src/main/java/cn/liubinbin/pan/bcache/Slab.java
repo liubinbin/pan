@@ -7,22 +7,22 @@ import io.netty.buffer.ByteBuf;
 /**
  * @author liubinbin
  */
-public abstract class Chunk {
+public abstract class Slab {
 
     private int slotsize;
     private int chunkSize;
     private byte status; // opening for put; being source of compact; being target of compact
 
-    private Chunk next;
+    private Slab next;
 
-    public Chunk(int slotSize, int chunkSize, Chunk chunk) {
+    public Slab(int slotSize, int chunkSize, Slab chunk) {
         System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.chunkSize = chunkSize;
         this.next = chunk;
     }
 
-    public Chunk(int slotSize, int chunkSize) {
+    public Slab(int slotSize, int chunkSize) {
         System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.chunkSize = chunkSize;
@@ -58,11 +58,11 @@ public abstract class Chunk {
         return chunkSize;
     }
 
-    public Chunk getNext() {
+    public Slab getNext() {
         return next;
     }
 
-    public void setNext(Chunk next) {
+    public void setNext(Slab next) {
         this.next = next;
     }
 }

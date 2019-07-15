@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author liubinbin
  */
-public class HeapByteBufferChunk extends Chunk {
+public class HeapByteBufferSlab extends Slab {
 
     private int slotsize;
     private ByteBuffer data;
@@ -19,7 +19,7 @@ public class HeapByteBufferChunk extends Chunk {
      */
     private AtomicInteger dataTotalSize;
 
-    public HeapByteBufferChunk(int slotSize, int chunkSize) {
+    public HeapByteBufferSlab(int slotSize, int chunkSize) {
         super(slotSize, chunkSize);
         this.slotsize = slotSize;
         this.data = ByteBuffer.allocate(chunkSize);
