@@ -2430,13 +2430,15 @@ public class BinTreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<
 		 *  1. 有一个节点
 		 *  2. 此节点为ROOT
 		 *  3. 没有子节点
-		 *  此外
+		 *  此外，我们需要做当节点是黑色时 ，我们需要进行旋转，因为删除黑色会改变红黑树的性质。
 		 */
 		
 		Entry<K, V> replacement = (p.left != null ? p.left : p.right);
 
 		if (replacement != null) {
+			// 1. 有一个节点
 			// Link replacement to parent
+			// 将replacement替换给节点p，替换之后，我们就少了一个节点，如果的节点p是黑色，我们需要做些调整。
 			replacement.parent = p.parent;
 			if (p.parent == null)
 				root = replacement;
@@ -2452,11 +2454,14 @@ public class BinTreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<
 			if (p.color == BLACK)
 				fixAfterDeletion(replacement);
 		} else if (p.parent == null) { // return if we are the only node.
+			// 2. 此节点为ROOT
 			root = null;
 		} else { // No children. Use self as phantom replacement and unlink.
+			// 3. 没有子节点
+			// 节点p是的黑色的话，需要做调整，然后才能把节点p移除。
 			if (p.color == BLACK)
 				fixAfterDeletion(p);
-			
+			// 解除掉节点p
 			if (p.parent != null) {
 				if (p == p.parent.left)
 					p.parent.left = null;
@@ -2467,34 +2472,44 @@ public class BinTreeMap<K, V> extends AbstractMap<K, V> implements NavigableMap<
 		}
 	}
 
-	/** From CLR */
+	/** From CLR
+	 * 
+	 *  x 节点需要调整，x节点的路径少了个黑色节点，需要平衡。
+	 *  	1. x下面的有一个黑色节点删除。
+	 *  	2. x会被删除，x是黑色。
+	 *  
+	 *  */
 	private void fixAfterDeletion(Entry<K, V> x) {
 		while (x != root && colorOf(x) == BLACK) {
 			if (x == leftOf(parentOf(x))) {
 				Entry<K, V> sib = rightOf(parentOf(x));
 
 				if (colorOf(sib) == RED) {
+					// 情形2
 					setColor(sib, BLACK);
 					setColor(parentOf(x), RED);
 					rotateLeft(parentOf(x));
 					sib = rightOf(parentOf(x));
 				}
-
+				// 到此为止，sib变为黑色
 				if (colorOf(leftOf(sib)) == BLACK && colorOf(rightOf(sib)) == BLACK) {
+					// 情形3
 					setColor(sib, RED);
 					x = parentOf(x);
 				} else {
 					if (colorOf(rightOf(sib)) == BLACK) {
+						// 情形5
 						setColor(leftOf(sib), BLACK);
 						setColor(sib, RED);
 						rotateRight(sib);
 						sib = rightOf(parentOf(x));
 					}
+					// 情形6
 					setColor(sib, colorOf(parentOf(x)));
 					setColor(parentOf(x), BLACK);
 					setColor(rightOf(sib), BLACK);
 					rotateLeft(parentOf(x));
-					x = root;
+					x = root;  // 可以终止算法，说明这种情形是我们最终的想要的。
 				}
 			} else { // symmetric
 				Entry<K, V> sib = leftOf(parentOf(x));
