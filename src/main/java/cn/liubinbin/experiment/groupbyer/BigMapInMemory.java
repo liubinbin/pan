@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * @author liubinbin
- *         is InMemory
+ * is InMemory
  */
 
 public class BigMapInMemory implements BigMap {

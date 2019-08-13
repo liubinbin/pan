@@ -1,12 +1,11 @@
 package cn.liubinbin.experiment.park;
 
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
 /**
  * Created by bin on 2019/7/17.
  */
-public class LockParkTest extends Thread{
+public class LockParkTest extends Thread {
     @Override
     public void run() {
         System.out.println("before park");

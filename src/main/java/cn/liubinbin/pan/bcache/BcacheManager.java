@@ -1,10 +1,10 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.SlabIsFullException;
-import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.metrics.Metrics;
 import cn.liubinbin.pan.module.OpEnum;
 import cn.liubinbin.pan.utils.ByteUtils;
@@ -209,7 +209,7 @@ public class BcacheManager {
     }
 
     public Slab getSlabByIdx(int idx) {
-        return (Slab)unsafe.getObjectVolatile(slabsInManager, (long) ((idx << NSHIFT) + NBASE)) ;
+        return (Slab) unsafe.getObjectVolatile(slabsInManager, (long) ((idx << NSHIFT) + NBASE));
     }
 
     public boolean casSlabByIdx(int idx, Slab expected, Slab update) {

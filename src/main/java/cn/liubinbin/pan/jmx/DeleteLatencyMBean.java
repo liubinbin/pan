@@ -6,9 +6,13 @@ package cn.liubinbin.pan.jmx;
 public interface DeleteLatencyMBean {
 
     public long getDeleteLatency50th();
+
     public long getDeleteLatency90th();
+
     public long getDeleteLatency95th();
+
     public long getDeleteLatency99th();
-    public long getDeleteLatency999th() ;
+
+    public long getDeleteLatency999th();
 
 }

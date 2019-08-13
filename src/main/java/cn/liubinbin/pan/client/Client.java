@@ -15,10 +15,8 @@ import org.apache.http.conn.ManagedHttpClientConnection;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -35,7 +33,6 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.LineParser;
 import org.apache.http.util.CharArrayBuffer;
-import org.apache.http.util.EntityUtils;
 
 import java.io.*;
 import java.nio.charset.CodingErrorAction;
@@ -186,7 +183,7 @@ public class Client {
             OutputStream outputStream = new FileOutputStream(destFile);
             byte[] bytes = new byte[1024];
             int byteCount = 0;
-            while ( (byteCount = inputStream.read(bytes)) != -1 ){
+            while ((byteCount = inputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, byteCount);
             }
             outputStream.flush();
@@ -209,7 +206,7 @@ public class Client {
         response.close();
     }
 
-    public void putOBject( String key, String content) throws IOException {
+    public void putOBject(String key, String content) throws IOException {
         putOBject("default", key, content);
     }
 

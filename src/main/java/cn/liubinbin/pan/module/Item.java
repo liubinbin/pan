@@ -8,19 +8,19 @@ import java.nio.ByteBuffer;
 
 /**
  * @author liubinbin
- *         <p>
- *         BaseCCSMap is the map who have the diff key and value.
- *         for BaseCCSMap:
- *         - meta:
- *         - int status:
- *         - int expiretime :expire time
- *         - int hash: key.hash
- *         - int dataLen :total data len
- *         - data:
- *         -- int keyLen
- *         -- int valueLen
- *         -- byte[] key
- *         -- byte[] value
+ * <p>
+ * BaseCCSMap is the map who have the diff key and value.
+ * for BaseCCSMap:
+ * - meta:
+ * - int status:
+ * - int expiretime :expire time
+ * - int hash: key.hash
+ * - int dataLen :total data len
+ * - data:
+ * -- int keyLen
+ * -- int valueLen
+ * -- byte[] key
+ * -- byte[] value
  */
 public class Item {
 

@@ -5,7 +5,6 @@ import cn.liubinbin.pan.module.Item;
 import java.nio.ByteBuffer;
 
 /**
- *
  * Created by bin on 2019/4/17.
  */
 public class SlabSimulation {

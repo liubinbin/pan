@@ -1,11 +1,10 @@
 package cn.liubinbin.pan.module;
 
 /**
- *
- *  GET
- *  PUT
- *  DELETE
- *
+ * GET
+ * PUT
+ * DELETE
+ * <p>
  * Created by bin on 2019/5/20.
  */
 public enum OpEnum {
@@ -15,7 +14,7 @@ public enum OpEnum {
     private String op;
     private int idx;
 
-    OpEnum(String op, int idx){
+    OpEnum(String op, int idx) {
         this.op = op;
         this.idx = idx;
     }

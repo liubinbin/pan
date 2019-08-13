@@ -58,7 +58,6 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.LineParser;
 import org.apache.http.util.CharArrayBuffer;
-import org.apache.http.util.EntityUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

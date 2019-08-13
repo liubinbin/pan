@@ -1,8 +1,8 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
@@ -186,12 +186,12 @@ public class ByteArraySlab extends Slab {
         return status;
     }
 
-    public long getExpireTime(int offset){
+    public long getExpireTime(int offset) {
         long expireTime = ByteArrayUtils.toLong(data, offset + Contants.EXPIRETIME_SHIFT);
         return expireTime;
     }
 
-    public int getHash(int offset){
+    public int getHash(int offset) {
         int hash = ByteArrayUtils.toInt(data, offset + Contants.HASH_SHIFT);
         return hash;
     }
@@ -206,25 +206,25 @@ public class ByteArraySlab extends Slab {
         return keyLength;
     }
 
-    public int getValueLength(int offset){
+    public int getValueLength(int offset) {
         int valueLength = ByteArrayUtils.toInt(data, offset + Contants.VALUELENGTH_SHIFT);
         return valueLength;
     }
 
-    public byte[] getKey(int offset){
+    public byte[] getKey(int offset) {
         int keyLength = getKeyLength(offset);
         byte[] key = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT, keyLength);
         return key;
     }
 
-    public byte[] getValue(int offset){
+    public byte[] getValue(int offset) {
         int keyLength = getKeyLength(offset);
         int valueLength = getValueLength(offset);
         byte[] value = ByteArrayUtils.getBytes(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
         return value;
     }
 
-    public ByteBuf getValueByByteBuffer(int offset){
+    public ByteBuf getValueByByteBuffer(int offset) {
         int keyLength = getKeyLength(offset);
         int valueLength = getValueLength(offset);
         ByteBuf value = Unpooled.wrappedBuffer(data, offset + Contants.KEYVALUE_SHIFT + keyLength, valueLength);
@@ -268,7 +268,7 @@ public class ByteArraySlab extends Slab {
         ArrayList<Key> keys = new ArrayList<Key>();
         int seekOffset = 0;
         while (seekOffset < getSlabSize()) {
-            if (getStatus(seekOffset) == 1 ) {
+            if (getStatus(seekOffset) == 1) {
                 keys.add(new Key(getKey(seekOffset)));
             }
             seekOffset += getSlotsize();
@@ -277,7 +277,6 @@ public class ByteArraySlab extends Slab {
     }
 
     /**
-     *
      * @param length
      * @return true for can be added data, false for full slab
      */

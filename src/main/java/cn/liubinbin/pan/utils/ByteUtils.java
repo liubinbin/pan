@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class ByteUtils {
 
-    public static boolean IsByteArrayEqual(byte[] buf1, byte[] buf2){
+    public static boolean IsByteArrayEqual(byte[] buf1, byte[] buf2) {
         return Arrays.equals(buf1, buf2);
     }
 
@@ -15,6 +15,7 @@ public class ByteUtils {
      * if buf1 > buf2, return 1
      * if buf1 = buf2, return 0
      * if buf1 < buf2, return -1
+     *
      * @param buf1
      * @param buf2
      * @return

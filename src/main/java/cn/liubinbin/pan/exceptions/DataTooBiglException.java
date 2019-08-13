@@ -1,7 +1,6 @@
 package cn.liubinbin.pan.exceptions;
 
 /**
- *
  * Created by bin on 2019/4/18.
  */
 public class DataTooBiglException extends PanException {

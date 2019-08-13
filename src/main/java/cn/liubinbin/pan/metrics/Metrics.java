@@ -47,7 +47,7 @@ public class Metrics {
             qpsMetrics.toServerLoad(serverLoad);
 
             // print
-            if (metricsPrint){
+            if (metricsPrint) {
                 System.out.println("qps " + serverLoad.getQpsStr());
                 System.out.println("gethistogram " + serverLoad.getGetHistogramStr());
                 System.out.println("puthistogram " + serverLoad.getPutHistogramStr());

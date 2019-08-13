@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by bin on 2019/5/15.
  */
-public class Cache extends LinkedHashMap{
+public class Cache extends LinkedHashMap {
     private int size;
 
     public Cache(int size) {

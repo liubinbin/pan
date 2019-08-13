@@ -1,9 +1,9 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * slabs are orginzed by slotsiz.
  * slabs of the same size are int the same idx of slabsInPool.
- *
+ * <p>
  * Created by bin on 2019/4/24.
  */
 public class SlabPool {
@@ -52,17 +52,17 @@ public class SlabPool {
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
-    public Slab getSlabByIdx(int idx){
-        return (Slab)unsafe.getObjectVolatile(slabsInPool, (long) ((idx << NSHIFT) + NBASE));
+    public Slab getSlabByIdx(int idx) {
+        return (Slab) unsafe.getObjectVolatile(slabsInPool, (long) ((idx << NSHIFT) + NBASE));
     }
 
-    public boolean casSlabByIdx(int idx, Slab expected, Slab update){
+    public boolean casSlabByIdx(int idx, Slab expected, Slab update) {
         return unsafe.compareAndSwapObject(slabsInPool, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
     // TODO we should use datalen( keylength + valuelength)
     public Slab allocate(int size) throws DataTooBiglException, TooManySlabsException {
-        if (currSlabCount.get() > slabMaxCount){
+        if (currSlabCount.get() > slabMaxCount) {
             throw new TooManySlabsException();
         }
         int choosenSlabIdx = chooseSlabIdx(size);

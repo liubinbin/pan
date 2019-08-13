@@ -38,7 +38,7 @@ public class Config {
         for (int i = 0; i < slotSizesStrArray.length; i++) {
             slotSizes[i] = Integer.parseInt(slotSizesStrArray[i].trim());
             if (slotSizes[i] > slabSize) {
-                throw new SlotBiggerThanSlabException("slotSize " + slotSizes[i] +  " is bigger than slabSize " + slabSize);
+                throw new SlotBiggerThanSlabException("slotSize " + slotSizes[i] + " is bigger than slabSize " + slabSize);
             }
         }
         return slotSizes;
@@ -53,15 +53,15 @@ public class Config {
         return configuration.getInt(Contants.CACHE_SLAB_SIZE, Contants.DEFAULT_CACHE_SLAB_SIZE);
     }
 
-    public int getSlabMaxCount(){
+    public int getSlabMaxCount() {
         return configuration.getInt(Contants.CACHE_SLAB_MAX_COUNT, Contants.DEFAULT_CACHE_SLAB_MAX_COUNT);
     }
 
-    public boolean getMetricsPrint(){
+    public boolean getMetricsPrint() {
         return configuration.getBoolean(Contants.PAN_METRICS_PRINT, Contants.DEFAULT_PAN_METRICS_PRINT);
     }
 
-    public int getRmiPort(){
+    public int getRmiPort() {
         return configuration.getInt(Contants.PAN_METRICS_PRINT, Contants.DEFAULT_PAN_RMI_PORT);
     }
 }

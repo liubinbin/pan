@@ -6,7 +6,10 @@ package cn.liubinbin.pan.jmx;
 public interface QpsMBean {
 
     public long getGetQps();
+
     public long getPutQps();
+
     public long getDeleteQps();
+
     public long getAllQps();
 }

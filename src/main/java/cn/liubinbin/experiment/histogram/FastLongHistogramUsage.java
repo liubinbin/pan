@@ -7,7 +7,7 @@ public class FastLongHistogramUsage {
 
     public static void main(String[] args) {
         FastLongHistogram fastLongHistogram = new FastLongHistogram();
-        for(int i = 0; i< 1000000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             fastLongHistogram.add(i, 1);
         }
 
@@ -21,7 +21,7 @@ public class FastLongHistogramUsage {
         for (int i = 0; i < quantiles.length; i++) {
             System.out.println("quantile: " + FastLongHistogram.DEFAULT_QUANTILES[i] + " value: " + quantiles[i]);
         }
-        System.out.println("custom Quantiles " );
+        System.out.println("custom Quantiles ");
         double[] customQuantiles = new double[]{0.2, 0.343, 0.234};
         quantiles = fastLongHistogram.getQuantiles(customQuantiles);
         for (int i = 0; i < quantiles.length; i++) {
@@ -29,7 +29,7 @@ public class FastLongHistogramUsage {
         }
 
         System.out.println("------------------------------------");
-        for (double tempQ = 0.00001; tempQ < 0.3; tempQ+= 0.00001) {
+        for (double tempQ = 0.00001; tempQ < 0.3; tempQ += 0.00001) {
             double[] tempCQs = new double[]{tempQ};
             long[] tempQs = fastLongHistogram.getQuantiles(tempCQs);
             for (int i = 0; i < tempQs.length; i++) {

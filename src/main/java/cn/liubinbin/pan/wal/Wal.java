@@ -5,7 +5,7 @@ package cn.liubinbin.pan.wal;
  */
 public class Wal {
 
-    public Wal(){
+    public Wal() {
 
     }
 
@@ -17,7 +17,7 @@ public class Wal {
 
     }
 
-    public void roll(){
+    public void roll() {
 
     }
 }

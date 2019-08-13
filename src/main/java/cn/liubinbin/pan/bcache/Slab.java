@@ -1,7 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -42,7 +42,6 @@ public abstract class Slab {
     public abstract boolean containKey(byte[] key);
 
     /**
-     *
      * @param length
      * @return true for can be added data, false for full slab
      */

@@ -1,21 +1,24 @@
 package cn.liubinbin.experiment.threadpool;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * LimitedQueue
- *  先有七个（maximumPoolSize + workQueueSize）submit成功，然后渐渐的加入剩余三个。
+ * 先有七个（maximumPoolSize + workQueueSize）submit成功，然后渐渐的加入剩余三个。
  * LinkedBlockingQueue
- *  先有七个（maximumPoolSize + workQueueSize）submit成功，然后剩余三个submit失败。
+ * 先有七个（maximumPoolSize + workQueueSize）submit成功，然后剩余三个submit失败。
  * 默认handler为new ThreadPoolExecutor.AbortPolicy()
-    public static class AbortPolicy implements RejectedExecutionHandler {
-        public AbortPolicy() {
-        }
-
-        public void rejectedExecution(Runnable var1, ThreadPoolExecutor var2) {
-            throw new RejectedExecutionException("Task " + var1.toString() + " rejected from " + var2.toString());
-        }
-    }
+ * public static class AbortPolicy implements RejectedExecutionHandler {
+ * public AbortPolicy() {
+ * }
+ * <p>
+ * public void rejectedExecution(Runnable var1, ThreadPoolExecutor var2) {
+ * throw new RejectedExecutionException("Task " + var1.toString() + " rejected from " + var2.toString());
+ * }
+ * }
  * Created by bin on 2019/5/29.
  */
 public class ThreadPoolUsage {
@@ -57,7 +60,7 @@ public class ThreadPoolUsage {
 
         ThreadPoolExecutor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(workQueueSize));
         Executors.newFixedThreadPool(2);
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < 10; i++) {
             System.out.println("submit one " + i);
             try {
                 executor.submit(new MyTask());

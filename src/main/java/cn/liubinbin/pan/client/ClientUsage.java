@@ -1,10 +1,7 @@
 package cn.liubinbin.pan.client;
 
-import jdk.internal.util.xml.impl.Input;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created by bin on 2019/5/21.

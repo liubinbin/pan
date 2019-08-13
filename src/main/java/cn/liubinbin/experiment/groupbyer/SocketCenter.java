@@ -7,14 +7,14 @@ import java.util.Queue;
 
 /**
  * @author liubinbin
- *         <p>
- *         3-0
- *         <p>
- *         2-0 2-1 2-2 2-3
- *         <p>
- *         1-0 1-1 1-2 1-3
- *         <p>
- *         input
+ * <p>
+ * 3-0
+ * <p>
+ * 2-0 2-1 2-2 2-3
+ * <p>
+ * 1-0 1-1 1-2 1-3
+ * <p>
+ * input
  */
 public class SocketCenter {
 

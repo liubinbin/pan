@@ -6,9 +6,13 @@ package cn.liubinbin.pan.jmx;
 public interface PutLatencyMBean {
 
     public long getPutLatency50th();
+
     public long getPutLatency90th();
-    public long getPutLatency95th() ;
+
+    public long getPutLatency95th();
+
     public long getPutLatency99th();
-    public long getPutLatency999th() ;
+
+    public long getPutLatency999th();
 
 }

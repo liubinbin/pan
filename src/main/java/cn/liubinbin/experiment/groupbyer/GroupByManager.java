@@ -4,8 +4,8 @@ import java.util.Random;
 
 /**
  * @author liubinbin
- *         <p>
- *         impelement group by sum(), there are two versions: in-menory and on-disk
+ * <p>
+ * impelement group by sum(), there are two versions: in-menory and on-disk
  */
 public class GroupByManager {
 

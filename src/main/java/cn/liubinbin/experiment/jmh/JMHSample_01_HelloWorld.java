@@ -23,6 +23,7 @@ public class JMHSample_01_HelloWorld {
     static class Demo {
         int id;
         String name;
+
         public Demo(int id, String name) {
             this.id = id;
             this.name = name;
@@ -30,9 +31,10 @@ public class JMHSample_01_HelloWorld {
     }
 
     static List<Demo> demoList;
+
     static {
         demoList = new ArrayList<>();
-        for (int i = 0; i < 10000; i ++) {
+        for (int i = 0; i < 10000; i++) {
             demoList.add(new Demo(i, "test"));
         }
     }
@@ -51,7 +53,7 @@ public class JMHSample_01_HelloWorld {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public void testHashMap() {
-        Map map = new HashMap((int)(demoList.size() / 0.75f) + 1);
+        Map map = new HashMap((int) (demoList.size() / 0.75f) + 1);
         for (Demo demo : demoList) {
             map.put(demo.id, demo.name);
         }

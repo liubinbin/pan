@@ -5,7 +5,7 @@ import cn.liubinbin.pan.jmx.*;
 /**
  * Created by bin on 2019/5/21.
  */
-public class ServerLoad{
+public class ServerLoad {
 
     private Qps qps;
     private GetLatency getLatency;
@@ -13,7 +13,7 @@ public class ServerLoad{
     private DeleteLatency deleteLatency;
     private AllLatency allLatency;
 
-    public ServerLoad(){
+    public ServerLoad() {
         this.qps = new Qps();
         this.getLatency = new GetLatency();
         this.putLatency = new PutLatency();

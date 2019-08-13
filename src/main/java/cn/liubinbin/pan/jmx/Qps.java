@@ -3,7 +3,7 @@ package cn.liubinbin.pan.jmx;
 /**
  * Created by bin on 2019/5/22.
  */
-public class Qps implements QpsMBean{
+public class Qps implements QpsMBean {
 
     private volatile long getQps;
     private volatile long putQps;
@@ -26,19 +26,19 @@ public class Qps implements QpsMBean{
         this.allQps = allQps;
     }
 
-    public long getGetQps(){
+    public long getGetQps() {
         return getQps;
     }
 
-    public long getPutQps(){
+    public long getPutQps() {
         return putQps;
     }
 
-    public long getDeleteQps(){
+    public long getDeleteQps() {
         return deleteQps;
     }
 
-    public long getAllQps(){
+    public long getAllQps() {
         return allQps;
     }
 }
