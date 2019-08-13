@@ -1,9 +1,9 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
@@ -19,12 +19,12 @@ public class BcacheManagerTest {
 
     private BcacheManager bcacheManager;
 
-    public BcacheManagerTest() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
+    public BcacheManagerTest() throws ConfigurationException, IOException, SlotBiggerThanSlabException {
         this.bcacheManager = new BcacheManager(new Config());
     }
 
     @Test
-    public void testPut() throws DataTooBiglException, SlabTooManyException {
+    public void testPut() throws DataTooBiglException, TooManySlabsException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -37,7 +37,7 @@ public class BcacheManagerTest {
     }
 
     @Test
-    public void testDelete() throws DataTooBiglException, SlabTooManyException {
+    public void testDelete() throws DataTooBiglException, TooManySlabsException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -54,7 +54,7 @@ public class BcacheManagerTest {
     }
 
     @Test
-    public void testGet() throws ConfigurationException, IOException, DataTooBiglException, SlabTooManyException, SlotBiggerThanChunkException {
+    public void testGet() throws ConfigurationException, IOException, DataTooBiglException, TooManySlabsException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         BcacheManager bcacheManager = new BcacheManager(cacheConfig);
         byte[] key = "abcd".getBytes();
@@ -76,7 +76,7 @@ public class BcacheManagerTest {
 
 
     @Test
-    public void testUse() throws DataTooBiglException, SlabTooManyException, IOException, ConfigurationException, SlotBiggerThanChunkException {
+    public void testUse() throws DataTooBiglException, TooManySlabsException, IOException, ConfigurationException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         BcacheManager cacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

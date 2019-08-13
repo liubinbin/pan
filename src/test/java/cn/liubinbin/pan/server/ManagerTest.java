@@ -3,8 +3,8 @@ package cn.liubinbin.pan.server;
 import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
-import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
@@ -20,12 +20,12 @@ public class ManagerTest {
 
     private BcacheManager bcacheManager;
 
-    public ManagerTest() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
+    public ManagerTest() throws ConfigurationException, IOException, SlotBiggerThanSlabException {
         this.bcacheManager = new BcacheManager(new Config());
     }
 
     @Test
-    public void testPut() throws SlabTooManyException, DataTooBiglException {
+    public void testPut() throws TooManySlabsException, DataTooBiglException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -38,7 +38,7 @@ public class ManagerTest {
     }
 
     @Test
-    public void testDelete() throws SlabTooManyException, DataTooBiglException {
+    public void testDelete() throws TooManySlabsException, DataTooBiglException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
@@ -54,7 +54,7 @@ public class ManagerTest {
     }
 
     @Test
-    public void testGet() throws ConfigurationException, IOException, SlotBiggerThanChunkException, SlabTooManyException, DataTooBiglException {
+    public void testGet() throws ConfigurationException, IOException, SlotBiggerThanSlabException, TooManySlabsException, DataTooBiglException {
         Config cacheConfig = new Config();
         BcacheManager bcacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

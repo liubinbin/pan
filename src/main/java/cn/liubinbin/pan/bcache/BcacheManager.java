@@ -2,9 +2,9 @@ package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.exceptions.SlabIsFullException;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
 import cn.liubinbin.pan.metrics.Metrics;
 import cn.liubinbin.pan.module.OpEnum;
 import cn.liubinbin.pan.utils.ByteUtils;
@@ -30,7 +30,7 @@ public class BcacheManager {
     private int NSHIFT;
     private Metrics metrics;
 
-    public BcacheManager(Config cacheConfig) throws SlotBiggerThanChunkException {
+    public BcacheManager(Config cacheConfig) throws SlotBiggerThanSlabException {
         this.slabPool = new SlabPool(cacheConfig);
         this.hashMod = cacheConfig.getHashMod();
         this.slotSizes = cacheConfig.getSlotSizes();
@@ -53,7 +53,7 @@ public class BcacheManager {
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
-    public BcacheManager(Config cacheConfig, Metrics metrics) throws SlotBiggerThanChunkException {
+    public BcacheManager(Config cacheConfig, Metrics metrics) throws SlotBiggerThanSlabException {
         this(cacheConfig);
         this.metrics = metrics;
     }
@@ -137,7 +137,7 @@ public class BcacheManager {
      * @param key   key to location data
      * @param value data related to key
      */
-    public void put(byte[] key, byte[] value) throws DataTooBiglException, SlabTooManyException {
+    public void put(byte[] key, byte[] value) throws DataTooBiglException, TooManySlabsException {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
@@ -188,10 +188,10 @@ public class BcacheManager {
         }
     }
 
-    public int chooseChunkIdx(int valueLen) {
-        for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
-            if (valueLen < slotSizes[chunkIdx]) {
-                return chunkIdx;
+    public int chooseSlabIdx(int valueLen) {
+        for (int slabIdx = 0; slabIdx < slotSizes.length; slabIdx++) {
+            if (valueLen < slotSizes[slabIdx]) {
+                return slabIdx;
             }
         }
         return -1;
@@ -199,9 +199,9 @@ public class BcacheManager {
 
     public boolean checkContainKey(byte[] key) {
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        Slab chunk = getSlabByIdx(keyHashRemainder);
-        while (chunk != null) {
-            if (chunk.containKey(key)) {
+        Slab slab = getSlabByIdx(keyHashRemainder);
+        while (slab != null) {
+            if (slab.containKey(key)) {
                 return true;
             }
         }
@@ -216,7 +216,7 @@ public class BcacheManager {
         return unsafe.compareAndSwapObject(slabsInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, SlabTooManyException, SlotBiggerThanChunkException {
+    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, TooManySlabsException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         BcacheManager cacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

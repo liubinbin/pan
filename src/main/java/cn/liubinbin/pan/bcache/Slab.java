@@ -10,22 +10,22 @@ import io.netty.buffer.ByteBuf;
 public abstract class Slab {
 
     private int slotsize;
-    private int chunkSize;
+    private int slabSize;
     private byte status; // opening for put; being source of compact; being target of compact
 
     private Slab next;
 
-    public Slab(int slotSize, int chunkSize, Slab chunk) {
-        System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
+    public Slab(int slotSize, int slabSize, Slab nextSlab) {
+        System.out.println("slabSize " + slabSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
-        this.chunkSize = chunkSize;
-        this.next = chunk;
+        this.slabSize = slabSize;
+        this.next = nextSlab;
     }
 
-    public Slab(int slotSize, int chunkSize) {
-        System.out.println("chunkSize " + chunkSize + " slotSize " + slotSize);
+    public Slab(int slotSize, int slabSize) {
+        System.out.println("slabSize " + slabSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
-        this.chunkSize = chunkSize;
+        this.slabSize = slabSize;
         this.next = null;
     }
 
@@ -46,7 +46,7 @@ public abstract class Slab {
     /**
      *
      * @param length
-     * @return true for can be added data, false for full chunk
+     * @return true for can be added data, false for full slab
      */
     public abstract boolean checkWriteForLen(int length);
 
@@ -54,8 +54,8 @@ public abstract class Slab {
         return slotsize;
     }
 
-    public int getChunkSize() {
-        return chunkSize;
+    public int getSlabSize() {
+        return slabSize;
     }
 
     public Slab getNext() {

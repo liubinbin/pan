@@ -17,7 +17,7 @@ package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -85,7 +85,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws DataTooBiglException, SlabTooManyException {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws DataTooBiglException, TooManySlabsException {
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
 

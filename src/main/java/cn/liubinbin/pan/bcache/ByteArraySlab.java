@@ -27,9 +27,9 @@ public class ByteArraySlab extends Slab {
      */
     private AtomicInteger dataTotalSize;
 
-    public ByteArraySlab(int slotSize, int chunkSize) {
-        super(slotSize, chunkSize);
-        this.data = new byte[chunkSize];
+    public ByteArraySlab(int slotSize, int slabSize) {
+        super(slotSize, slabSize);
+        this.data = new byte[slabSize];
         this.dataTotalSize = new AtomicInteger(0);
         this.nextFreeSlot = 0;
     }
@@ -37,7 +37,7 @@ public class ByteArraySlab extends Slab {
     public byte[] getByByteArray(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
         int seekOffset = 0;
-        while (seekOffset < getChunkSize()) {
+        while (seekOffset < getSlabSize()) {
             if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
                     && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
                 return getValue(seekOffset);
@@ -50,7 +50,7 @@ public class ByteArraySlab extends Slab {
     public ByteBuf getByByteBuf(byte[] key) {
         int keyHash = ByteUtils.hashCode(key);
         int seekOffset = 0;
-        while (seekOffset < getChunkSize()) {
+        while (seekOffset < getSlabSize()) {
             if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
                     && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
                 return getValueByByteBuffer(seekOffset);
@@ -65,17 +65,17 @@ public class ByteArraySlab extends Slab {
      * @return
      */
     public int put(byte[] key, byte[] value) throws SlabIsFullException, DataTooBiglException {
-        if (getSlotsize() < value.length || getChunkSize() < value.length) {
-            throw new DataTooBiglException("object is too big, value is " + value.length + " slotSize " + getSlotsize() + " chunkSize " + getChunkSize());
+        if (getSlotsize() < value.length || getSlabSize() < value.length) {
+            throw new DataTooBiglException("object is too big, value is " + value.length + " slotSize " + getSlotsize() + " slabSize " + getSlabSize());
         }
 
         // find position
-        if (dataTotalSize.get() >= getChunkSize()) {
-            throw new SlabIsFullException("chunk is full, slotSize: " + getSlotsize());
+        if (dataTotalSize.get() >= getSlabSize()) {
+            throw new SlabIsFullException("slab is full, slotSize: " + getSlotsize());
         }
         int seekOffset = seekAndWriteStatus();
         if (seekOffset < 0) {
-            throw new SlabIsFullException("chunk is full, slotSize: " + getSlotsize());
+            throw new SlabIsFullException("slab is full, slotSize: " + getSlotsize());
         }
 
         // set totalsize
@@ -94,7 +94,7 @@ public class ByteArraySlab extends Slab {
 
     public int seekAndWriteStatus() {
         int seekOffset = 0;
-        while (seekOffset < getChunkSize()) {
+        while (seekOffset < getSlabSize()) {
             if (ByteArrayUtils.toInt(data, seekOffset) == 0) {
                 if (ByteArrayUtils.compareAndSetInt(data, seekOffset + Contants.STATUS_SHIFT_LINKED, 0, 1)) {
                     return seekOffset;
@@ -235,7 +235,7 @@ public class ByteArraySlab extends Slab {
         int offset = -1;
         int keyHash = ByteUtils.hashCode(key);
         int seekOffset = 0;
-        while (seekOffset < getChunkSize()) {
+        while (seekOffset < getSlabSize()) {
             if (getStatus(seekOffset) == 1 && getHash(seekOffset) == keyHash
                     && ByteUtils.IsByteArrayEqual(getKey(seekOffset), key)) {
                 offset = seekOffset;
@@ -267,7 +267,7 @@ public class ByteArraySlab extends Slab {
     public ArrayList<Key> getAllKeys() {
         ArrayList<Key> keys = new ArrayList<Key>();
         int seekOffset = 0;
-        while (seekOffset < getChunkSize()) {
+        while (seekOffset < getSlabSize()) {
             if (getStatus(seekOffset) == 1 ) {
                 keys.add(new Key(getKey(seekOffset)));
             }
@@ -279,10 +279,10 @@ public class ByteArraySlab extends Slab {
     /**
      *
      * @param length
-     * @return true for can be added data, false for full chunk
+     * @return true for can be added data, false for full slab
      */
     public boolean checkWriteForLen(int length) {
-        return length < getSlotsize() && getdataTotalSize() < getChunkSize();
+        return length < getSlotsize() && getdataTotalSize() < getSlabSize();
     }
 
     public int getdataTotalSize() {

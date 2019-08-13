@@ -8,13 +8,13 @@ import java.nio.ByteBuffer;
  *
  * Created by bin on 2019/4/17.
  */
-public class BchunkSimulation {
+public class SlabSimulation {
 
     public static void main(String[] args) {
-        System.out.println("hello BchunkSimulation");
-        ByteBuffer bChunk = ByteBuffer.allocate(1024 * 1024 * 2);
-        System.out.println("bChunk " + bChunk.toString());
-        int chunkOffset = 0;
+        System.out.println("hello SlabSimulation");
+        ByteBuffer bSlab = ByteBuffer.allocate(1024 * 1024 * 2);
+        System.out.println("bSlab " + bSlab.toString());
+        int slabOffset = 0;
 
         int slotSize = 10240;
         byte[] firstKey = "first".getBytes();
@@ -26,7 +26,7 @@ public class BchunkSimulation {
 
         // write first KeyValue
         int offsetFirst = 0;
-        chunkOffset = offsetFirst;
+        slabOffset = offsetFirst;
 
 
         // write second KeyValue

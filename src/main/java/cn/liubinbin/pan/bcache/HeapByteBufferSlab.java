@@ -19,10 +19,10 @@ public class HeapByteBufferSlab extends Slab {
      */
     private AtomicInteger dataTotalSize;
 
-    public HeapByteBufferSlab(int slotSize, int chunkSize) {
-        super(slotSize, chunkSize);
+    public HeapByteBufferSlab(int slotSize, int slabSize) {
+        super(slotSize, slabSize);
         this.slotsize = slotSize;
-        this.data = ByteBuffer.allocate(chunkSize);
+        this.data = ByteBuffer.allocate(slabSize);
         this.dataTotalSize.set(0);
         this.nextFreeSlot = 0;
     }

@@ -1,6 +1,6 @@
 # 设计
 
-参考hashmap，paldb，bucketcache，mslab，memcache。
+参考 hashmap，paldb，bucketcache，mslab，memcache。
 
 首先会分析目前上述的相关实现。
 
@@ -17,8 +17,8 @@
 
 ###可以借鉴的点
 
-* index部分用一个slot来包装，slot是固定长度，可以按计算偏移量。
-* 通过碰撞找数据，这个部分的实现也需要slot来保证。
+* index 部分用一个 slot 来包装，slot 是固定长度，可以按计算偏移量。
+* 通过碰撞找数据，这个部分的实现也需要 slot 来保证。
 
 
 
@@ -30,7 +30,7 @@
 
 ###可以借鉴的点
 
-* 计算hash值。
+* 计算 hash 值。
 
 
 

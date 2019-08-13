@@ -61,25 +61,25 @@ public class Item {
     }
 
     public static void main(String[] args) {
-        ByteBuffer bChunk = ByteBuffer.allocate(1024 * 1024 * 2);
+        ByteBuffer bSlab = ByteBuffer.allocate(1024 * 1024 * 2);
         byte[] key = "item.key".getBytes();
         byte[] value = "item.value".getBytes();
 
         Item bItem = new Item(key, value);
         System.out.println("bItem " + bItem.toString());
-        bItem.writeTo(bChunk, 0);
-        System.out.println("bChunk " + bChunk.toString());
-        bChunk.flip();
-        int status = bChunk.getInt();
-        long expireTime = bChunk.getLong();
-        int hash = bChunk.getInt();
-        int dataLen = bChunk.getInt();
-        int keyLength = bChunk.getInt();
-        int valueLength = bChunk.getInt();
+        bItem.writeTo(bSlab, 0);
+        System.out.println("bSlab " + bSlab.toString());
+        bSlab.flip();
+        int status = bSlab.getInt();
+        long expireTime = bSlab.getLong();
+        int hash = bSlab.getInt();
+        int dataLen = bSlab.getInt();
+        int keyLength = bSlab.getInt();
+        int valueLength = bSlab.getInt();
         byte[] keyre = new byte[keyLength];
-        bChunk.get(keyre);
+        bSlab.get(keyre);
         byte[] valuere = new byte[valueLength];
-        bChunk.get(valuere);
+        bSlab.get(valuere);
 
         System.out.println("status: " + status);
         System.out.println("expiretime: " + expireTime);

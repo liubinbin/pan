@@ -19,10 +19,10 @@ public class DirectByteBufferSlab extends Slab {
      */
     private AtomicInteger dataTotalSize;
 
-    public DirectByteBufferSlab(int slotSize, int chunkSize) {
-        super(slotSize, chunkSize);
+    public DirectByteBufferSlab(int slotSize, int slabSize) {
+        super(slotSize, slabSize);
         this.slotsize = slotSize;
-        this.data = ByteBuffer.allocateDirect(chunkSize);
+        this.data = ByteBuffer.allocateDirect(slabSize);
         this.dataTotalSize = new AtomicInteger(0);
         this.nextFreeSlot = 0;
     }

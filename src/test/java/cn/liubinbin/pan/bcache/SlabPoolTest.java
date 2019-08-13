@@ -1,9 +1,9 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
@@ -17,71 +17,71 @@ import static org.junit.Assert.*;
 public class SlabPoolTest {
 
     @Test
-    public void testChooseChunkIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
+    public void testChooseSlabIdx() throws IOException, ConfigurationException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
 //        System.out.println("getSlotSizes " + Arrays.asList(cacheConfig.getSlotSizes()));
         SlabPool slabPool = new SlabPool(cacheConfig);
-        assertEquals(0, slabPool.chooseChunkIdx(20));
-        assertEquals(1, slabPool.chooseChunkIdx(5122));
-        assertEquals(4, slabPool.chooseChunkIdx(41965));
-        assertEquals(-1, slabPool.chooseChunkIdx(16778241));
+        assertEquals(0, slabPool.chooseSlabIdx(20));
+        assertEquals(1, slabPool.chooseSlabIdx(5122));
+        assertEquals(4, slabPool.chooseSlabIdx(41965));
+        assertEquals(-1, slabPool.chooseSlabIdx(16778241));
     }
 
     @Test
-    public void testCasChunkByIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
+    public void testCasSlabByIdx() throws IOException, ConfigurationException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         SlabPool slabPool = new SlabPool(cacheConfig);
 //        System.out.println("cacheConfig.getSlotSizes().length " + cacheConfig.getSlotSizes().length);
         int slotSizes = cacheConfig.getSlotSizes().length;
         for (int i = 0; i < slotSizes; i++) {
-            Slab chunk1 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
-            Slab chunk2 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
-            Slab chunk3 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
-            assertFalse(slabPool.casChunkByIdx(i, chunk2, chunk1));
-            assertTrue(slabPool.casChunkByIdx(i, null, chunk1));
-            assertTrue(slabPool.casChunkByIdx(i, chunk1, chunk3));
-            assertFalse(slabPool.casChunkByIdx(i, chunk2, chunk3));
+            Slab slab1 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
+            Slab slab2 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
+            Slab slab3 = new ByteArraySlab(cacheConfig.getSlotSizes()[i], cacheConfig.getSlabSize());
+            assertFalse(slabPool.casSlabByIdx(i, slab2, slab1));
+            assertTrue(slabPool.casSlabByIdx(i, null, slab1));
+            assertTrue(slabPool.casSlabByIdx(i, slab1, slab3));
+            assertFalse(slabPool.casSlabByIdx(i, slab2, slab3));
         }
     }
 
     @Test
-    public void testgetChunkByIdx() throws IOException, ConfigurationException, SlotBiggerThanChunkException {
+    public void testgetSlabByIdx() throws IOException, ConfigurationException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         SlabPool slabPool = new SlabPool(cacheConfig);
         int tempSlotSize = 234;
-        int tempChunkSize = 1234;
-        Slab chunk = new ByteArraySlab(tempSlotSize, tempChunkSize);
-        assertEquals(null, slabPool.getChunkByIdx(0));
-        slabPool.casChunkByIdx(0, null, chunk);
-        Slab chunkGot = slabPool.getChunkByIdx(0);
-        assertEquals(tempSlotSize, chunkGot.getSlotsize());
-        assertEquals(tempChunkSize, chunkGot.getChunkSize());
-        assertEquals(chunkGot, slabPool.getChunkByIdx(0));
-        assertEquals(null, slabPool.getChunkByIdx(1));
+        int tempSlabSize = 1234;
+        Slab slab = new ByteArraySlab(tempSlotSize, tempSlabSize);
+        assertEquals(null, slabPool.getSlabByIdx(0));
+        slabPool.casSlabByIdx(0, null, slab);
+        Slab slabGot = slabPool.getSlabByIdx(0);
+        assertEquals(tempSlotSize, slabGot.getSlotsize());
+        assertEquals(tempSlabSize, slabGot.getSlabSize());
+        assertEquals(slabGot, slabPool.getSlabByIdx(0));
+        assertEquals(null, slabPool.getSlabByIdx(1));
     }
 
     @Test
-    public void testAllocate() throws IOException, ConfigurationException, DataTooBiglException, SlabTooManyException, SlotBiggerThanChunkException {
+    public void testAllocate() throws IOException, ConfigurationException, DataTooBiglException, TooManySlabsException, SlotBiggerThanSlabException {
         Config cacheConfig = new Config();
         // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
         SlabPool slabPool = new SlabPool(cacheConfig);
         int tempSlotSize = 234;
-        int tempChunkSize = 1234;
-        Slab chunk = slabPool.allocate(2);
-        int choosenIdx = slabPool.chooseChunkIdx(2);
-        assertEquals(chunk, slabPool.getChunkByIdx(choosenIdx));
+        int tempSlabSize = 1234;
+        Slab slab = slabPool.allocate(2);
+        int choosenIdx = slabPool.chooseSlabIdx(2);
+        assertEquals(slab, slabPool.getSlabByIdx(choosenIdx));
         slabPool.allocate(2);
-        Slab headChunkForIdx = slabPool.getChunkByIdx(choosenIdx);
+        Slab headSlabForIdx = slabPool.getSlabByIdx(choosenIdx);
         boolean in = false;
-        while (headChunkForIdx != null){
-            if (headChunkForIdx == chunk) {
+        while (headSlabForIdx != null){
+            if (headSlabForIdx == slab) {
                 in = true;
                 break;
             } else {
-                headChunkForIdx = headChunkForIdx.getNext();
+                headSlabForIdx = headSlabForIdx.getNext();
             }
         }
         assertEquals(true, in);

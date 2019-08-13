@@ -44,7 +44,6 @@ public final class PanServer {
         Jmx jmx = new Jmx(cacheConfig, metrics.getServerLoad());
         jmx.start();
 
-        // ChunkManager cacheManager = new ChunkManager(cacheConfig);
         BcacheManager cacheManager = new BcacheManager(cacheConfig, metrics);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};

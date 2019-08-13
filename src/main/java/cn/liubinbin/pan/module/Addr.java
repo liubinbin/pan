@@ -5,12 +5,12 @@ package cn.liubinbin.pan.module;
  */
 public class Addr {
 
-    private int chunkIdx;
+    private int slabIdx;
     private int offset;
     private int length;
 
-    public Addr(int chunkIdx, int offset, int length) {
-        this.setChunkIdx(chunkIdx);
+    public Addr(int slabIdx, int offset, int length) {
+        this.setSlabIdx(slabIdx);
         this.setOffset(offset);
         this.setLength(length);
     }
@@ -23,12 +23,12 @@ public class Addr {
         this.offset = offset;
     }
 
-    public int getChunkIdx() {
-        return chunkIdx;
+    public int getSlabIdx() {
+        return slabIdx;
     }
 
-    public void setChunkIdx(int chunkIdx) {
-        this.chunkIdx = chunkIdx;
+    public void setSlabIdx(int slabIdx) {
+        this.slabIdx = slabIdx;
     }
 
     public int getLength() {
@@ -41,6 +41,6 @@ public class Addr {
 
     @Override
     public String toString() {
-        return String.format("{chunkIdx: %d ; offset: %d ; length: %d }", chunkIdx, offset, length);
+        return String.format("{slabIdx: %d ; offset: %d ; length: %d }", slabIdx, offset, length);
     }
 }

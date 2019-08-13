@@ -42,7 +42,7 @@ public class SlabTest {
 
 //    @Test
 //    public void testNull() {
-//        Slab chunk = new ByteArraySlab(128, 16384);
+//        Slab slab = new ByteArraySlab(128, 16384);
 //
 //    }
 }

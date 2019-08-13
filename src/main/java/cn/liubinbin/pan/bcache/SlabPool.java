@@ -1,9 +1,9 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.SlabTooManyException;
+import cn.liubinbin.pan.exceptions.TooManySlabsException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
+import cn.liubinbin.pan.exceptions.SlotBiggerThanSlabException;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -20,19 +20,19 @@ public class SlabPool {
     private int biggestSlotSize;
     private int slabSize;
     private int slabMaxCount;
-    private AtomicInteger chunkCurrCount;
+    private AtomicInteger currSlabCount;
     private sun.misc.Unsafe unsafe;
     private int NBASE;
     private int NSHIFT;
 
-    public SlabPool(Config cacheConfig) throws SlotBiggerThanChunkException {
+    public SlabPool(Config cacheConfig) throws SlotBiggerThanSlabException {
         this.slotSizes = cacheConfig.getSlotSizes();
         this.slabSize = cacheConfig.getSlabSize();
         this.slabMaxCount = cacheConfig.getSlabMaxCount();
-        this.chunkCurrCount = new AtomicInteger(0);
+        this.currSlabCount = new AtomicInteger(0);
         this.slabsInPool = new ByteArraySlab[slotSizes.length];
-        for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
-            this.slabsInPool[chunkIdx] = null;
+        for (int slabIdx = 0; slabIdx < slotSizes.length; slabIdx++) {
+            this.slabsInPool[slabIdx] = null;
         }
         this.biggestSlotSize = slotSizes[slotSizes.length - 1];
 
@@ -50,46 +50,46 @@ public class SlabPool {
         NSHIFT = 31 - Integer.numberOfLeadingZeros(ns);
     }
 
-    public Slab getChunkByIdx(int idx){
+    public Slab getSlabByIdx(int idx){
         return (Slab)unsafe.getObjectVolatile(slabsInPool, (long) ((idx << NSHIFT) + NBASE));
     }
 
-    public boolean casChunkByIdx(int idx, Slab expected, Slab update){
+    public boolean casSlabByIdx(int idx, Slab expected, Slab update){
         return unsafe.compareAndSwapObject(slabsInPool, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
     // TODO we should use datalen( keylength + valuelength)
-    public Slab allocate(int size) throws DataTooBiglException, SlabTooManyException {
-        if (chunkCurrCount.get() > slabMaxCount){
-            throw new SlabTooManyException();
+    public Slab allocate(int size) throws DataTooBiglException, TooManySlabsException {
+        if (currSlabCount.get() > slabMaxCount){
+            throw new TooManySlabsException();
         }
-        int choosenChunkIdx = chooseChunkIdx(size);
-        if (choosenChunkIdx < 0) {
+        int choosenSlabIdx = chooseSlabIdx(size);
+        if (choosenSlabIdx < 0) {
             throw new DataTooBiglException("object is too big, biggestSlotSize is " + biggestSlotSize);
         }
-        Slab chunk = new ByteArraySlab(getSlotSizeForIdx(choosenChunkIdx), slabSize);
-        addChunk(choosenChunkIdx, chunk);
-        return chunk;
+        Slab slab = new ByteArraySlab(getSlotSizeForIdx(choosenSlabIdx), slabSize);
+        addSlab(choosenSlabIdx, slab);
+        return slab;
     }
 
-    public void addChunk(int hashKey, Slab update) {
-        if (getChunkByIdx(hashKey) == null) {
-            if (casChunkByIdx(hashKey, null, update)) {
+    public void addSlab(int hashKey, Slab update) {
+        if (getSlabByIdx(hashKey) == null) {
+            if (casSlabByIdx(hashKey, null, update)) {
                 return;
             }
         }
-        Slab expected = getChunkByIdx(hashKey);
+        Slab expected = getSlabByIdx(hashKey);
         update.setNext(expected);
-        while (!casChunkByIdx(hashKey, expected, update)) {
-            expected = getChunkByIdx(hashKey);
+        while (!casSlabByIdx(hashKey, expected, update)) {
+            expected = getSlabByIdx(hashKey);
             update.setNext(expected);
         }
     }
 
-    public int chooseChunkIdx(int size) {
-        for (int chunkIdx = 0; chunkIdx < slotSizes.length; chunkIdx++) {
-            if (size < slotSizes[chunkIdx]) {
-                return chunkIdx;
+    public int chooseSlabIdx(int size) {
+        for (int slabIdx = 0; slabIdx < slotSizes.length; slabIdx++) {
+            if (size < slotSizes[slabIdx]) {
+                return slabIdx;
             }
         }
         return -1;
