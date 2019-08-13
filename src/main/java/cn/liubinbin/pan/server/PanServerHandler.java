@@ -93,7 +93,6 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
 
             tempData.clear();
             key = null;
-            System.out.println("req.method()" + req.method());
             if (req.method().equals(HttpMethod.GET)) {
                 isGet = true;
                 //deal with get request
