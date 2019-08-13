@@ -1,7 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.ChunkTooManyException;
+import cn.liubinbin.pan.exceptions.SlabTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import sun.misc.Unsafe;
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * Created by bin on 2019/4/24.
  */
-public class ChunkPool {
+public class SlabPool {
 
     private Slab[] slabsInPool;
     private int[] slotSizes;
@@ -25,7 +25,7 @@ public class ChunkPool {
     private int NBASE;
     private int NSHIFT;
 
-    public ChunkPool(Config cacheConfig) throws SlotBiggerThanChunkException {
+    public SlabPool(Config cacheConfig) throws SlotBiggerThanChunkException {
         this.slotSizes = cacheConfig.getSlotSizes();
         this.slabSize = cacheConfig.getSlabSize();
         this.slabMaxCount = cacheConfig.getSlabMaxCount();
@@ -59,9 +59,9 @@ public class ChunkPool {
     }
 
     // TODO we should use datalen( keylength + valuelength)
-    public Slab allocate(int size) throws DataTooBiglException, ChunkTooManyException {
+    public Slab allocate(int size) throws DataTooBiglException, SlabTooManyException {
         if (chunkCurrCount.get() > slabMaxCount){
-            throw new ChunkTooManyException();
+            throw new SlabTooManyException();
         }
         int choosenChunkIdx = chooseChunkIdx(size);
         if (choosenChunkIdx < 0) {

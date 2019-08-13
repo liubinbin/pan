@@ -1,8 +1,8 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Config;
-import cn.liubinbin.pan.exceptions.ChunkIsFullException;
-import cn.liubinbin.pan.exceptions.ChunkTooManyException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
+import cn.liubinbin.pan.exceptions.SlabTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
 import cn.liubinbin.pan.metrics.Metrics;
@@ -21,8 +21,8 @@ import java.lang.reflect.Field;
 
 public class BcacheManager {
 
-    private ChunkPool chunkPool;
-    private Slab[] chunksInManager;
+    private SlabPool slabPool;
+    private Slab[] slabsInManager;
     private int[] slotSizes;
     private int hashMod;
     private sun.misc.Unsafe unsafe;
@@ -31,12 +31,12 @@ public class BcacheManager {
     private Metrics metrics;
 
     public BcacheManager(Config cacheConfig) throws SlotBiggerThanChunkException {
-        this.chunkPool = new ChunkPool(cacheConfig);
+        this.slabPool = new SlabPool(cacheConfig);
         this.hashMod = cacheConfig.getHashMod();
         this.slotSizes = cacheConfig.getSlotSizes();
-        this.chunksInManager = new ByteArraySlab[hashMod];
+        this.slabsInManager = new ByteArraySlab[hashMod];
         for (int slabIdx = 0; slabIdx < hashMod; slabIdx++) {
-            this.chunksInManager[slabIdx] = null;
+            this.slabsInManager[slabIdx] = null;
         }
 
         try {
@@ -67,17 +67,17 @@ public class BcacheManager {
     public byte[] getByByteArray(byte[] key) {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        // find chunk
-        Slab chunk = getChunkByIdx(keyHashRemainder);
+        // find slab
+        Slab slab = getSlabByIdx(keyHashRemainder);
         byte[] value = null;
-        while (chunk != null) {
-            if ((value = chunk.getByByteArray(key)) != null) {
+        while (slab != null) {
+            if ((value = slab.getByByteArray(key)) != null) {
                 if (metrics != null) {
                     metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
                 }
                 return value;
             }
-            chunk = chunk.getNext();
+            slab = slab.getNext();
         }
         if (metrics != null) {
             metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
@@ -94,17 +94,17 @@ public class BcacheManager {
     public ByteBuf getByByteBuf(byte[] key) {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        // find chunk
-        Slab chunk = getChunkByIdx(keyHashRemainder);
+        // find slab
+        Slab slab = getSlabByIdx(keyHashRemainder);
         ByteBuf value;
-        while (chunk != null) {
-            if ((value = chunk.getByByteBuf(key)) != null) {
+        while (slab != null) {
+            if ((value = slab.getByByteBuf(key)) != null) {
                 if (metrics != null) {
                     metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
                 }
                 return value;
             }
-            chunk = chunk.getNext();
+            slab = slab.getNext();
         }
         if (metrics != null) {
             metrics.addOpMetrics(OpEnum.GET, (System.currentTimeMillis() - startTime));
@@ -120,11 +120,11 @@ public class BcacheManager {
     public void delete(byte[] key) {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        // find chunk
-        Slab chunk = getChunkByIdx(keyHashRemainder);
-        while (chunk != null) {
-            chunk.delete(key);
-            chunk = chunk.getNext();
+        // find slab
+        Slab slab = getSlabByIdx(keyHashRemainder);
+        while (slab != null) {
+            slab.delete(key);
+            slab = slab.getNext();
         }
         if (metrics != null) {
             metrics.addOpMetrics(OpEnum.DELETE, (System.currentTimeMillis() - startTime));
@@ -137,35 +137,35 @@ public class BcacheManager {
      * @param key   key to location data
      * @param value data related to key
      */
-    public void put(byte[] key, byte[] value) throws DataTooBiglException, ChunkTooManyException {
+    public void put(byte[] key, byte[] value) throws DataTooBiglException, SlabTooManyException {
         long startTime = System.currentTimeMillis();
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
         while (true) {
-            // find chunk
-            Slab chunk = getChunkByIdx(keyHashRemainder);
-            while (chunk != null) {
-                if (chunk.checkWriteForLen(value.length)) {
+            // find slab
+            Slab slab = getSlabByIdx(keyHashRemainder);
+            while (slab != null) {
+                if (slab.checkWriteForLen(value.length)) {
                     break;
                 } else {
-                    chunk = chunk.getNext();
+                    slab = slab.getNext();
                 }
             }
-            // if chunk is null, allocate a chunk
-            if (chunk == null) {
-                chunk = chunkPool.allocate(value.length);
-                if (chunk == null) {
-                    // we cannot allocate chunk, maybe we have already too many chunksInManager.
+            // if slab is null, allocate a slab
+            if (slab == null) {
+                slab = slabPool.allocate(value.length);
+                if (slab == null) {
+                    // we cannot allocate slab, maybe we have already too many slabsInManager.
                     // TODO expire item by value.length
                     continue;
                 }
-                addChunk(keyHashRemainder, chunk);
+                addSlab(keyHashRemainder, slab);
             }
 
             // put data
             try {
-                chunk.put(key, value);
+                slab.put(key, value);
                 break;
-            } catch (ChunkIsFullException e) {
+            } catch (SlabIsFullException e) {
                 // just retry, do nothing
             }
         }
@@ -174,16 +174,16 @@ public class BcacheManager {
         }
     }
 
-    public void addChunk(int hashKey, Slab update) {
-        if (getChunkByIdx(hashKey) == null) {
-            if (casChunkByIdx(hashKey, null, update)) {
+    public void addSlab(int hashKey, Slab update) {
+        if (getSlabByIdx(hashKey) == null) {
+            if (casSlabByIdx(hashKey, null, update)) {
                 return;
             }
         }
-        Slab expected = getChunkByIdx(hashKey);
+        Slab expected = getSlabByIdx(hashKey);
         update.setNext(expected);
-        while (!casChunkByIdx(hashKey, expected, update)) {
-            expected = getChunkByIdx(hashKey);
+        while (!casSlabByIdx(hashKey, expected, update)) {
+            expected = getSlabByIdx(hashKey);
             update.setNext(expected);
         }
     }
@@ -199,7 +199,7 @@ public class BcacheManager {
 
     public boolean checkContainKey(byte[] key) {
         int keyHashRemainder = ByteUtils.hashCodeMod(key, hashMod);
-        Slab chunk = getChunkByIdx(keyHashRemainder);
+        Slab chunk = getSlabByIdx(keyHashRemainder);
         while (chunk != null) {
             if (chunk.containKey(key)) {
                 return true;
@@ -208,15 +208,15 @@ public class BcacheManager {
         return false;
     }
 
-    public Slab getChunkByIdx(int idx) {
-        return (Slab)unsafe.getObjectVolatile(chunksInManager, (long) ((idx << NSHIFT) + NBASE)) ;
+    public Slab getSlabByIdx(int idx) {
+        return (Slab)unsafe.getObjectVolatile(slabsInManager, (long) ((idx << NSHIFT) + NBASE)) ;
     }
 
-    public boolean casChunkByIdx(int idx, Slab expected, Slab update) {
-        return unsafe.compareAndSwapObject(chunksInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
+    public boolean casSlabByIdx(int idx, Slab expected, Slab update) {
+        return unsafe.compareAndSwapObject(slabsInManager, (long) ((idx << NSHIFT) + NBASE), expected, update);
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, ChunkTooManyException, SlotBiggerThanChunkException {
+    public static void main(String[] args) throws ConfigurationException, IOException, DataTooBiglException, SlabTooManyException, SlotBiggerThanChunkException {
         Config cacheConfig = new Config();
         BcacheManager cacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};

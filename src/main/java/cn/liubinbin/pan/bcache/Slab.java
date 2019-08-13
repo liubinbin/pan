@@ -1,6 +1,6 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import io.netty.buffer.ByteBuf;
 
@@ -37,7 +37,7 @@ public abstract class Slab {
      * @param value
      * @return
      */
-    public abstract int put(byte[] key, byte[] value) throws ChunkIsFullException, DataTooBiglException;
+    public abstract int put(byte[] key, byte[] value) throws SlabIsFullException, DataTooBiglException;
 
     public abstract void delete(byte[] key);
 

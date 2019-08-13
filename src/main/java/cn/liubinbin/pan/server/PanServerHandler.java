@@ -17,9 +17,8 @@ package cn.liubinbin.pan.server;
 
 import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.exceptions.ChunkTooManyException;
+import cn.liubinbin.pan.exceptions.SlabTooManyException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
-import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
@@ -86,7 +85,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws DataTooBiglException, ChunkTooManyException {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws DataTooBiglException, SlabTooManyException {
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
 

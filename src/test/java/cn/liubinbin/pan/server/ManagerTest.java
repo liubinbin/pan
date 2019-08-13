@@ -1,12 +1,13 @@
 package cn.liubinbin.pan.server;
 
+import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Config;
+import cn.liubinbin.pan.exceptions.DataTooBiglException;
+import cn.liubinbin.pan.exceptions.SlabTooManyException;
 import cn.liubinbin.pan.exceptions.SlotBiggerThanChunkException;
-import cn.liubinbin.pan.oldcache.ChunkManager;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -17,53 +18,52 @@ import static org.junit.Assert.*;
  */
 public class ManagerTest {
 
-    private ChunkManager chunkManager;
+    private BcacheManager bcacheManager;
 
     public ManagerTest() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
-        this.chunkManager = new ChunkManager(new Config());
+        this.bcacheManager = new BcacheManager(new Config());
     }
 
     @Test
-    public void testPut() {
+    public void testPut() throws SlabTooManyException, DataTooBiglException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
         byte[] value1 = {'v', 'a', 'l', 'u', 'e', '1'};
 
-        chunkManager.put(key, value);
-        chunkManager.put(key1, value1);
-        byte[] valueFromCache = chunkManager.getByByteArray(key);
+        bcacheManager.put(key, value);
+        bcacheManager.put(key1, value1);
+        byte[] valueFromCache = bcacheManager.getByByteArray(key);
         assertTrue(Arrays.equals(value, valueFromCache));
     }
 
     @Test
-    public void testDelete() {
+    public void testDelete() throws SlabTooManyException, DataTooBiglException {
         byte[] key = {'k', 'e', 'y'};
         byte[] key1 = {'k', 'e', 'y', '1'};
         byte[] value = {'v', 'a', 'l', 'u', 'e'};
         byte[] value1 = {'v', 'a', 'l', 'u', 'e', '1'};
 
-        chunkManager.put(key, value);
-        chunkManager.put(key1, value1);
-        chunkManager.delete(key);
-        assertNull(chunkManager.getByByteArray(key));
-        assertNull(chunkManager.getByByteBuf(key));
-        assertNotNull(chunkManager.getByByteArray(key1));
-        assertNotNull(chunkManager.getByByteBuf(key1));
+        bcacheManager.put(key, value);
+        bcacheManager.put(key1, value1);
+        bcacheManager.delete(key);
+        assertNull(bcacheManager.getByByteArray(key));
+        assertNull(bcacheManager.getByByteBuf(key));
+        assertNotNull(bcacheManager.getByByteArray(key1));
+        assertNotNull(bcacheManager.getByByteBuf(key1));
     }
 
     @Test
-    public void testGet() throws ConfigurationException, IOException, SlotBiggerThanChunkException {
+    public void testGet() throws ConfigurationException, IOException, SlotBiggerThanChunkException, SlabTooManyException, DataTooBiglException {
         Config cacheConfig = new Config();
-        ChunkManager cacheManager = new ChunkManager(cacheConfig);
+        BcacheManager bcacheManager = new BcacheManager(cacheConfig);
         byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
         byte[] CONTENT1 = {'j', 'a', 'v', 'a', 'i', 's', 'g', 'r', 'e', 'a', 't'};
         byte[] CONTENT2 = new byte[73060];
         CONTENT2[73060 - 1] = '1';
-        cacheManager.put("abcd".getBytes(), CONTENT);
-        cacheManager.put("abc".getBytes(), CONTENT1);
-        cacheManager.put("abcde".getBytes(), CONTENT2);
-        assertNotNull(cacheManager.getByByteBuf("abcd".getBytes()));
-        assertTrue(cacheManager.checkContainKey());
+        bcacheManager.put("abcd".getBytes(), CONTENT);
+        bcacheManager.put("abc".getBytes(), CONTENT1);
+        bcacheManager.put("abcde".getBytes(), CONTENT2);
+        assertNotNull(bcacheManager.getByByteBuf("abcd".getBytes()));
     }
 }

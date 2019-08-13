@@ -1,7 +1,7 @@
 package cn.liubinbin.pan.bcache;
 
 import cn.liubinbin.pan.conf.Contants;
-import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
 import cn.liubinbin.pan.utils.ByteArrayUtils;
@@ -79,7 +79,7 @@ public class ByteArrayLinkedSlab extends Slab {
         return null;
     }
 
-    public int put(byte[] key, byte[] value) throws ChunkIsFullException {
+    public int put(byte[] key, byte[] value) throws SlabIsFullException {
         return put(key, value, false);
     }
 
@@ -87,14 +87,14 @@ public class ByteArrayLinkedSlab extends Slab {
      * @param value
      * @return
      */
-    public int put(byte[] key, byte[] value, boolean replace) throws ChunkIsFullException {
+    public int put(byte[] key, byte[] value, boolean replace) throws SlabIsFullException {
         // find position
         if (dataTotalSize.get() >= getChunkSize()) {
-            throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());
+            throw new SlabIsFullException("chunk is full, slotSize: " + getSlotsize());
         }
         int seekOffset = seekAndWriteStatus();
         if (seekOffset < 0) {
-            throw new ChunkIsFullException("chunk is full, slotSize: " + getSlotsize());
+            throw new SlabIsFullException("chunk is full, slotSize: " + getSlotsize());
         }
 
         // set totalsize

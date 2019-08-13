@@ -19,7 +19,6 @@ import cn.liubinbin.pan.bcache.BcacheManager;
 import cn.liubinbin.pan.conf.Config;
 import cn.liubinbin.pan.jmx.Jmx;
 import cn.liubinbin.pan.metrics.Metrics;
-import cn.liubinbin.pan.oldcache.ChunkManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;

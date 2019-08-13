@@ -1,6 +1,6 @@
 package cn.liubinbin.pan.bcache;
 
-import cn.liubinbin.pan.exceptions.ChunkIsFullException;
+import cn.liubinbin.pan.exceptions.SlabIsFullException;
 import cn.liubinbin.pan.exceptions.DataTooBiglException;
 import cn.liubinbin.pan.module.Item;
 import cn.liubinbin.pan.module.Key;
@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class ByteArrayLinkedSlabTest {
 
     @Test
-    public void testPut() throws ChunkIsFullException, DataTooBiglException {
+    public void testPut() throws SlabIsFullException, DataTooBiglException {
         ByteArraySlab byteArrayChunk = new ByteArraySlab(1024, 1024 * 1024);
         byte[] key = "hellokey".getBytes();
         byte[] value = "hellovalue".getBytes();
@@ -65,7 +65,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testGetByByteArray() throws ChunkIsFullException, DataTooBiglException {
+    public void testGetByByteArray() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
@@ -82,7 +82,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testgetByByteBuf() throws ChunkIsFullException, DataTooBiglException {
+    public void testgetByByteBuf() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
@@ -103,7 +103,7 @@ public class ByteArrayLinkedSlabTest {
 
 
     @Test
-    public void testContainKey() throws ChunkIsFullException, DataTooBiglException {
+    public void testContainKey() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
@@ -115,7 +115,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testGetAllKeys() throws ChunkIsFullException {
+    public void testGetAllKeys() throws SlabIsFullException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArrayLinkedSlab byteArrayLinkedChunk = new ByteArrayLinkedSlab(slotSize, chunkSize);
@@ -135,7 +135,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testGetdataTotalSize() throws ChunkIsFullException, DataTooBiglException {
+    public void testGetdataTotalSize() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
@@ -146,7 +146,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testDelete() throws ChunkIsFullException, DataTooBiglException {
+    public void testDelete() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
@@ -172,7 +172,7 @@ public class ByteArrayLinkedSlabTest {
     }
 
     @Test
-    public void testTime() throws ChunkIsFullException, DataTooBiglException {
+    public void testTime() throws SlabIsFullException, DataTooBiglException {
         int slotSize = 1024;
         int chunkSize = 1024 * 1024;
         ByteArraySlab byteArrayChunk = new ByteArraySlab(slotSize, chunkSize);
