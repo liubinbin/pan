@@ -26,7 +26,6 @@ public class ByteArraySlabTest {
         int offset = -1;
         offset = byteArraySlab.put(key, value);
         Item item = byteArraySlab.readFrom(0);
-        System.out.println("item: " + item.toString());
         assertEquals(1, item.getStatus());
         assertTrue(Arrays.equals(key, item.getKey()));
         assertTrue(Arrays.equals(value, item.getValue()));
