@@ -10,6 +10,8 @@ import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * slabs are orginzed by slotsiz.
+ * slabs of the same size are int the same idx of slabsInPool.
  *
  * Created by bin on 2019/4/24.
  */
@@ -72,16 +74,16 @@ public class SlabPool {
         return slab;
     }
 
-    public void addSlab(int hashKey, Slab update) {
-        if (getSlabByIdx(hashKey) == null) {
-            if (casSlabByIdx(hashKey, null, update)) {
+    public void addSlab(int choosenSlabIdx, Slab update) {
+        if (getSlabByIdx(choosenSlabIdx) == null) {
+            if (casSlabByIdx(choosenSlabIdx, null, update)) {
                 return;
             }
         }
-        Slab expected = getSlabByIdx(hashKey);
+        Slab expected = getSlabByIdx(choosenSlabIdx);
         update.setNext(expected);
-        while (!casSlabByIdx(hashKey, expected, update)) {
-            expected = getSlabByIdx(hashKey);
+        while (!casSlabByIdx(choosenSlabIdx, expected, update)) {
+            expected = getSlabByIdx(choosenSlabIdx);
             update.setNext(expected);
         }
     }

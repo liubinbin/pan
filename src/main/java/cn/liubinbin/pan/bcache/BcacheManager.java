@@ -174,16 +174,16 @@ public class BcacheManager {
         }
     }
 
-    public void addSlab(int hashKey, Slab update) {
-        if (getSlabByIdx(hashKey) == null) {
-            if (casSlabByIdx(hashKey, null, update)) {
+    public void addSlab(int keyHashRemainder, Slab update) {
+        if (getSlabByIdx(keyHashRemainder) == null) {
+            if (casSlabByIdx(keyHashRemainder, null, update)) {
                 return;
             }
         }
-        Slab expected = getSlabByIdx(hashKey);
+        Slab expected = getSlabByIdx(keyHashRemainder);
         update.setNext(expected);
-        while (!casSlabByIdx(hashKey, expected, update)) {
-            expected = getSlabByIdx(hashKey);
+        while (!casSlabByIdx(keyHashRemainder, expected, update)) {
+            expected = getSlabByIdx(keyHashRemainder);
             update.setNext(expected);
         }
     }
