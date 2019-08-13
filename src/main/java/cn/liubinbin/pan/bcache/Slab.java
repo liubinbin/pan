@@ -16,14 +16,12 @@ public abstract class Slab {
     private Slab next;
 
     public Slab(int slotSize, int slabSize, Slab nextSlab) {
-        System.out.println("slabSize " + slabSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.slabSize = slabSize;
         this.next = nextSlab;
     }
 
     public Slab(int slotSize, int slabSize) {
-        System.out.println("slabSize " + slabSize + " slotSize " + slotSize);
         this.slotsize = slotSize;
         this.slabSize = slabSize;
         this.next = null;
