@@ -62,7 +62,7 @@ public class SlabPool {
 
     // TODO we should use datalen( keylength + valuelength)
     public synchronized Slab allocate(int size) throws DataTooBiglException, TooManySlabsException {
-        if (currSlabCount.get() > slabMaxCount) {
+        if (currSlabCount.get() >= slabMaxCount) {
             throw new TooManySlabsException();
         }
         int choosenSlabIdx = chooseSlabIdx(size);

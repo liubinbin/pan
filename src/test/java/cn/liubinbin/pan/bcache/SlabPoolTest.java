@@ -86,4 +86,16 @@ public class SlabPoolTest {
         }
         assertEquals(true, in);
     }
+
+
+    @Test(expected = TooManySlabsException.class)
+    public void testAllocateTooManaySlabs() throws TooManySlabsException, DataTooBiglException, IOException, ConfigurationException, SlotBiggerThanSlabException {
+        Config cacheConfig = new Config();
+        // 5120,9216,17408,41964,50176,58368,66560,132096,263168,525312,1049600,4195328,16778240
+        SlabPool slabPool = new SlabPool(cacheConfig);
+        for (int i = 1; i <= cacheConfig.getSlabMaxCount(); i++) {
+            slabPool.allocate(2);
+        }
+        slabPool.allocate(2);
+    }
 }
