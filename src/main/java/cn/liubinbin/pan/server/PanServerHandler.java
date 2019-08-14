@@ -94,7 +94,7 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
             key = null;
             if (req.method().equals(HttpMethod.GET)) {
                 isGet = true;
-                //deal with get request
+                // deal with get request
                 final String uri = req.uri();
                 final String path = sanitizeUri(uri);
                 if (path == null) {
@@ -134,14 +134,6 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
 
                 if (req instanceof HttpRequest) {
                     tempData.clear();
-                    System.out.println("It is HttpRequest");
-                    if (req instanceof FullHttpRequest) {
-                        System.out.println("It is FullHttpRequest");
-                    } else {
-                        System.out.println("It is not FullHttpRequest");
-                    }
-                } else {
-                    System.out.println("It is not HttpRequest" + req.getClass());
                 }
             } else if (req.method().equals(HttpMethod.DELETE)) {
                 final String uri = req.uri();
@@ -169,18 +161,12 @@ public class PanServerHandler extends ChannelInboundHandlerAdapter {
                 ByteBuf tempContent = ((HttpContent) msg).content();
                 if (tempContent.isReadable()) {
                     tempData.addComponent(true, tempContent.duplicate());
-//					System.out.println(ByteBufUtil.hexDump(tempContent));
-                    System.out.println("It is HttpContent " + tempContent.readableBytes() + " " + tempData.numComponents() + " " + tempData.maxNumComponents() + " " + tempData.maxCapacity() + " " + tempData.maxWritableBytes());
-                } else {
-                    System.out.println("abc is not readable");
                 }
                 if (msg instanceof LastHttpContent) {
                     int length = tempData.readableBytes();
                     byte[] data = new byte[length];
                     tempData.getBytes(tempData.readerIndex(), data);
-                    System.out.println("key.length: " + key.length + " data.length: " + data.length);
                     cacheManager.put(key, data);
-                    System.out.println("It is LastHttpContent " + length + " " + data.length);
                     FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
                     response.headers().set(CONTENT_TYPE, "text/plain");
                     if (!false) {

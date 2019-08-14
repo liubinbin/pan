@@ -26,7 +26,10 @@ public class ClientUsage {
         client.getObject("key6", new File("dest"));
 
 //        client.deleteObject("default","key4");
-
+        for (int i = 0; i < 1000000; i++) {
+            client.putOBject("key" + i , new File("C:\\Users\\viruser.v-desktop\\Desktop\\f759b66c.png"));
+            System.out.println(i + " done");
+        }
 
         client.close();
     }

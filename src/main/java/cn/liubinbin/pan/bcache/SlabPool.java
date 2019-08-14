@@ -61,7 +61,7 @@ public class SlabPool {
     }
 
     // TODO we should use datalen( keylength + valuelength)
-    public Slab allocate(int size) throws DataTooBiglException, TooManySlabsException {
+    public synchronized Slab allocate(int size) throws DataTooBiglException, TooManySlabsException {
         if (currSlabCount.get() > slabMaxCount) {
             throw new TooManySlabsException();
         }
@@ -71,6 +71,7 @@ public class SlabPool {
         }
         Slab slab = new ByteArraySlab(getSlotSizeForIdx(choosenSlabIdx), slabSize);
         addSlab(choosenSlabIdx, slab);
+        currSlabCount.getAndIncrement();
         return slab;
     }
 
