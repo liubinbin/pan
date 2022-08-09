@@ -7,8 +7,8 @@ public class Worker implements Runnable {
     private Processor processor = null;
 
     public Worker(Processor processor) {
-        this.processor = processor;
-//		this.processor = new Processor();
+//        this.processor = processor;
+		this.processor = new Processor();
         this.random = new Random();
     }
 
